@@ -1,128 +1,207 @@
-# 🌅 Aurora
+🌅 Aurora
+Aplicativo mobile moderno desenvolvido em React Native com Expo e TypeScript
+Aurora é um projeto estruturado de forma modular e escalável, projetado para facilitar a colaboração entre desenvolvedores e manter a qualidade do código através de boas práticas de desenvolvimento.
 
-Projeto em React Native com Expo e TypeScript. Estrutura simples, modular e voltada para colaboração entre desenvolvedores.
+📋 Índice
 
----
-
-## 🚀 Como rodar o projeto
-
-### ⚙️ Pré-requisitos
-
-- Node.js (v18 ou superior)
-- Git
-- [Expo CLI](https://expo.dev/) *(não precisa estar instalado globalmente)*
-
-### 🔄 Clonando e rodando
-
-```bash
-git clone git@github.com:seu-usuario/aurora.git
-cd aurora
-npm install
-npx expo start
-Você pode abrir o app com o Expo Go ou emulador Android/iOS.
-
-📂 Estrutura de Pastas
-bash
-Copy
-Edit
-src/
-├── app/         # Arquivo principal (ex: src/app/index.tsx)
-├── components/  # Componentes reutilizáveis
-└── screens/     # Telas principais do app
+🚀 Início Rápido
+📦 Tecnologias
+📂 Estrutura do Projeto
+⚙️ Configuração
+🔧 Scripts Disponíveis
+🔄 Fluxo de Desenvolvimento
 📌 Padrão de Commits
-Use o formato:
-
-makefile
-Copy
-Edit
-<tipo>: descrição
-Tipos:
-
-feat: nova funcionalidade
-
-fix: correção de bug
-
-docs: documentação
-
-style: formatação (sem alteração funcional)
-
-refactor: refatoração de código
-
-test: adição ou alteração de testes
-
-chore: tarefas administrativas/configurações
-
-Exemplos:
-
-bash
-Copy
-Edit
-git commit -m "feat: adicionar tela de login"
-git commit -m "fix: corrigir bug na navegação"
-git commit -m "docs: atualizar README"
-🔁 Fluxo de Desenvolvimento
-Crie uma nova branch:
-
-bash
-Copy
-Edit
-git checkout -b feat/nome-da-feature
-Faça commits objetivos e frequentes.
-
-Suba a branch:
-
-bash
-Copy
-Edit
-git push origin feat/nome-da-feature
-Abra um Pull Request para main.
-
-Aguarde revisão e merge.
-
-✅ Boas práticas
-Use camelCase para arquivos, funções e variáveis.
-
-Componentes reutilizáveis → src/components
-
-Telas → src/screens
-
-Lógica de navegação e inicialização → src/app
-
-Prefira async/await a .then()
-
-Evite lógica de negócio nas telas
-
-Use tipagem forte com type ou interface
-
-Comente partes importantes do código
-
-Crie um .env com segredos, e adicione um .env.example
-
-📦 Variáveis de Ambiente
-Crie um arquivo .env na raiz:
-
-ini
-Copy
-Edit
-API_URL=https://suaapi.com
-ENV=development
-Crie também um .env.example para referência dos devs.
-
-🛠️ Scripts úteis
-bash
-Copy
-Edit
-npm start        # Inicia o Expo
-npm run android  # Abre no emulador Android
-npm run ios      # Abre no emulador iOS (Mac)
-npm run web      # Abre no navegador
+✅ Boas Práticas
 👥 Equipe
-@fulano
+📄 Licença
 
-@ciclano
 
-@beltrano
+🚀 Início Rápido
+Pré-requisitos
+Certifique-se de ter as seguintes ferramentas instaladas:
 
-@usuario4
+Node.js v18+ (Download)
+Git (Download)
+Expo CLI (instalação automática via npx)
 
-@usuario5
+Instalação
+
+Clone o repositório
+bashgit clone git@github.com:seu-usuario/aurora.git
+cd aurora
+
+Instale as dependências
+bashnpm install
+
+Configure as variáveis de ambiente
+bashcp .env.example .env
+# Edite o arquivo .env com suas configurações
+
+Execute o projeto
+bashnpx expo start
+
+Abra o app
+
+Expo Go: Escaneie o QR code com o app Expo Go
+Emulador: Pressione a para Android ou i para iOS
+Web: Pressione w para abrir no navegador
+
+
+
+
+📦 Tecnologias
+TecnologiaVersãoDescriçãoReact NativeLatestFramework para desenvolvimento mobileExpoLatestPlataforma para desenvolvimento React NativeTypeScriptLatestSuperset do JavaScript com tipagem estáticaNode.jsv18+Ambiente de execução JavaScript
+
+📂 Estrutura do Projeto
+aurora/
+├── src/
+│   ├── app/         # Arquivo principal e configurações da aplicação
+│   │   └── index.tsx
+│   ├── components/  # Componentes reutilizáveis
+│   │   ├── Button/
+│   │   ├── Input/
+│   │   └── ...
+│   ├── screens/     # Telas principais do app
+│   │   ├── Home/
+│   │   ├── Login/
+│   │   └── ...
+│   ├── services/    # Serviços e APIs
+│   ├── utils/       # Funções utilitárias
+│   └── types/       # Definições de tipos TypeScript
+├── assets/          # Imagens, fontes e outros recursos
+├── .env.example     # Exemplo de variáveis de ambiente
+├── app.json         # Configurações do Expo
+├── package.json     # Dependências e scripts
+└── README.md        # Documentação do projeto
+
+⚙️ Configuração
+Variáveis de Ambiente
+Crie um arquivo .env na raiz do projeto baseado no .env.example:
+ini# API Configuration
+API_URL=https://suaapi.com
+API_KEY=sua_chave_api
+
+# Environment
+NODE_ENV=development
+ENV=development
+
+# Optional: Analytics, Crashlytics, etc.
+ANALYTICS_KEY=sua_chave_analytics
+
+⚠️ Importante: Nunca commite o arquivo .env com informações sensíveis!
+
+
+🔧 Scripts Disponíveis
+ScriptComandoDescriçãoDesenvolvimentonpm startInicia o servidor de desenvolvimentoAndroidnpm run androidExecuta no emulador AndroidiOSnpm run iosExecuta no emulador iOS (macOS)Webnpm run webExecuta no navegadorBuildnpm run buildGera build de produçãoLintnpm run lintExecuta verificação de códigoTestnpm testExecuta testes unitários
+
+🔄 Fluxo de Desenvolvimento
+1. Criando uma Nova Feature
+bash# Crie uma nova branch a partir da main
+git checkout main
+git pull origin main
+git checkout -b feat/nome-da-feature
+2. Desenvolvendo
+
+Faça commits pequenos e frequentes
+Siga o padrão de commits
+Teste suas alterações localmente
+
+3. Enviando para Revisão
+bash# Suba sua branch
+git push origin feat/nome-da-feature
+
+# Abra um Pull Request para main
+# Aguarde revisão e aprovação da equipe
+4. Após Aprovação
+
+O merge será feito pela equipe
+Delete a branch local após o merge:
+bashgit checkout main
+git pull origin main
+git branch -d feat/nome-da-feature
+
+
+
+📌 Padrão de Commits
+Utilize o formato Conventional Commits:
+<tipo>: <descrição>
+
+[corpo opcional]
+[rodapé opcional]
+Tipos de Commit
+TipoDescriçãoExemplofeatNova funcionalidadefeat: adicionar tela de loginfixCorreção de bugfix: corrigir validação de emaildocsDocumentaçãodocs: atualizar READMEstyleFormatação/estilostyle: corrigir indentaçãorefactorRefatoraçãorefactor: otimizar componente ButtontestTestestest: adicionar testes para LoginchoreTarefas administrativaschore: atualizar dependênciasperfMelhoria de performanceperf: otimizar carregamento de imagens
+Exemplos de Commits
+bashgit commit -m "feat: implementar autenticação com JWT"
+git commit -m "fix: corrigir crash na tela de perfil"
+git commit -m "docs: adicionar documentação da API"
+git commit -m "refactor: extrair lógica de validação para hook customizado"
+
+✅ Boas Práticas
+📝 Código
+
+Nomenclatura: Use camelCase para variáveis e funções, PascalCase para componentes
+Tipagem: Sempre use TypeScript com tipagem forte (interface ou type)
+Estrutura: Mantenha componentes pequenos e focados em uma responsabilidade
+Comentários: Documente código complexo e decisões importantes
+
+🗂️ Organização
+
+Componentes reutilizáveis → src/components/
+Telas específicas → src/screens/
+Lógica de negócio → src/services/ ou hooks customizados
+Utilitários → src/utils/
+
+🔄 Async/Await
+typescript// ✅ Preferido
+const fetchData = async () => {
+  try {
+    const response = await api.getData();
+    return response.data;
+  } catch (error) {
+    console.error('Erro:', error);
+  }
+};
+
+// ❌ Evitar
+const fetchData = () => {
+  return api.getData()
+    .then(response => response.data)
+    .catch(error => console.error('Erro:', error));
+};
+🧩 Separação de Responsabilidades
+
+Telas: Apenas layout e estado local
+Componentes: Interface e comportamento específico
+Services: Comunicação com APIs
+Utils: Funções auxiliares puras
+
+
+👥 Equipe
+Conheça a equipe por trás do Aurora:
+AvatarNomePapelGitHub👨‍💻Fulano SilvaTech Lead@fulano👩‍💻Ciclana SantosFrontend Developer@ciclano👨‍💻Beltrano CostaMobile Developer@beltrano👩‍💻Ana SouzaUI/UX Developer@usuario4👨‍💻Carlos LimaBackend Integration@usuario5
+
+🤝 Contribuindo
+Contribuições são sempre bem-vindas! Para contribuir:
+
+Faça um fork do projeto
+Crie uma branch para sua feature (git checkout -b feat/AmazingFeature)
+Commit suas mudanças (git commit -m 'feat: adicionar AmazingFeature')
+Push para a branch (git push origin feat/AmazingFeature)
+Abra um Pull Request
+
+
+📄 Licença
+Este projeto está sob a licença MIT. Veja o arquivo LICENSE para mais detalhes.
+
+🆘 Suporte
+Encontrou algum problema ou tem dúvidas?
+
+🐛 Bugs: Abra uma issue
+💬 Discussões: Use as discussions
+📧 Email: contato@aurora-app.com
+
+
+<div align="center">
+Feito com ❤️ pela equipe Aurora
+⬆ Voltar ao topo
+</div>
