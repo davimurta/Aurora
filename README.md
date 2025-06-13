@@ -1,58 +1,83 @@
-🌅 Aurora
-Aplicativo mobile moderno desenvolvido em React Native com Expo e TypeScript
+# 🌅 Aurora
+
+**Aplicativo mobile moderno desenvolvido em React Native com Expo e TypeScript**
+
 Aurora é um projeto estruturado de forma modular e escalável, projetado para facilitar a colaboração entre desenvolvedores e manter a qualidade do código através de boas práticas de desenvolvimento.
 
-📋 Índice
+---
 
-🚀 Início Rápido
-📦 Tecnologias
-📂 Estrutura do Projeto
-⚙️ Configuração
-🔧 Scripts Disponíveis
-🔄 Fluxo de Desenvolvimento
-📌 Padrão de Commits
-✅ Boas Práticas
-👥 Equipe
-📄 Licença
+## 📋 Índice
 
+- [🚀 Início Rápido](#início-rápido)
+- [📦 Tecnologias](#tecnologias)
+- [📂 Estrutura do Projeto](#estrutura-do-projeto)
+- [⚙️ Configuração](#configuração)
+- [🔧 Scripts Disponíveis](#scripts-disponíveis)
+- [🔄 Fluxo de Desenvolvimento](#fluxo-de-desenvolvimento)
+- [📌 Padrão de Commits](#padrão-de-commits)
+- [✅ Boas Práticas](#boas-práticas)
+- [👥 Equipe](#equipe)
+- [🤝 Contribuindo](#contribuindo)
+- [📄 Licença](#licença)
+- [🆘 Suporte](#suporte)
 
-🚀 Início Rápido
-Pré-requisitos
+---
+
+## 🚀 Início Rápido
+
+### Pré-requisitos
+
 Certifique-se de ter as seguintes ferramentas instaladas:
 
-Node.js v18+ (Download)
-Git (Download)
-Expo CLI (instalação automática via npx)
+- **Node.js** v18+ ([Download](https://nodejs.org/))
+- **Git** ([Download](https://git-scm.com/))
+- **Expo CLI** (instalação automática via npx)
 
-Instalação
+### Instalação
 
-Clone o repositório
-bashgit clone git@github.com:seu-usuario/aurora.git
-cd aurora
+1. **Clone o repositório**
+   ```bash
+   git clone git@github.com:seu-usuario/aurora.git
+   cd aurora
+   ```
 
-Instale as dependências
-bashnpm install
+2. **Instale as dependências**
+   ```bash
+   npm install
+   ```
 
-Configure as variáveis de ambiente
-bashcp .env.example .env
-# Edite o arquivo .env com suas configurações
+3. **Configure as variáveis de ambiente**
+   ```bash
+   cp .env.example .env
+   # Edite o arquivo .env com suas configurações
+   ```
 
-Execute o projeto
-bashnpx expo start
+4. **Execute o projeto**
+   ```bash
+   npx expo start
+   ```
 
-Abra o app
+5. **Abra o app**
+   - **Expo Go**: Escaneie o QR code com o app Expo Go
+   - **Emulador**: Pressione `a` para Android ou `i` para iOS
+   - **Web**: Pressione `w` para abrir no navegador
 
-Expo Go: Escaneie o QR code com o app Expo Go
-Emulador: Pressione a para Android ou i para iOS
-Web: Pressione w para abrir no navegador
+---
 
+## 📦 Tecnologias
 
+| Tecnologia | Versão | Descrição |
+|------------|--------|-----------|
+| React Native | Latest | Framework para desenvolvimento mobile |
+| Expo | Latest | Plataforma para desenvolvimento React Native |
+| TypeScript | Latest | Superset do JavaScript com tipagem estática |
+| Node.js | v18+ | Ambiente de execução JavaScript |
 
+---
 
-📦 Tecnologias
-TecnologiaVersãoDescriçãoReact NativeLatestFramework para desenvolvimento mobileExpoLatestPlataforma para desenvolvimento React NativeTypeScriptLatestSuperset do JavaScript com tipagem estáticaNode.jsv18+Ambiente de execução JavaScript
+## 📂 Estrutura do Projeto
 
-📂 Estrutura do Projeto
+```
 aurora/
 ├── src/
 │   ├── app/         # Arquivo principal e configurações da aplicação
@@ -73,11 +98,18 @@ aurora/
 ├── app.json         # Configurações do Expo
 ├── package.json     # Dependências e scripts
 └── README.md        # Documentação do projeto
+```
 
-⚙️ Configuração
-Variáveis de Ambiente
-Crie um arquivo .env na raiz do projeto baseado no .env.example:
-ini# API Configuration
+---
+
+## ⚙️ Configuração
+
+### Variáveis de Ambiente
+
+Crie um arquivo `.env` na raiz do projeto baseado no `.env.example`:
+
+```ini
+# API Configuration
 API_URL=https://suaapi.com
 API_KEY=sua_chave_api
 
@@ -87,72 +119,120 @@ ENV=development
 
 # Optional: Analytics, Crashlytics, etc.
 ANALYTICS_KEY=sua_chave_analytics
+```
 
-⚠️ Importante: Nunca commite o arquivo .env com informações sensíveis!
+> ⚠️ **Importante**: Nunca commite o arquivo `.env` com informações sensíveis!
 
+---
 
-🔧 Scripts Disponíveis
-ScriptComandoDescriçãoDesenvolvimentonpm startInicia o servidor de desenvolvimentoAndroidnpm run androidExecuta no emulador AndroidiOSnpm run iosExecuta no emulador iOS (macOS)Webnpm run webExecuta no navegadorBuildnpm run buildGera build de produçãoLintnpm run lintExecuta verificação de códigoTestnpm testExecuta testes unitários
+## 🔧 Scripts Disponíveis
 
-🔄 Fluxo de Desenvolvimento
-1. Criando uma Nova Feature
-bash# Crie uma nova branch a partir da main
+| Script | Comando | Descrição |
+|--------|---------|-----------|
+| **Desenvolvimento** | `npm start` | Inicia o servidor de desenvolvimento |
+| **Android** | `npm run android` | Executa no emulador Android |
+| **iOS** | `npm run ios` | Executa no emulador iOS (macOS) |
+| **Web** | `npm run web` | Executa no navegador |
+| **Build** | `npm run build` | Gera build de produção |
+| **Lint** | `npm run lint` | Executa verificação de código |
+| **Test** | `npm test` | Executa testes unitários |
+
+---
+
+## 🔄 Fluxo de Desenvolvimento
+
+### 1. Criando uma Nova Feature
+
+```bash
+# Crie uma nova branch a partir da main
 git checkout main
 git pull origin main
 git checkout -b feat/nome-da-feature
-2. Desenvolvendo
+```
 
-Faça commits pequenos e frequentes
-Siga o padrão de commits
-Teste suas alterações localmente
+### 2. Desenvolvendo
 
-3. Enviando para Revisão
-bash# Suba sua branch
+- Faça commits pequenos e frequentes
+- Siga o [padrão de commits](#-padrão-de-commits)
+- Teste suas alterações localmente
+
+### 3. Enviando para Revisão
+
+```bash
+# Suba sua branch
 git push origin feat/nome-da-feature
 
 # Abra um Pull Request para main
 # Aguarde revisão e aprovação da equipe
-4. Após Aprovação
+```
 
-O merge será feito pela equipe
-Delete a branch local após o merge:
-bashgit checkout main
-git pull origin main
-git branch -d feat/nome-da-feature
+### 4. Após Aprovação
 
+- O merge será feito pela equipe
+- Delete a branch local após o merge:
+  ```bash
+  git checkout main
+  git pull origin main
+  git branch -d feat/nome-da-feature
+  ```
 
+---
 
-📌 Padrão de Commits
-Utilize o formato Conventional Commits:
+## 📌 Padrão de Commits
+
+Utilize o formato **Conventional Commits**:
+
+```
 <tipo>: <descrição>
 
 [corpo opcional]
 [rodapé opcional]
-Tipos de Commit
-TipoDescriçãoExemplofeatNova funcionalidadefeat: adicionar tela de loginfixCorreção de bugfix: corrigir validação de emaildocsDocumentaçãodocs: atualizar READMEstyleFormatação/estilostyle: corrigir indentaçãorefactorRefatoraçãorefactor: otimizar componente ButtontestTestestest: adicionar testes para LoginchoreTarefas administrativaschore: atualizar dependênciasperfMelhoria de performanceperf: otimizar carregamento de imagens
-Exemplos de Commits
-bashgit commit -m "feat: implementar autenticação com JWT"
+```
+
+### Tipos de Commit
+
+| Tipo | Descrição | Exemplo |
+|------|-----------|---------|
+| `feat` | Nova funcionalidade | `feat: adicionar tela de login` |
+| `fix` | Correção de bug | `fix: corrigir validação de email` |
+| `docs` | Documentação | `docs: atualizar README` |
+| `style` | Formatação/estilo | `style: corrigir indentação` |
+| `refactor` | Refatoração | `refactor: otimizar componente Button` |
+| `test` | Testes | `test: adicionar testes para Login` |
+| `chore` | Tarefas administrativas | `chore: atualizar dependências` |
+| `perf` | Melhoria de performance | `perf: otimizar carregamento de imagens` |
+
+### Exemplos de Commits
+
+```bash
+git commit -m "feat: implementar autenticação com JWT"
 git commit -m "fix: corrigir crash na tela de perfil"
 git commit -m "docs: adicionar documentação da API"
 git commit -m "refactor: extrair lógica de validação para hook customizado"
+```
 
-✅ Boas Práticas
-📝 Código
+---
 
-Nomenclatura: Use camelCase para variáveis e funções, PascalCase para componentes
-Tipagem: Sempre use TypeScript com tipagem forte (interface ou type)
-Estrutura: Mantenha componentes pequenos e focados em uma responsabilidade
-Comentários: Documente código complexo e decisões importantes
+## ✅ Boas Práticas
 
-🗂️ Organização
+### 📝 Código
 
-Componentes reutilizáveis → src/components/
-Telas específicas → src/screens/
-Lógica de negócio → src/services/ ou hooks customizados
-Utilitários → src/utils/
+- **Nomenclatura**: Use `camelCase` para variáveis e funções, `PascalCase` para componentes
+- **Tipagem**: Sempre use TypeScript com tipagem forte (`interface` ou `type`)
+- **Estrutura**: Mantenha componentes pequenos e focados em uma responsabilidade
+- **Comentários**: Documente código complexo e decisões importantes
 
-🔄 Async/Await
-typescript// ✅ Preferido
+### 🗂️ Organização
+
+- **Componentes reutilizáveis** → `src/components/`
+- **Telas específicas** → `src/screens/`
+- **Lógica de negócio** → `src/services/` ou hooks customizados
+- **Utilitários** → `src/utils/`
+
+### 🔄 Async/Await
+
+```typescript
+// ✅ Preferido
 const fetchData = async () => {
   try {
     const response = await api.getData();
@@ -168,40 +248,63 @@ const fetchData = () => {
     .then(response => response.data)
     .catch(error => console.error('Erro:', error));
 };
-🧩 Separação de Responsabilidades
+```
 
-Telas: Apenas layout e estado local
-Componentes: Interface e comportamento específico
-Services: Comunicação com APIs
-Utils: Funções auxiliares puras
+### 🧩 Separação de Responsabilidades
 
+- **Telas**: Apenas layout e estado local
+- **Componentes**: Interface e comportamento específico
+- **Services**: Comunicação com APIs
+- **Utils**: Funções auxiliares puras
 
-👥 Equipe
+---
+
+## 👥 Equipe
+
 Conheça a equipe por trás do Aurora:
-AvatarNomePapelGitHub👨‍💻Fulano SilvaTech Lead@fulano👩‍💻Ciclana SantosFrontend Developer@ciclano👨‍💻Beltrano CostaMobile Developer@beltrano👩‍💻Ana SouzaUI/UX Developer@usuario4👨‍💻Carlos LimaBackend Integration@usuario5
 
-🤝 Contribuindo
+| Avatar | Nome | Papel | GitHub |
+|--------|------|-------|--------|
+| 👨‍💻 | **Fulano Silva** | Tech Lead | [@fulano](https://github.com/fulano) |
+| 👩‍💻 | **Ciclana Santos** | Frontend Developer | [@ciclano](https://github.com/ciclano) |
+| 👨‍💻 | **Beltrano Costa** | Mobile Developer | [@beltrano](https://github.com/beltrano) |
+| 👩‍💻 | **Ana Souza** | UI/UX Developer | [@usuario4](https://github.com/usuario4) |
+| 👨‍💻 | **Carlos Lima** | Backend Integration | [@usuario5](https://github.com/usuario5) |
+
+---
+
+## 🤝 Contribuindo
+
 Contribuições são sempre bem-vindas! Para contribuir:
 
-Faça um fork do projeto
-Crie uma branch para sua feature (git checkout -b feat/AmazingFeature)
-Commit suas mudanças (git commit -m 'feat: adicionar AmazingFeature')
-Push para a branch (git push origin feat/AmazingFeature)
-Abra um Pull Request
+1. Faça um fork do projeto
+2. Crie uma branch para sua feature (`git checkout -b feat/AmazingFeature`)
+3. Commit suas mudanças (`git commit -m 'feat: adicionar AmazingFeature'`)
+4. Push para a branch (`git push origin feat/AmazingFeature`)
+5. Abra um Pull Request
 
+---
 
-📄 Licença
-Este projeto está sob a licença MIT. Veja o arquivo LICENSE para mais detalhes.
+## 📄 Licença
 
-🆘 Suporte
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+
+---
+
+## 🆘 Suporte
+
 Encontrou algum problema ou tem dúvidas?
 
-🐛 Bugs: Abra uma issue
-💬 Discussões: Use as discussions
-📧 Email: contato@aurora-app.com
+- 🐛 **Bugs**: Abra uma [issue](https://github.com/seu-usuario/aurora/issues)
+- 💬 **Discussões**: Use as [discussions](https://github.com/seu-usuario/aurora/discussions)
+- 📧 **Email**: contato@aurora-app.com
 
+---
 
 <div align="center">
-Feito com ❤️ pela equipe Aurora
-⬆ Voltar ao topo
+
+**Feito com ❤️ pela equipe Aurora**
+
+[⬆ Voltar ao topo](#-aurora)
+
 </div>
