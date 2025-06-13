@@ -17,9 +17,6 @@ Aurora é um projeto estruturado de forma modular e escalável, projetado para f
 - [📌 Padrão de Commits](#padrão-de-commits)
 - [✅ Boas Práticas](#boas-práticas)
 - [👥 Equipe](#equipe)
-- [🤝 Contribuindo](#contribuindo)
-- [📄 Licença](#licença)
-- [🆘 Suporte](#suporte)
 
 ---
 
@@ -153,7 +150,7 @@ git checkout -b feat/nome-da-feature
 ### 2. Desenvolvendo
 
 - Faça commits pequenos e frequentes
-- Siga o [padrão de commits](#-padrão-de-commits)
+- Siga o [padrão de commits](#padrão-de-commits)
 - Teste suas alterações localmente
 
 ### 3. Enviando para Revisão
@@ -265,46 +262,18 @@ Conheça a equipe por trás do Aurora:
 
 | Avatar | Nome | Papel | GitHub |
 |--------|------|-------|--------|
-| 👨‍💻 | **Fulano Silva** | Tech Lead | [@fulano](https://github.com/fulano) |
-| 👩‍💻 | **Ciclana Santos** | Frontend Developer | [@ciclano](https://github.com/ciclano) |
-| 👨‍💻 | **Beltrano Costa** | Mobile Developer | [@beltrano](https://github.com/beltrano) |
-| 👩‍💻 | **Ana Souza** | UI/UX Developer | [@usuario4](https://github.com/usuario4) |
-| 👨‍💻 | **Carlos Lima** | Backend Integration | [@usuario5](https://github.com/usuario5) |
+| 👨‍💻 | **Davi Murta** | ... | [@davimurta](https://github.com/davimurta) |
+| 👩‍💻 | **Ciclana Santos** | ... | [@ciclano](https://github.com/ciclano) |
+| 👨‍💻 | **Beltrano Costa** | ... | [@beltrano](https://github.com/beltrano) |
+| 👩‍💻 | **Ana Souza** | ... | [@usuario4](https://github.com/usuario4) |
+| 👨‍💻 | **Carlos Lima** | ... | [@usuario5](https://github.com/usuario5) |
 
----
 
-## 🤝 Contribuindo
-
-Contribuições são sempre bem-vindas! Para contribuir:
-
-1. Faça um fork do projeto
-2. Crie uma branch para sua feature (`git checkout -b feat/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'feat: adicionar AmazingFeature'`)
-4. Push para a branch (`git push origin feat/AmazingFeature`)
-5. Abra um Pull Request
-
----
-
-## 📄 Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
-
----
-
-## 🆘 Suporte
-
-Encontrou algum problema ou tem dúvidas?
-
-- 🐛 **Bugs**: Abra uma [issue](https://github.com/seu-usuario/aurora/issues)
-- 💬 **Discussões**: Use as [discussions](https://github.com/seu-usuario/aurora/discussions)
-- 📧 **Email**: contato@aurora-app.com
-
----
 
 <div align="center">
 
 **Feito com ❤️ pela equipe Aurora**
 
-[⬆ Voltar ao topo](#-aurora)
+[⬆ Voltar ao topo](#aurora)
 
 </div>
