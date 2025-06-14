@@ -3,11 +3,16 @@
   "compilerOptions": {
     "jsx": "react",
     "strict": true,
+    "baseUrl": ".",
     "paths": {
       "@/*": [
-        "./*"
-      ]
-    }
+        "./*",
+      ],
+      "@components/*": ["src/components/*"],
+      "@assets/*": ["assets/*"],
+    },
+    "resolveJsonModule": true,
+    "esModuleInterop": true
   },
   "include": [
     "**/*.ts",
