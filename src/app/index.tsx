@@ -38,7 +38,14 @@ const Login: React.FC = () => {
                 source={require("@assets/images/google.png")}
                 style={styles.image}
               />
-              <Text>Fazer Login com o google</Text>
+              <Text>Continuar com o Google</Text>
+            </View>
+            <View style={styles.AppleLogin}>
+              <Image
+                source={require("@assets/images/vecteezy_apple_1199813.png")}
+                style={styles.image}
+              />
+              <Text>Continuar com a Apple</Text>
             </View>
 
             <View style={styles.divider} />
@@ -127,7 +134,20 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderWidth: 1,
     borderColor: "#4ECDC4",
-    borderRadius: 8,
+    borderRadius: 30,
+  },
+  AppleLogin: {
+    width: "100%",
+    height: 40,
+    alignItems: "center",
+    justifyContent: "center",
+    display: "flex",
+    flexDirection: "row",
+    gap: 20,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: "#4ECDC4",
+    borderRadius: 30,
   },
   link: {
     color: '#B0B0B0',
