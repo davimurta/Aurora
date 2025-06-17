@@ -45,14 +45,14 @@ const RedefinirSenha: React.FC = () => {
             <Button
               title="Enviar"
               iconName="login"
-              onPress={() => router.push("/Home/Home")}
+              onPress={() => router.push("/ComfirmarCodigo/ComfirmarCodigo")}
               backgroundColor="#4ECDC4"
               textColor="#fff"
               loading={false}
               style={{ marginTop: 30, alignSelf: "center" }}
             />
 
-            <Pressable onPress={() => router.push('/ComfirmarCodigo/ComfirmarCodigo')}>
+            <Pressable onPress={() => router.push('/Home/Home')}>
               <Text style={styles.link}>
                 Retornar para Login
               </Text>
