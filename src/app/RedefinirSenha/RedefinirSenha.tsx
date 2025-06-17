@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react";
 import {
   View,
   StyleSheet,
@@ -10,31 +10,34 @@ import {
   Image,
   Text,
   Pressable,
-  Linking,
 } from "react-native";
 import Input from "@components/Input";
 import Button from "@components/Button";
 import { router } from "expo-router";
 
-const index = () => {
+const RedefinirSenha: React.FC = () => {
+
   return (
     <KeyboardAvoidingView
       style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : undefined} // no Android use undefined ou "height"
-      keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0} // ajusta para evitar sobreposição
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <ScrollView
           contentContainerStyle={styles.scrollContainer}
-          keyboardShouldPersistTaps="handled" // permite toque fora para fechar teclado
+          keyboardShouldPersistTaps="handled"
         >
           <View style={styles.inputWrapper}>
+            
+
+            <View style={styles.divider} />
 
             <Input
               style={styles.input}
-              label="Email cadastrado"
+              label="Email"
               type="email"
-              placeholder="Digite seu email"
+              placeholder="Digite o email cadastrado"
               keyboardType="email-address"
               iconName="email"
             />
@@ -42,16 +45,16 @@ const index = () => {
             <Button
               title="Enviar"
               iconName="login"
-              onPress={() => router.push("/Home/Home")}
+              onPress={() => router.push("/ComfirmarCodigo/ComfirmarCodigo")}
               backgroundColor="#4ECDC4"
               textColor="#fff"
               loading={false}
-              style={{ marginTop: 30, alignSelf: "center" }} // ou qualquer outro estilo
+              style={{ marginTop: 30, alignSelf: "center" }}
             />
 
-            <Pressable onPress={() => router.push('/RedefinirSenha/RedefinirSenha')}>
+            <Pressable onPress={() => router.push('/Home/Home')}>
               <Text style={styles.link}>
-                Reenviar
+                Retornar para Login
               </Text>
             </Pressable>
           </View>
@@ -100,20 +103,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderWidth: 1,
     borderColor: "#4ECDC4",
-    borderRadius: 30,
-  },
-  AppleLogin: {
-    width: "100%",
-    height: 40,
-    alignItems: "center",
-    justifyContent: "center",
-    display: "flex",
-    flexDirection: "row",
-    gap: 20,
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: "#4ECDC4",
-    borderRadius: 30,
+    borderRadius: 8,
   },
   link: {
     color: '#B0B0B0',
@@ -124,4 +114,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default index
+export default RedefinirSenha;
