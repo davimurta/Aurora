@@ -8,15 +8,15 @@ Aurora é um projeto estruturado de forma modular e escalável, projetado para f
 
 ## 📋 Índice
 
-- [🚀 Início Rápido](#início-rápido)
-- [📦 Tecnologias](#tecnologias)
-- [📂 Estrutura do Projeto](#estrutura-do-projeto)
-- [⚙️ Configuração](#configuração)
-- [🔧 Scripts Disponíveis](#scripts-disponíveis)
-- [🔄 Fluxo de Desenvolvimento](#fluxo-de-desenvolvimento)
-- [📌 Padrão de Commits](#padrão-de-commits)
-- [✅ Boas Práticas](#boas-práticas)
-- [👥 Equipe](#equipe)
+- [🚀 Início Rápido](#-início-rápido)
+- [📦 Tecnologias](#-tecnologias)
+- [📂 Estrutura do Projeto](#-estrutura-do-projeto)
+- [⚙️ Configuração](#️-configuração)
+- [🔧 Scripts Disponíveis](#-scripts-disponíveis)
+- [🔄 Fluxo de Desenvolvimento](#-fluxo-de-desenvolvimento)
+- [📌 Padrão de Commits](#-padrão-de-commits)
+- [✅ Boas Práticas](#-boas-práticas)
+- [👥 Equipe](#-equipe)
 
 ---
 
@@ -259,17 +259,18 @@ const fetchData = () => {
 ## 👥 Equipe
 
 Conheça a equipe por trás do Aurora:
+Turma: **3A1**
 
 | Matrícula | Nome | Papel | GitHub |
 |--------|------|-------|--------|
 | 12300055 | **Davi Murta** | ... | [@davimurta](https://github.com/davimurta) |
 | 12400947 | **Sara Freitas** | ... | [@sahfreitas](https://github.com/sahfreitas) |
 | 12302589 | **Maria Fernanda** | ... | [@mafemelo](https://github.com/mafemelo) |
-| 22402942 | **Samuel Cordeiro** | ... | [@...](https://github.com/) |
-| 12300993 | **João Pedro** | ... | [@...](https://github.com/) |
-| 12303127 | **Ronan Porto** | ... | [@...](https://github.com/) |
+| 22402942 | **Samuel Cordeiro** | ... | *A definir* |
+| 12300993 | **João Pedro** | ... | *A definir* |
+| 12303127 | **Ronan Porto** | ... | *A definir* |
 
-
+---
 
 <div align="center">
 
