@@ -260,13 +260,14 @@ const fetchData = () => {
 
 Conheça a equipe por trás do Aurora:
 
-| Avatar | Nome | Papel | GitHub |
+| Matrícula | Nome | Papel | GitHub |
 |--------|------|-------|--------|
-| 👨‍💻 | **Davi Murta** | ... | [@davimurta](https://github.com/davimurta) |
-| 👩‍💻 | **Ciclana Santos** | ... | [@ciclano](https://github.com/ciclano) |
-| 👨‍💻 | **Beltrano Costa** | ... | [@beltrano](https://github.com/beltrano) |
-| 👩‍💻 | **Ana Souza** | ... | [@usuario4](https://github.com/usuario4) |
-| 👨‍💻 | **Carlos Lima** | ... | [@usuario5](https://github.com/usuario5) |
+| 12300055 | **Davi Murta** | ... | [@davimurta](https://github.com/davimurta) |
+| 12400947 | **Sara Freitas** | ... | [@sahfreitas](https://github.com/sahfreitas) |
+| 12302589 | **Maria Fernanda** | ... | [@mafemelo](https://github.com/mafemelo) |
+| 22402942 | **Samuel Cordeiro** | ... | [@...](https://github.com/) |
+| 12300993 | **João Pedro** | ... | [@...](https://github.com/) |
+| 12303127 | **Ronan Porto** | ... | [@...](https://github.com/) |
 
 
 
