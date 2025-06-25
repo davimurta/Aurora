@@ -267,7 +267,7 @@ Turma: **3A1**
 | 12400947 | **Sara Freitas** | ... | [@sahfreitas](https://github.com/sahfreitas) |
 | 12302589 | **Maria Fernanda** | ... | [@mafemelo](https://github.com/mafemelo) |
 | 22402942 | **Samuel Cordeiro** | ... | *A definir* |
-| 12300993 | **João Pedro** | ... | *A definir* |
+| 12300993 | **João Pedro** | ... | [@jpfgomes](https://github.com/jpfgomes) |
 | 12303127 | **Ronan Porto** | ... | *A definir* |
 
 ---
