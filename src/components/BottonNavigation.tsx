@@ -1,87 +1,201 @@
-import React from 'react';
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import { useRouter, usePathname } from 'expo-router';
-import type { Href } from 'expo-router';
+import { router, usePathname } from "expo-router";
+import React, { useState, useEffect } from "react";
+import { View, TouchableOpacity, StyleSheet, Pressable } from "react-native";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 interface BottomNavigationProps {
-  // Props opcionais para customização
+  activeTab?: string;
+  onTabPress?: (tab: string) => void;
 }
 
-const BottomNavigation: React.FC<BottomNavigationProps> = () => {
-  const router = useRouter();
+const BottomNavigation: React.FC<BottomNavigationProps> = ({
+  activeTab: initialActiveTab,
+  onTabPress,
+}) => {
   const pathname = usePathname();
+  const [activeTab, setActiveTab] = useState("");
 
-  // Mapear rotas para os tabs
-  const tabs = [
-    { key: 'home', icon: 'home', route: '/' as Href },
-    { key: 'calendar', icon: 'calendar-today', route: '/calendar' as Href },
-    { key: 'add', icon: 'add', route: '/add' as Href },
-    { key: 'chat', icon: 'chat', route: '/DailyRegister/DeilyRegister' as Href },
-    { key: 'profile', icon: 'person', route: '/profile' as Href },
-  ];
-
-  const handleTabPress = (route: Href) => {
-    router.push(route);
+  
+  const getActiveTabFromPath = (path: string): string => {
+    if (path.includes("/Home")) return "home";
+    if (path.includes("/DailyRegister")) return "analytics";
+    if (path.includes("/Chat")) return "chat";
+    if (path.includes("/Profile") || path.includes("/profile") || path.includes("/acesso")) return "profile";
+    return "home"; 
   };
 
-  const isActiveTab = (route: Href) => {
-    return pathname === route;
+  
+  useEffect(() => {
+    const currentTab = getActiveTabFromPath(pathname);
+    setActiveTab(currentTab);
+  }, [pathname]);
+
+  
+  useEffect(() => {
+    if (initialActiveTab) {
+      setActiveTab(initialActiveTab);
+    }
+  }, [initialActiveTab]);
+
+  const handleTabPress = (tab: string) => {
+    
+    setActiveTab(tab);
+    
+    
+    if (onTabPress) {
+      onTabPress(tab);
+    }
+
+    
+    switch (tab) {
+      case "home":
+        router.push("/Home/Home" as any);
+        break;
+      case "analytics":
+        router.push("/DailyRegister/DeilyRegister" as any);
+        break;
+      case "add":
+        
+        break;
+      case "chat":
+        
+        break;
+      case "profile":
+        
+        break;
+    }
   };
 
-  const getIconColor = (route: Href) => {
-    return isActiveTab(route) ? '#fff' : '#333';
+  const getIconColor = (tab: string) => {
+    return activeTab === tab ? "#FFFFFF" : "rgba(255,255,255,0.6)";
   };
 
-  const getTabStyle = (route: Href, isCenter: boolean = false) => {
+  const getIconContainerStyle = (tab: string) => {
     return [
-      isCenter ? styles.navItemCenter : styles.navItem,
-      isActiveTab(route) && styles.activeNavItem,
+      styles.navIconContainer,
+      activeTab === tab && styles.activeNavItem,
     ];
   };
 
   return (
     <View style={styles.bottomNav}>
-      {tabs.map((tab, index) => (
+      <View style={styles.navContent}>
         <TouchableOpacity
-          key={tab.key}
-          style={getTabStyle(tab.route, index === 2)} // Index 2 é o botão central (add)
-          onPress={() => handleTabPress(tab.route)}
+          style={styles.navItem}
+          onPress={() => handleTabPress("home")}
+          activeOpacity={0.7}
         >
-          <Icon 
-            name={tab.icon} 
-            size={24} 
-            color={getIconColor(tab.route)} 
-          />
+          <View style={getIconContainerStyle("home")}>
+            <Icon name="home" size={26} color={getIconColor("home")} />
+          </View>
         </TouchableOpacity>
-      ))}
+
+        <TouchableOpacity
+          style={styles.navItem}
+          onPress={() => handleTabPress("analytics")}
+          activeOpacity={0.7}
+        >
+          <View style={getIconContainerStyle("analytics")}>
+            <Icon
+              name="analytics"
+              size={26}
+              color={getIconColor("analytics")}
+            />
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.navItemCenter}
+          onPress={() => handleTabPress("add")}
+          activeOpacity={0.8}
+        >
+          <View style={styles.centerNavButton}>
+            <Icon name="add" size={28} color="#4ECDC4" />
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.navItem}
+          onPress={() => handleTabPress("chat")}
+          activeOpacity={0.7}
+        >
+          <View style={getIconContainerStyle("chat")}>
+            <Icon
+              name="chat-bubble-outline"
+              size={26}
+              color={getIconColor("chat")}
+            />
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.navItem}
+          onPress={() => handleTabPress("profile")}
+          activeOpacity={0.7}
+        >
+          <View style={getIconContainerStyle("profile")}>
+            <Icon
+              name="person-outline"
+              size={26}
+              color={getIconColor("profile")}
+            />
+          </View>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   bottomNav: {
-    flexDirection: 'row',
-    backgroundColor: '#4ECDC4',
-    paddingVertical: 12,
+    backgroundColor: "#4ECDC4",
+    paddingTop: 12,
+    paddingBottom: 12,
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+    elevation: 8,
+    shadowColor: "#4ECDC4",
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+  },
+  navContent: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
     paddingHorizontal: 16,
-    justifyContent: 'space-around',
-    alignItems: 'center',
   },
   navItem: {
     flex: 1,
-    alignItems: 'center',
-    paddingVertical: 8,
-    borderRadius: 20,
+    alignItems: "center",
+  },
+  navIconContainer: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  activeNavItem: {
+    backgroundColor: "rgba(255,255,255,0.25)",
+    transform: [{ scale: 1.1 }],
   },
   navItemCenter: {
     flex: 1,
-    alignItems: 'center',
-    paddingVertical: 8,
-    borderRadius: 20,
+    alignItems: "center",
   },
-  activeNavItem: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+  centerNavButton: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: "#FFFFFF",
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 6,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
   },
 });
 

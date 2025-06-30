@@ -17,20 +17,17 @@ import Button from "@components/Button";
 import { router } from "expo-router";
 
 const Login: React.FC = () => {
-  const Cadastro = () => {
-    Linking.openURL('https://www.seusite.com/cadastro');
-  };
 
   return (
     <KeyboardAvoidingView
       style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : undefined} // no Android use undefined ou "height"
-      keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0} // ajusta para evitar sobreposição
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <ScrollView
           contentContainerStyle={styles.scrollContainer}
-          keyboardShouldPersistTaps="handled" // permite toque fora para fechar teclado
+          keyboardShouldPersistTaps="handled"
         >
           <View style={styles.inputWrapper}>
             <View style={styles.googleLogin}>
@@ -68,7 +65,7 @@ const Login: React.FC = () => {
               backgroundColor="#4ECDC4"
               textColor="#fff"
               loading={false}
-              style={{ marginTop: 30, alignSelf: "center" }} // ou qualquer outro estilo
+              style={{ marginTop: 30, alignSelf: "center" }}
             />
 
             <Pressable onPress={() => router.push('/Cadastro/Cadastro')}>
@@ -127,7 +124,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderWidth: 1,
     borderColor: "#4ECDC4",
-    borderRadius: 30,
+    borderRadius: 4,
   },
   link: {
     color: '#B0B0B0',

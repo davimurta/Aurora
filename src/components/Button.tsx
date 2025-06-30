@@ -20,7 +20,7 @@ type ButtonProps = {
   disabled?: boolean;
   loading?: boolean;
   fullWidth?: boolean;
-  style?: StyleProp<ViewStyle>; // <- permite sobrescrever estilos externos
+  style?: StyleProp<ViewStyle>;  
 };
 
 const Button: React.FC<ButtonProps> = ({
@@ -42,7 +42,7 @@ const Button: React.FC<ButtonProps> = ({
         styles.button,
         { backgroundColor: isDisabled ? '#ccc' : backgroundColor },
         fullWidth ? { alignSelf: 'stretch' } : { alignSelf: 'center' },
-        style, // <- aplica o estilo externo por último
+        style,
       ]}
       activeOpacity={0.8}
       onPress={onPress}

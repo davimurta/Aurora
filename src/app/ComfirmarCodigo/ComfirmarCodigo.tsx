@@ -7,7 +7,6 @@ import {
   Keyboard,
   Platform,
   ScrollView,
-  Image,
   Text,
   Pressable,
 } from "react-native";
@@ -17,7 +16,6 @@ import { router } from "expo-router";
 import CodeVerification from "@/src/components/codigo";
 
 const ConfirmarCodigo: React.FC = () => {
-
   return (
     <KeyboardAvoidingView
       style={styles.container}
@@ -31,7 +29,9 @@ const ConfirmarCodigo: React.FC = () => {
         >
           <View style={styles.inputWrapper}>
             <View style={styles.divider} />
-            <CodeVerification />
+            <CodeVerification
+              length={6}
+            />
             <Button
               title="Enviar"
               iconName="login"
@@ -42,10 +42,10 @@ const ConfirmarCodigo: React.FC = () => {
               style={{ marginTop: 30, alignSelf: "center" }}
             />
 
-            <Pressable onPress={() => router.push('/RedefinirSenha/RedefinirSenha')}>
-              <Text style={styles.link}>
-                Retornar para Login
-              </Text>
+            <Pressable
+              onPress={() => router.push("/RedefinirSenha/RedefinirSenha")}
+            >
+              <Text style={styles.link}>Retornar para Login</Text>
             </Pressable>
           </View>
         </ScrollView>
@@ -96,10 +96,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   link: {
-    color: '#B0B0B0',
-    textDecorationLine: 'underline',
+    color: "#B0B0B0",
+    textDecorationLine: "underline",
     fontSize: 14,
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: 20,
   },
 });

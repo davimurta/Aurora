@@ -8,6 +8,7 @@ import {
   SafeAreaView,
   ScrollView,
   Dimensions,
+  StatusBar,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { PanGestureHandler, GestureHandlerRootView, PanGestureHandlerGestureEvent } from 'react-native-gesture-handler';
@@ -16,74 +17,48 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   runOnJS,
+  withSpring,
 } from 'react-native-reanimated';
+import BottomNavigation from '../../components/BottonNavigation';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
-interface Emoji {
+interface MoodOption {
   id: number;
-  emoji: string;
+  icon: string;
   label: string;
+  color: string;
 }
 
 interface GestureContext {
   startX: number;
-  [key: string]: unknown; // Add index signature to satisfy the constraint
+  [key: string]: unknown;
 }
 
-// Bottom Navigation Component
-const BottomNavigation: React.FC = () => {
-  return (
-    <View style={styles.bottomNav}>
-      <TouchableOpacity style={styles.navItem}>
-        <Icon name="home" size={24} color="#333" />
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.navItem}>
-        <Icon name="calendar-today" size={24} color="#333" />
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.navItemCenter}>
-        <Icon name="add" size={24} color="#333" />
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.navItem}>
-        <Icon name="chat" size={24} color="#333" />
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.navItem}>
-        <Icon name="person" size={24} color="#333" />
-      </TouchableOpacity>
-    </View>
-  );
-};
-
 const DailyRegisterScreen: React.FC = () => {
-  const [selectedEmoji, setSelectedEmoji] = useState<number | null>(null);
-  const [selectedColor, setSelectedColor] = useState<string>('#FFD93D');
+  const [selectedMood, setSelectedMood] = useState<number | null>(null);
+  const [intensityValue, setIntensityValue] = useState<number>(0.5);
   const [diaryText, setDiaryText] = useState<string>('');
   
-  // Shared value for slider position
-  const sliderPosition = useSharedValue(0.5); // Start in middle (yellow)
   
-  const emojis: Emoji[] = [
-    { id: 1, emoji: '😢', label: 'Muito triste' },
-    { id: 2, emoji: '😞', label: 'Triste' },
-    { id: 3, emoji: '😐', label: 'Neutro' },
-    { id: 4, emoji: '🙂', label: 'Feliz' },
-    { id: 5, emoji: '😊', label: 'Muito feliz' },
-    { id: 6, emoji: '😄', label: 'Radiante' },
+  const sliderPosition = useSharedValue(0.5);
+  const buttonScale = useSharedValue(1);
+  
+  const moodOptions: MoodOption[] = [
+    { id: 1, icon: 'sentiment-very-dissatisfied', label: 'Muito triste', color: '#FF6B6B' },
+    { id: 2, icon: 'sentiment-dissatisfied', label: 'Triste', color: '#FF8E53' },
+    { id: 3, icon: 'sentiment-neutral', label: 'Neutro', color: '#FFD93D' },
+    { id: 4, icon: 'sentiment-satisfied', label: 'Bem', color: '#6BCF7F' },
+    { id: 5, icon: 'sentiment-very-satisfied', label: 'Muito bem', color: '#4ECDC4' },
+    { id: 6, icon: 'mood', label: 'Radiante', color: '#45B7D1' },
   ];
 
-  // Color gradient for slider
-  const colors = [
-    '#FF6B6B', // Red (sad)
-    '#FF8E53', // Orange
-    '#FFD93D', // Yellow
-    '#6BCF7F', // Green
-    '#4ECDC4', // Teal
-    '#45B7D1', // Blue (happy)
-  ];
-
-  const getColorFromPosition = (position: number): string => {
-    const colorIndex = Math.floor(position * (colors.length - 1));
-    return colors[colorIndex] || colors[0];
+  const getIntensityColor = (intensity: number): string => {
+    if (intensity < 0.2) return '#FF6B6B';
+    if (intensity < 0.4) return '#FF8E53';
+    if (intensity < 0.6) return '#FFD93D';
+    if (intensity < 0.8) return '#6BCF7F';
+    return '#4ECDC4';
   };
 
   const gestureHandler = useAnimatedGestureHandler<PanGestureHandlerGestureEvent, GestureContext>({
@@ -91,116 +66,184 @@ const DailyRegisterScreen: React.FC = () => {
       context.startX = sliderPosition.value;
     },
     onActive: (event, context) => {
-      const sliderWidth = width - 80; // Account for margins
-      const newPosition = Math.max(0, Math.min(1, event.translationX / sliderWidth + context.startX));
+      const sliderWidth = width - 120; 
+      const newPosition = Math.max(0, Math.min(1, 
+        (context.startX * sliderWidth + event.translationX) / sliderWidth
+      ));
       sliderPosition.value = newPosition;
-      
-      // Update color on JS thread
-      runOnJS(setSelectedColor)(getColorFromPosition(newPosition));
+      runOnJS(setIntensityValue)(newPosition);
+    },
+    onEnd: () => {
+      sliderPosition.value = withSpring(sliderPosition.value);
     },
   });
 
-  const animatedStyle = useAnimatedStyle(() => {
-    const sliderWidth = width - 80;
+  const animatedSliderStyle = useAnimatedStyle(() => {
+    const sliderWidth = width - 120;
     return {
-      transform: [{ translateX: sliderPosition.value * sliderWidth }],
+      transform: [{ translateX: sliderPosition.value * sliderWidth - 14 }],
     };
   });
 
-  const handleEmojiSelect = (emojiId: number) => {
-    setSelectedEmoji(emojiId);
+  const animatedButtonStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: buttonScale.value }],
+    };
+  });
+
+  const handleMoodSelect = (moodId: number) => {
+    setSelectedMood(moodId);
   };
 
   const handleSubmit = () => {
-    console.log('Dados do registro:', {
-      emoji: selectedEmoji,
-      color: selectedColor,
+    buttonScale.value = withSpring(0.95, {}, () => {
+      buttonScale.value = withSpring(1);
+    });
+
+    console.log('Registro diário:', {
+      mood: selectedMood,
+      intensity: intensityValue,
       text: diaryText,
     });
-    // Aqui você implementaria a lógica para salvar os dados
   };
 
   return (
     <GestureHandlerRootView style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="#4ECDC4" />
       <SafeAreaView style={styles.container}>
-        <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-          {/* Header */}
-          <View style={styles.header}>
-            <Text style={styles.logo}>logo.</Text>
+        <ScrollView 
+          style={styles.content} 
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}
+        >
+          {/* Welcome Section */}
+          <View style={styles.welcomeSection}>
+            <Text style={styles.welcomeText}>Como você está hoje?</Text>
+            <Text style={styles.dateText}>
+              {new Date().toLocaleDateString('pt-BR', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+              })}
+            </Text>
           </View>
 
-          {/* Title */}
-          <Text style={styles.title}>Registro diário</Text>
-
-          {/* Mood Question */}
-          <Text style={styles.question}>Como você está se sentindo hoje?</Text>
-
-          {/* Emoji Selection */}
-          <View style={styles.emojiContainer}>
-            {emojis.map((emoji) => (
-              <TouchableOpacity
-                key={emoji.id}
-                style={[
-                  styles.emojiButton,
-                  selectedEmoji === emoji.id && styles.emojiButtonSelected,
-                ]}
-                onPress={() => handleEmojiSelect(emoji.id)}
-              >
-                <Text style={styles.emojiText}>{emoji.emoji}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-
-          {/* Intensity Question */}
-          <Text style={styles.question}>Qual a intensidade desse sentimento?</Text>
-
-          {/* Color Slider */}
-          <View style={styles.sliderContainer}>
-            <View style={styles.sliderTrack}>
-              {/* Gradient background */}
-              <View style={styles.gradientTrack}>
-                {colors.map((color, index) => (
-                  <View
-                    key={index}
-                    style={[
-                      styles.gradientSegment,
-                      { backgroundColor: color },
-                    ]}
-                  />
-                ))}
-              </View>
-              
-              {/* Slider thumb */}
-              <PanGestureHandler onGestureEvent={gestureHandler}>
-                <Animated.View style={[styles.sliderThumb, animatedStyle, { backgroundColor: selectedColor }]} />
-              </PanGestureHandler>
+          {/* Mood Selection Card */}
+          <View style={styles.card}>
+            <View style={styles.cardHeader}>
+              <Icon name="psychology" size={24} color="#4ECDC4" />
+              <Text style={styles.cardTitle}>Selecione seu humor</Text>
             </View>
             
-            {/* Slider labels */}
-            <View style={styles.sliderLabels}>
-              <Text style={styles.sliderLabel}>-</Text>
-              <Text style={styles.sliderLabel}>+</Text>
+            <View style={styles.moodGrid}>
+              {moodOptions.map((mood) => (
+                <TouchableOpacity
+                  key={mood.id}
+                  style={[
+                    styles.moodButton,
+                    selectedMood === mood.id && [styles.moodButtonSelected, { borderColor: mood.color }],
+                  ]}
+                  onPress={() => handleMoodSelect(mood.id)}
+                  activeOpacity={0.7}
+                >
+                  <View style={[styles.moodIconContainer, selectedMood === mood.id && { backgroundColor: mood.color }]}>
+                    <Icon 
+                      name={mood.icon} 
+                      size={28} 
+                      color={selectedMood === mood.id ? '#FFFFFF' : mood.color} 
+                    />
+                  </View>
+                  <Text style={[styles.moodLabel, selectedMood === mood.id && { color: mood.color, fontWeight: '600' }]}>
+                    {mood.label}
+                  </Text>
+                </TouchableOpacity>
+              ))}
             </View>
           </View>
 
-          {/* Text Input */}
-          <TextInput
-            style={styles.textInput}
-            multiline
-            placeholder="Digite aqui..."
-            placeholderTextColor="#999"
-            value={diaryText}
-            onChangeText={setDiaryText}
-            textAlignVertical="top"
-          />
+          {/* Intensity Slider Card */}
+          <View style={styles.card}>
+            <View style={styles.cardHeader}>
+              <Icon name="tune" size={24} color="#4ECDC4" />
+              <Text style={styles.cardTitle}>Intensidade do sentimento</Text>
+            </View>
+
+            <View style={styles.sliderSection}>
+              <View style={styles.sliderContainer}>
+                <View style={styles.sliderTrack}>
+                  <View style={[styles.sliderProgress, { 
+                    width: `${intensityValue * 100}%`,
+                    backgroundColor: getIntensityColor(intensityValue)
+                  }]} />
+                  
+                  <PanGestureHandler onGestureEvent={gestureHandler}>
+                    <Animated.View style={[
+                      styles.sliderThumb, 
+                      animatedSliderStyle,
+                      { backgroundColor: getIntensityColor(intensityValue) }
+                    ]}>
+                      <View style={styles.sliderThumbInner} />
+                    </Animated.View>
+                  </PanGestureHandler>
+                </View>
+                
+                <View style={styles.sliderLabels}>
+                  <View style={styles.sliderLabelContainer}>
+                    <Icon name="remove" size={20} color="#999" />
+                    <Text style={styles.sliderLabelText}>Baixa</Text>
+                  </View>
+                  <View style={styles.sliderLabelContainer}>
+                    <Icon name="add" size={20} color="#999" />
+                    <Text style={styles.sliderLabelText}>Alta</Text>
+                  </View>
+                </View>
+              </View>
+
+              <View style={styles.intensityDisplay}>
+                <Text style={styles.intensityText}>
+                  Intensidade: {Math.round(intensityValue * 100)}%
+                </Text>
+              </View>
+            </View>
+          </View>
+
+          {/* Journal Card */}
+          <View style={styles.card}>
+            <View style={styles.cardHeader}>
+              <Icon name="edit-note" size={24} color="#4ECDC4" />
+              <Text style={styles.cardTitle}>Como foi seu dia?</Text>
+            </View>
+            
+            <View style={styles.textInputContainer}>
+              <TextInput
+                style={styles.textInput}
+                multiline
+                placeholder="Compartilhe seus pensamentos, experiências ou qualquer coisa que queira registrar sobre hoje..."
+                placeholderTextColor="#A0A0A0"
+                value={diaryText}
+                onChangeText={setDiaryText}
+                textAlignVertical="top"
+              />
+              <View style={styles.textInputFooter}>
+                <Text style={styles.characterCount}>{diaryText.length}/500</Text>
+              </View>
+            </View>
+          </View>
 
           {/* Submit Button */}
-          <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-            <Text style={styles.submitButtonText}>Enviar</Text>
-          </TouchableOpacity>
+          <Animated.View style={animatedButtonStyle}>
+            <TouchableOpacity 
+              style={styles.submitButton} 
+              onPress={handleSubmit}
+              activeOpacity={0.8}
+            >
+              <Icon name="check" size={24} color="#FFFFFF" style={styles.submitButtonIcon} />
+              <Text style={styles.submitButtonText}>Salvar Registro</Text>
+            </TouchableOpacity>
+          </Animated.View>
         </ScrollView>
 
-        {/* Bottom Navigation Component */}
         <BottomNavigation />
       </SafeAreaView>
     </GestureHandlerRootView>
@@ -210,141 +253,281 @@ const DailyRegisterScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#F8FAFB',
+  },
+  header: {
+    backgroundColor: '#4ECDC4',
+    paddingTop: 10,
+    paddingBottom: 20,
+    borderBottomLeftRadius: 25,
+    borderBottomRightRadius: 25,
+    elevation: 8,
+    shadowColor: '#4ECDC4',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+  },
+  headerContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+  },
+  logo: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    letterSpacing: 1,
+  },
+  profileButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   content: {
     flex: 1,
-    paddingHorizontal: 20,
   },
-  header: {
-    paddingTop: 20,
-    paddingBottom: 10,
+  scrollContent: {
+    paddingBottom: 20,
   },
-  logo: {
-    fontSize: 18,
-    fontWeight: '300',
-    color: '#4ECDC4',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 20,
-  },
-  question: {
-    fontSize: 16,
-    color: '#333',
-    marginBottom: 20,
-    fontWeight: '400',
-  },
-  emojiContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 40,
-    paddingHorizontal: 10,
-  },
-  emojiButton: {
-    width: 45,
-    height: 45,
-    borderRadius: 22.5,
-    justifyContent: 'center',
+  welcomeSection: {
+    padding: 24,
     alignItems: 'center',
-    backgroundColor: '#f8f8f8',
+  },
+  welcomeText: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#2C3E50',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  dateText: {
+    fontSize: 16,
+    color: '#7F8C8D',
+    textAlign: 'center',
+    textTransform: 'capitalize',
+  },
+  card: {
+    backgroundColor: '#FFFFFF',
+    marginHorizontal: 20,
+    marginBottom: 20,
+    borderRadius: 20,
+    padding: 20,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#2C3E50',
+    marginLeft: 12,
+  },
+  moodGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  moodButton: {
+    width: '30%',
+    alignItems: 'center',
+    paddingVertical: 16,
+    borderRadius: 16,
+    marginBottom: 16,
     borderWidth: 2,
     borderColor: 'transparent',
+    backgroundColor: '#F8F9FA',
   },
-  emojiButtonSelected: {
-    borderColor: '#4ECDC4',
-    backgroundColor: '#fff',
+  moodButtonSelected: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 2,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
-  emojiText: {
-    fontSize: 24,
+  moodIconContainer: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(78, 205, 196, 0.1)',
+    marginBottom: 8,
+  },
+  moodLabel: {
+    fontSize: 12,
+    color: '#7F8C8D',
+    textAlign: 'center',
+    fontWeight: '500',
+  },
+  sliderSection: {
+    marginTop: 10,
   },
   sliderContainer: {
-    marginBottom: 40,
+    marginBottom: 20,
+    paddingHorizontal: 14, 
   },
   sliderTrack: {
-    height: 40,
-    borderRadius: 20,
+    height: 8,
+    backgroundColor: '#E9ECEF',
+    borderRadius: 4,
     position: 'relative',
-    marginBottom: 10,
+    marginBottom: 20,
   },
-  gradientTrack: {
-    flexDirection: 'row',
+  sliderProgress: {
     height: '100%',
-    borderRadius: 20,
-    overflow: 'hidden',
-  },
-  gradientSegment: {
-    flex: 1,
+    borderRadius: 4,
+    position: 'absolute',
+    left: 0,
+    top: 0,
   },
   sliderThumb: {
     position: 'absolute',
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    top: 5,
-    left: -15,
-    borderWidth: 3,
-    borderColor: '#fff',
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    top: -10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 4,
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
+  sliderThumbInner: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: '#FFFFFF',
   },
   sliderLabels: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingHorizontal: 10,
   },
-  sliderLabel: {
-    fontSize: 18,
-    fontWeight: '300',
-    color: '#666',
+  sliderLabelContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  sliderLabelText: {
+    fontSize: 14,
+    color: '#7F8C8D',
+    marginLeft: 4,
+    fontWeight: '500',
+  },
+  intensityDisplay: {
+    alignItems: 'center',
+    padding: 12,
+    backgroundColor: '#F8F9FA',
+    borderRadius: 12,
+  },
+  intensityText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#4ECDC4',
+  },
+  textInputContainer: {
+    marginTop: 10,
   },
   textInput: {
     borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
+    borderColor: '#E9ECEF',
+    borderRadius: 16,
     padding: 16,
     fontSize: 16,
-    color: '#333',
-    minHeight: 200,
-    marginBottom: 30,
+    color: '#2C3E50',
+    minHeight: 140,
+    backgroundColor: '#F8F9FA',
+    textAlignVertical: 'top',
+  },
+  textInputFooter: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginTop: 8,
+  },
+  characterCount: {
+    fontSize: 12,
+    color: '#7F8C8D',
   },
   submitButton: {
-    backgroundColor: '#FFD93D',
-    paddingVertical: 16,
-    borderRadius: 25,
+    backgroundColor: '#4ECDC4',
+    flexDirection: 'row',
+    justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 20,
+    paddingVertical: 18,
+    marginHorizontal: 20,
+    borderRadius: 16,
+    elevation: 6,
+    shadowColor: '#4ECDC4',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+  },
+  submitButtonIcon: {
+    marginRight: 8,
   },
   submitButtonText: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '600',
-    color: '#333',
+    color: '#FFFFFF',
   },
   bottomNav: {
-    flexDirection: 'row',
     backgroundColor: '#4ECDC4',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 12,
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+    elevation: 8,
+    shadowColor: '#4ECDC4',
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+  },
+  navContent: {
+    flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
+    paddingHorizontal: 16,
   },
   navItem: {
     flex: 1,
     alignItems: 'center',
-    paddingVertical: 8,
+  },
+  navIconContainer: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   navItemCenter: {
     flex: 1,
     alignItems: 'center',
-    paddingVertical: 8,
+  },
+  centerNavButton: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 6,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
   },
 });
 

@@ -10,7 +10,6 @@ import {
   Image,
   Text,
   Pressable,
-  Linking,
 } from "react-native";
 import Input from "@components/Input";
 import Button from "@components/Button";
@@ -20,13 +19,13 @@ const index = () => {
   return (
     <KeyboardAvoidingView
       style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : undefined} // no Android use undefined ou "height"
-      keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0} // ajusta para evitar sobreposição
+      behavior={Platform.OS === "ios" ? "padding" : undefined} 
+      keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0} 
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <ScrollView
           contentContainerStyle={styles.scrollContainer}
-          keyboardShouldPersistTaps="handled" // permite toque fora para fechar teclado
+          keyboardShouldPersistTaps="handled" 
         >
           <View style={styles.inputWrapper}>
             <View style={styles.googleLogin}>
@@ -42,10 +41,10 @@ const index = () => {
             <Input
               style={styles.input}
               label="Nome completo"
-              type="email" // mudar o type
+              type="email"
               placeholder="Digite seu nome completo"
-              keyboardType="email-address" // mudar o keyboardtype
-              iconName="email" // mudar o icon
+              keyboardType="email-address" 
+              iconName="email" 
             />
             <Input
               style={styles.input}
@@ -72,15 +71,12 @@ const index = () => {
               backgroundColor="#4ECDC4"
               textColor="#fff"
               loading={false}
-              style={{ marginTop: 30, alignSelf: "center" }} // ou qualquer outro estilo
+              style={{ marginTop: 30, alignSelf: "center" }}
             />
 
-              <Text style={styles.sub}>
-                Já tem uma conta?
-              </Text>
             <Pressable onPress={() => router.push('/')}>
               <Text style={styles.link}>
-                Faça login aqui
+                Já tem uma conta? Faça login aqui
               </Text>
             </Pressable>
           </View>
@@ -129,17 +125,11 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderWidth: 1,
     borderColor: "#4ECDC4",
-    borderRadius: 30,
+    borderRadius: 4,
   },
   link: {
     color: '#B0B0B0',
     textDecorationLine: 'underline',
-    fontSize: 14,
-    textAlign: 'center',
-    marginTop: 20,
-  },
-  sub: {
-    color: '#B0B0B0',
     fontSize: 14,
     textAlign: 'center',
     marginTop: 20,
