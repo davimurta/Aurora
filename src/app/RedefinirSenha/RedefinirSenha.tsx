@@ -52,7 +52,7 @@ const RedefinirSenha: React.FC = () => {
               style={{ marginTop: 30, alignSelf: "center" }}
             />
 
-            <Pressable onPress={() => router.push('/Home/Home')}>
+            <Pressable onPress={() => router.push('/')}>
               <Text style={styles.link}>
                 Retornar para Login
               </Text>
