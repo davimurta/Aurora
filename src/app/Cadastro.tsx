@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react'
 import {
   View,
   StyleSheet,
@@ -15,37 +15,59 @@ import Input from "@components/Input";
 import Button from "@components/Button";
 import { router } from "expo-router";
 
-const RedefinirSenha: React.FC = () => {
-
+const index = () => {
   return (
     <KeyboardAvoidingView
       style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
+      behavior={Platform.OS === "ios" ? "padding" : undefined} 
+      keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0} 
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <ScrollView
           contentContainerStyle={styles.scrollContainer}
-          keyboardShouldPersistTaps="handled"
+          keyboardShouldPersistTaps="handled" 
         >
           <View style={styles.inputWrapper}>
-            
+            <View style={styles.googleLogin}>
+              <Image
+                source={require("@assets/images/google.png")}
+                style={styles.image}
+              />
+              <Text>Continuar com o Google</Text>
+            </View>
 
             <View style={styles.divider} />
 
             <Input
               style={styles.input}
+              label="Nome completo"
+              type="email"
+              placeholder="Digite seu nome completo"
+              keyboardType="email-address" 
+              iconName="email" 
+            />
+            <Input
+              style={styles.input}
               label="Email"
               type="email"
-              placeholder="Digite o email cadastrado"
+              placeholder="Digite seu email"
               keyboardType="email-address"
               iconName="email"
             />
 
+            <Input
+              style={styles.input}
+              label="Senha"
+              type="senha"
+              placeholder="Digite sua senha"
+              secureTextEntry
+              iconName="lock"
+            />
+
             <Button
-              title="Enviar"
+              title="Cadastrar"
               iconName="login"
-              onPress={() => router.push("/ComfirmarCodigo/ComfirmarCodigo")}
+              onPress={() => router.push("/UserTypeSelection")}
               backgroundColor="#4ECDC4"
               textColor="#fff"
               loading={false}
@@ -54,7 +76,7 @@ const RedefinirSenha: React.FC = () => {
 
             <Pressable onPress={() => router.push('/')}>
               <Text style={styles.link}>
-                Retornar para Login
+                Já tem uma conta? Faça login aqui
               </Text>
             </Pressable>
           </View>
@@ -103,7 +125,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderWidth: 1,
     borderColor: "#4ECDC4",
-    borderRadius: 8,
+    borderRadius: 4,
   },
   link: {
     color: '#B0B0B0',
@@ -114,4 +136,5 @@ const styles = StyleSheet.create({
   },
 });
 
-export default RedefinirSenha;
+
+export default index

@@ -1,6 +1,6 @@
 import { router, usePathname } from "expo-router";
 import React, { useState, useEffect } from "react";
-import { View, TouchableOpacity, StyleSheet, Pressable } from "react-native";
+import { View, TouchableOpacity, StyleSheet } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
 interface BottomNavigationProps {
@@ -15,22 +15,19 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
   const pathname = usePathname();
   const [activeTab, setActiveTab] = useState("");
 
-  
   const getActiveTabFromPath = (path: string): string => {
     if (path.includes("/Home")) return "home";
     if (path.includes("/DailyRegister")) return "analytics";
     if (path.includes("/Chat")) return "chat";
-    if (path.includes("/Profile") || path.includes("/profile") || path.includes("/acesso")) return "profile";
+    if (path.includes("/Profile") || path.includes("/acesso")) return "profile";
     return "home"; 
   };
 
-  
   useEffect(() => {
     const currentTab = getActiveTabFromPath(pathname);
     setActiveTab(currentTab);
   }, [pathname]);
 
-  
   useEffect(() => {
     if (initialActiveTab) {
       setActiveTab(initialActiveTab);
@@ -38,31 +35,41 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
   }, [initialActiveTab]);
 
   const handleTabPress = (tab: string) => {
-    
     setActiveTab(tab);
-    
     
     if (onTabPress) {
       onTabPress(tab);
     }
 
     
-    switch (tab) {
-      case "home":
-        router.push("/Home/Home" as any);
-        break;
-      case "analytics":
-        router.push("/DailyRegister/DeilyRegister" as any);
-        break;
-      case "add":
-        
-        break;
-      case "chat":
-        
-        break;
-      case "profile":
-        
-        break;
+    try {
+      switch (tab) {
+        case "home":
+          router.push("/Home");
+          break;
+        case "analytics":
+          router.push("/DailyRegister");
+          break;
+        case "add":
+          router.push("/AddArticle");
+          console.log("Botão add pressionado - implementar rota");
+          break;
+        case "chat":
+          
+          router.push("/Chat");
+          break;
+        case "profile":
+          
+          router.push("/Profile");
+          break;
+        default:
+          console.warn(`Tab não reconhecida: ${tab}`);
+      }
+    } catch (error) {
+      console.error(`Erro ao navegar para ${tab}:`, error);
+      
+      console.log(`Tentando navegar para: ${tab}`);
+      console.log(`Pathname atual: ${pathname}`);
     }
   };
 

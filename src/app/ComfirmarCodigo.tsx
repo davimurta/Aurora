@@ -35,7 +35,7 @@ const ConfirmarCodigo: React.FC = () => {
             <Button
               title="Enviar"
               iconName="login"
-              onPress={() => router.push("/Home/Home")}
+              onPress={() => router.push("/Home")}
               backgroundColor="#4ECDC4"
               textColor="#fff"
               loading={false}
@@ -43,7 +43,7 @@ const ConfirmarCodigo: React.FC = () => {
             />
 
             <Pressable
-              onPress={() => router.push("/RedefinirSenha/RedefinirSenha")}
+              onPress={() => router.push("/RedefinirSenha")}
             >
               <Text style={styles.link}>Retornar para Login</Text>
             </Pressable>

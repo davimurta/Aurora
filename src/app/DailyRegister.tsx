@@ -19,7 +19,7 @@ import Animated, {
   runOnJS,
   withSpring,
 } from 'react-native-reanimated';
-import BottomNavigation from '../../components/BottonNavigation';
+import BottomNavigation from '../components/BottonNavigation';
 
 const { width, height } = Dimensions.get('window');
 

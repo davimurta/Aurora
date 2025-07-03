@@ -61,19 +61,19 @@ const Login: React.FC = () => {
             <Button
               title="Entrar"
               iconName="login"
-              onPress={() => router.push("/Home/Home")}
+              onPress={() => router.push("/Home")}
               backgroundColor="#4ECDC4"
               textColor="#fff"
               loading={false}
               style={{ marginTop: 30, alignSelf: "center" }}
             />
 
-            <Pressable onPress={() => router.push('/Cadastro/Cadastro')}>
+            <Pressable onPress={() => router.push('/Cadastro')}>
               <Text style={styles.link}>
                 Não tem uma conta? Criar uma agora
               </Text>
             </Pressable>
-            <Pressable onPress={() => router.push('/RedefinirSenha/RedefinirSenha')}>
+            <Pressable onPress={() => router.push('/RedefinirSenha')}>
               <Text style={styles.link}>
                 Esqueci a senha
               </Text>
