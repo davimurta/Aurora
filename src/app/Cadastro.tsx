@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -10,12 +10,80 @@ import {
   Image,
   Text,
   Pressable,
+  Alert,
 } from "react-native";
 import Input from "@components/Input";
 import Button from "@components/Button";
 import { router } from "expo-router";
+import { useAuth } from "../contexts/AuthContext";
+import { db } from "../services/firebaseConfig";
+import { collection, addDoc } from 'firebase/firestore';
 
-const index = () => {
+const Cadastro = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [displayName, setDisplayName] = useState('');
+  const [loading, setLoading] = useState(false);
+  
+  const { register } = useAuth();
+
+  // Função para testar Firestore
+  const testFirestore = async () => {
+    try {
+      console.log('Testando Firestore...');
+      const testData = {
+        message: 'Teste de conexão',
+        timestamp: new Date(),
+      };
+      
+      const docRef = await addDoc(collection(db, 'teste'), testData);
+      console.log('✅ Documento de teste criado:', docRef.id);
+      Alert.alert('Sucesso', `Firestore funcionando! ID: ${docRef.id}`);
+    } catch (error) {
+      console.error('❌ Erro no teste do Firestore:', error);
+      Alert.alert(
+        'Erro',
+        `Firestore não funcionando: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
+    }
+  };
+
+  const handleRegister = async () => {
+    console.log('Iniciando processo de cadastro...');
+    console.log('Email:', email);
+    console.log('Nome:', displayName);
+    console.log('Senha length:', password.length);
+    
+    if (!email || !password || !displayName) {
+      console.log('Campos obrigatórios não preenchidos');
+      Alert.alert('Erro', 'Por favor, preencha todos os campos');
+      return;
+    }
+
+    if (password.length < 6) {
+      console.log('Senha muito curta');
+      Alert.alert('Erro', 'A senha deve ter pelo menos 6 caracteres');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      console.log('Chamando função de registro...');
+      await register(email, password, displayName);
+      console.log('Cadastro realizado com sucesso!');
+      Alert.alert('Sucesso', 'Conta criada com sucesso!', [
+        { text: 'OK', onPress: () => router.push('/UserTypeSelection') }
+      ]);
+    } catch (error: any) {
+      console.error('Erro no cadastro:', error);
+      Alert.alert('Erro', error.message || 'Erro desconhecido');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <KeyboardAvoidingView
       style={styles.container}
@@ -41,17 +109,21 @@ const index = () => {
             <Input
               style={styles.input}
               label="Nome completo"
-              type="email"
+              type="texto"
               placeholder="Digite seu nome completo"
-              keyboardType="email-address" 
-              iconName="email" 
+              value={displayName}
+              onChangeText={setDisplayName}
+              iconName="person"
             />
+            
             <Input
               style={styles.input}
               label="Email"
               type="email"
               placeholder="Digite seu email"
               keyboardType="email-address"
+              value={email}
+              onChangeText={setEmail}
               iconName="email"
             />
 
@@ -61,17 +133,28 @@ const index = () => {
               type="senha"
               placeholder="Digite sua senha"
               secureTextEntry
+              value={password}
+              onChangeText={setPassword}
               iconName="lock"
             />
 
             <Button
               title="Cadastrar"
               iconName="login"
-              onPress={() => router.push("/UserTypeSelection")}
+              onPress={handleRegister}
               backgroundColor="#4ECDC4"
               textColor="#fff"
-              loading={false}
+              loading={loading}
               style={{ marginTop: 30, alignSelf: "center" }}
+            />
+
+            {/* Botão temporário para teste do Firestore */}
+            <Button
+              title="Teste Firestore"
+              onPress={testFirestore}
+              backgroundColor="#FF6B6B"
+              textColor="#fff"
+              style={{ marginTop: 10, alignSelf: "center" }}
             />
 
             <Pressable onPress={() => router.push('/')}>
@@ -84,7 +167,7 @@ const index = () => {
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -136,5 +219,4 @@ const styles = StyleSheet.create({
   },
 });
 
-
-export default index
+export default Cadastro;

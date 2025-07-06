@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   StyleSheet,
@@ -10,13 +10,36 @@ import {
   Image,
   Text,
   Pressable,
-  Linking,
+  Alert,
 } from "react-native";
 import Input from "@components/Input";
 import Button from "@components/Button";
 import { router } from "expo-router";
+import { useAuth } from "../contexts/AuthContext";
 
 const Login: React.FC = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  
+  const { login } = useAuth();
+
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert('Erro', 'Por favor, preencha todos os campos');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await login(email, password);
+      router.push('/Home');
+    } catch (error: any) {
+      Alert.alert('Erro', error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <KeyboardAvoidingView
@@ -46,6 +69,8 @@ const Login: React.FC = () => {
               type="email"
               placeholder="Digite seu email"
               keyboardType="email-address"
+              value={email}
+              onChangeText={setEmail}
               iconName="email"
             />
 
@@ -55,16 +80,18 @@ const Login: React.FC = () => {
               type="senha"
               placeholder="Digite sua senha"
               secureTextEntry
+              value={password}
+              onChangeText={setPassword}
               iconName="lock"
             />
 
             <Button
               title="Entrar"
               iconName="login"
-              onPress={() => router.push("/Home")}
+              onPress={handleLogin}
               backgroundColor="#4ECDC4"
               textColor="#fff"
-              loading={false}
+              loading={loading}
               style={{ marginTop: 30, alignSelf: "center" }}
             />
 
@@ -73,6 +100,7 @@ const Login: React.FC = () => {
                 Não tem uma conta? Criar uma agora
               </Text>
             </Pressable>
+            
             <Pressable onPress={() => router.push('/RedefinirSenha')}>
               <Text style={styles.link}>
                 Esqueci a senha

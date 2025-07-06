@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   StyleSheet,
@@ -7,15 +7,41 @@ import {
   Keyboard,
   Platform,
   ScrollView,
-  Image,
   Text,
   Pressable,
+  Alert,
 } from "react-native";
 import Input from "@components/Input";
 import Button from "@components/Button";
 import { router } from "expo-router";
+import { useAuth } from "../contexts/AuthContext";
 
 const RedefinirSenha: React.FC = () => {
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+  
+  const { resetPassword } = useAuth();
+
+  const handleResetPassword = async () => {
+    if (!email) {
+      Alert.alert('Erro', 'Por favor, digite seu email');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await resetPassword(email);
+      Alert.alert(
+        'Sucesso', 
+        'Um link para redefinir sua senha foi enviado para seu email',
+        [{ text: 'OK', onPress: () => router.push('/') }]
+      );
+    } catch (error: any) {
+      Alert.alert('Erro', error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <KeyboardAvoidingView
@@ -29,32 +55,35 @@ const RedefinirSenha: React.FC = () => {
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.inputWrapper}>
-            
-
-            <View style={styles.divider} />
+            <Text style={styles.title}>Redefinir Senha</Text>
+            <Text style={styles.subtitle}>
+              Digite seu email para receber as instruções de redefinição de senha
+            </Text>
 
             <Input
               style={styles.input}
               label="Email"
               type="email"
-              placeholder="Digite o email cadastrado"
+              placeholder="Digite seu email"
               keyboardType="email-address"
+              value={email}
+              onChangeText={setEmail}
               iconName="email"
             />
 
             <Button
               title="Enviar"
-              iconName="login"
-              onPress={() => router.push("/ComfirmarCodigo")}
+              iconName="send"
+              onPress={handleResetPassword}
               backgroundColor="#4ECDC4"
               textColor="#fff"
-              loading={false}
+              loading={loading}
               style={{ marginTop: 30, alignSelf: "center" }}
             />
 
             <Pressable onPress={() => router.push('/')}>
               <Text style={styles.link}>
-                Retornar para Login
+                Voltar para o login
               </Text>
             </Pressable>
           </View>
@@ -77,33 +106,22 @@ const styles = StyleSheet.create({
   inputWrapper: {
     width: "100%",
   },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 10,
+    color: '#333',
+  },
+  subtitle: {
+    fontSize: 16,
+    textAlign: 'center',
+    marginBottom: 30,
+    color: '#666',
+    lineHeight: 22,
+  },
   input: {
     width: "100%",
-  },
-  divider: {
-    height: 2,
-    borderRadius: 9999,
-    backgroundColor: "#4ECDC4",
-    marginVertical: 20,
-    width: "100%",
-  },
-  image: {
-    width: 20,
-    height: 20,
-    alignSelf: "center",
-  },
-  googleLogin: {
-    width: "100%",
-    height: 40,
-    alignItems: "center",
-    justifyContent: "center",
-    display: "flex",
-    flexDirection: "row",
-    gap: 20,
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: "#4ECDC4",
-    borderRadius: 8,
   },
   link: {
     color: '#B0B0B0',
