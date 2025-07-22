@@ -323,14 +323,14 @@ git commit -m "docs: marcar login como concluído no checklist"
 Conheça a equipe por trás do Aurora:  
 **Turma: 3A1**
 
-| Matrícula | Nome | Papel | GitHub | Responsabilidade Principal |
-|-----------|------|-------|--------|----------------------------|
-| 12300055 | **Davi Murta** | Frontend Developer | [@davimurta](https://github.com/davimurta) | Autenticação e Componentes |
-| 12400947 | **Sara Freitas** | UI/UX Designer | [@sahfreitas](https://github.com/sahfreitas) | Design System e Interfaces |
-| 12302589 | **Maria Fernanda** | Frontend Developer | [@mafemelo](https://github.com/mafemelo) | Dashboard Paciente |
-| 22402942 | **Samuel Cordeiro** | Backend Developer | [@sam-cordeiro](https://github.com/sam-cordeiro) | Firebase e APIs |
-| 12300993 | **João Pedro** | Frontend Developer | [@jpfgomes](https://github.com/jpfgomes) | Dashboard Psicólogo |
-| 12303127 | **Ronan Porto** | QA/Tester | [@RonanPorto](https://github.com/RonanPorto) | Testes e Qualidade |
+| Matrícula | Nome | Papel | GitHub |
+|-----------|------|-------|--------|
+| 12300055 | **Davi Murta** | Tech Lead | [@davimurta](https://github.com/davimurta) |
+| 12400947 | **Sara Freitas** | UI/UX Designer | [@sahfreitas](https://github.com/sahfreitas) |
+| 12302589 | **Maria Fernanda** | FullStack Developer | [@mafemelo](https://github.com/mafemelo) |
+| 22402942 | **Samuel Cordeiro** | Backend Developer | [@sam-cordeiro](https://github.com/sam-cordeiro) |
+| 12300993 | **João Pedro** | Backend Developer | [@jpfgomes](https://github.com/jpfgomes) |
+| 12303127 | **Ronan Porto** | Frontend Developer | [@RonanPorto](https://github.com/RonanPorto) |
 
 ---
 
