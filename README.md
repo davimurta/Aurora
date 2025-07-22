@@ -116,6 +116,10 @@ aurora/
 └── README.md        # Documentação do projeto
 ```
 
+### Diagrama de classes
+
+<img width="1300" height="3540" alt="Untitled diagram _ Mermaid Chart-2025-07-22-143815" src="https://github.com/user-attachments/assets/eb7e72f7-1dbc-4fea-8115-f89749ec694f" />
+
 ---
 
 ## ⚙️ Configuração
