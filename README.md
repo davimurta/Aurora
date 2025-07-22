@@ -328,9 +328,9 @@ Conheça a equipe por trás do Aurora:
 | 12300055 | **Davi Murta** | Frontend Developer | [@davimurta](https://github.com/davimurta) | Autenticação e Componentes |
 | 12400947 | **Sara Freitas** | UI/UX Designer | [@sahfreitas](https://github.com/sahfreitas) | Design System e Interfaces |
 | 12302589 | **Maria Fernanda** | Frontend Developer | [@mafemelo](https://github.com/mafemelo) | Dashboard Paciente |
-| 22402942 | **Samuel Cordeiro** | Backend Developer | *A definir* | Firebase e APIs |
+| 22402942 | **Samuel Cordeiro** | Backend Developer | [@sam-cordeiro](https://github.com/sam-cordeiro) | Firebase e APIs |
 | 12300993 | **João Pedro** | Frontend Developer | [@jpfgomes](https://github.com/jpfgomes) | Dashboard Psicólogo |
-| 12303127 | **Ronan Porto** | QA/Tester | *A definir* | Testes e Qualidade |
+| 12303127 | **Ronan Porto** | QA/Tester | [@RonanPorto](https://github.com/RonanPorto) | Testes e Qualidade |
 
 ---
 
