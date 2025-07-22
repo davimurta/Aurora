@@ -190,13 +190,6 @@ ANALYTICS_KEY=sua_chave_analytics
 - [ ] **Upload de documentos** (diploma, CRP, comprovantes)
 - [ ] **Dashboard analítico** com métricas
 
-### Extras (Roadmap Futuro)
-- [ ] **Sistema de chat** paciente-psicólogo
-- [ ] **Recomendações personalizadas** baseadas em IA
-- [ ] **Personalização de interface** (temas, notificações)
-- [ ] **Integração com wearables** para dados biométricos
-- [ ] **Sistema de agendamento** de consultas
-
 ---
 
 ## 🎯 Funcionalidades
@@ -319,7 +312,6 @@ git commit -m "docs: marcar login como concluído no checklist"
 
 ### 🎨 UI/UX
 
-- Siga as guidelines de Material Design (Android) e Human Interface (iOS)
 - Mantenha consistência visual entre telas
 - Implemente loading states e error handling
 - Considere acessibilidade em todos os componentes
