@@ -171,8 +171,8 @@ ANALYTICS_KEY=sua_chave_analytics
 
 ### Funcionalidades Gerais
 - [x] **Login com autenticação** (Firebase)
-- [ ] **Cadastro de usuários** (pacientes)
-- [ ] **Cadastro de psicólogos** (com validação de documentos)
+- [x] **Cadastro de usuários** (pacientes)
+- [x] **Cadastro de psicólogos** (com validação de documentos)
 - [ ] **Diferenciação entre perfis** (paciente/psicólogo)
 - [ ] **Aceite dos termos e condições** no cadastro
 
