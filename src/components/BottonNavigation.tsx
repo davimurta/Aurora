@@ -18,7 +18,7 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
   const getActiveTabFromPath = (path: string): string => {
     if (path.includes("/Home")) return "home";
     if (path.includes("/DailyRegister")) return "analytics";
-    if (path.includes("/Chat")) return "chat";
+    if (path.includes("/HistoryRegister")) return "emotionalhistory";
     if (path.includes("/Profile") || path.includes("/acesso")) return "profile";
     return "home"; 
   };
@@ -57,6 +57,10 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
         case "chat":
           
           router.push("/Chat");
+          break;
+        case "emotionalhistory":
+          
+          router.push("/HistoryRegister");
           break;
         case "profile":
           
@@ -123,14 +127,14 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
 
         <TouchableOpacity
           style={styles.navItem}
-          onPress={() => handleTabPress("chat")}
+          onPress={() => handleTabPress("emotionalhistory")}
           activeOpacity={0.7}
         >
-          <View style={getIconContainerStyle("chat")}>
+          <View style={getIconContainerStyle("emotionalhistory")}>
             <Icon
               name="chat-bubble-outline"
               size={26}
-              color={getIconColor("chat")}
+              color={getIconColor("emotionalhistory")}
             />
           </View>
         </TouchableOpacity>
