@@ -91,6 +91,21 @@ const Privacy: React.FC = () => {
     );
   };
 
+  const handlePrivacyOptionPress = (item: any) => {
+    if (item.title === "Exportar Dados") {
+      router.push("/ExportData");
+    } else if (item.title === "Política de Privacidade") {
+      // Navegar para a página de política de privacidade
+      console.log("Navegando para Política de Privacidade");
+    } else if (item.title === "Termos de Uso") {
+      // Navegar para a página de termos de uso
+      console.log("Navegando para Termos de Uso");
+    } else if (item.title === "Excluir Dados") {
+      // Navegar para a página de exclusão de dados ou mostrar modal de confirmação
+      console.log("Navegando para Exclusão de Dados");
+    }
+  };
+
   const renderPrivacySettingItem = (item: PrivacyItem) => (
     <View key={item.id} style={styles.settingItem}>
       <View style={styles.settingLeft}>
@@ -114,7 +129,11 @@ const Privacy: React.FC = () => {
   );
 
   const renderPrivacyOption = (item: any, index: number) => (
-    <TouchableOpacity key={index} style={styles.optionItem}>
+    <TouchableOpacity 
+      key={index} 
+      style={styles.optionItem}
+      onPress={() => handlePrivacyOptionPress(item)}
+    >
       <View style={styles.optionLeft}>
         <View style={styles.iconContainer}>
           <Icon name={item.icon} size={20} color="#4ECDC4" />
