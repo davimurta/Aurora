@@ -13,6 +13,7 @@ import {
   Pressable,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import { useAuth } from "../contexts/AuthContext";
 
 interface ActivityItem {
   id: string;
@@ -31,6 +32,7 @@ interface PersonalDataItem {
 const Profile: React.FC = () => {
   const [userImage, setUserImage] = useState<string | null>(null);
   const [showPersonalData, setShowPersonalData] = useState<boolean>(false);
+  const { userData } = useAuth();
 
   const userName = "Maria Silva";
   const userEmail = "maria.silva@email.com";
@@ -60,29 +62,42 @@ const Profile: React.FC = () => {
   ];
 
   const personalData: PersonalDataItem[] = [
-    { label: "Nome", value: userName, icon: "person" },
+    { 
+      label: "Nome", 
+      value: userData?.displayName ?? "", 
+      icon: "person" },
     {
       label: "Email",
-      value: showPersonalData ? userEmail : "••••••••••••••••••••",
+      value: showPersonalData ? userData?.email ?? "" : "••••••••••••••••••••",
       icon: "email",
     },
     {
       label: "Telefone",
-      value: showPersonalData ? "(11) 99999-9999" : "••• •••••-••••",
+      value: showPersonalData ? "31 99999-9999" : "••• •••••-••••",
       icon: "phone",
-    },
-    {
-      label: "Data de Nascimento",
-      value: showPersonalData ? "15/08/1990" : "••/••/••••",
-      icon: "cake",
     },
   ];
 
   const accountSettings = [
-    { label: "Notificações", icon: "notifications", hasSwitch: true, route: "/NotificationCenter" },
-    { label: "Privacidade", icon: "security", hasSwitch: false, route: "/Privacy" },
+    {
+      label: "Notificações",
+      icon: "notifications",
+      hasSwitch: true,
+      route: "/NotificationCenter",
+    },
+    {
+      label: "Privacidade",
+      icon: "security",
+      hasSwitch: false,
+      route: "/Privacy",
+    },
     { label: "Idioma", icon: "language", hasSwitch: false, route: "/Language" },
-    { label: "Ajuda e Suporte", icon: "help", hasSwitch: false, route: "/Help" },
+    {
+      label: "Ajuda e Suporte",
+      icon: "help",
+      hasSwitch: false,
+      route: "/Help",
+    },
   ];
 
   const handleImagePicker = () => {
@@ -132,8 +147,8 @@ const Profile: React.FC = () => {
   );
 
   const renderSettingItem = (item: any, index: number) => (
-    <TouchableOpacity 
-      key={index} 
+    <TouchableOpacity
+      key={index}
       style={styles.settingItem}
       onPress={() => router.push(item.route)}
     >
@@ -166,8 +181,8 @@ const Profile: React.FC = () => {
             </View>
           </TouchableOpacity>
 
-          <Text style={styles.userName}>{userName}</Text>
-          <Text style={styles.userEmail}>{userEmail}</Text>
+          <Text style={styles.userName}>{userData?.displayName}</Text>
+          <Text style={styles.userEmail}>{userData?.email}</Text>
 
           <TouchableOpacity style={styles.editProfileButton}>
             <Icon name="edit" size={18} color="#4ECDC4" />

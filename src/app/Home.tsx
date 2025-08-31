@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useRouter } from 'expo-router';
+import { useAuth } from '../contexts/AuthContext';
 
 interface CardItem {
   id: string;
@@ -56,6 +57,7 @@ const Home: React.FC<HomeProps> = ({
   onNavigateToBlogPost, 
   onNavigateToActivity 
 }) => {
+  const { userData } = useAuth();
   const router = useRouter();
 
   const activities = [

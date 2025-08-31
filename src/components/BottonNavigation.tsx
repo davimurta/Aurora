@@ -2,6 +2,7 @@ import { router, usePathname } from "expo-router";
 import React, { useState, useEffect } from "react";
 import { View, TouchableOpacity, StyleSheet } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import { useAuth } from '../contexts/AuthContext';
 
 interface BottomNavigationProps {
   activeTab?: string;
@@ -12,6 +13,7 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
   activeTab: initialActiveTab,
   onTabPress,
 }) => {
+  const { userData } = useAuth();
   const pathname = usePathname();
   const [activeTab, setActiveTab] = useState("");
 
@@ -117,7 +119,11 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
           activeOpacity={0.8}
         >
           <View style={styles.centerNavButton}>
-            <Icon name="add" size={28} color="#4ECDC4" />
+            {userData?.userType === 'psicologo' ? (
+              <Icon name="add" size={28} color="#4ECDC4" />
+            ) : (
+              <Icon name="article" size={28} color="#4ECDC4" />
+            )}
           </View>
         </TouchableOpacity>
 

@@ -22,7 +22,7 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   
-  const { login } = useAuth();
+  const { login, userData } = useAuth();
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -33,7 +33,10 @@ const Login: React.FC = () => {
     setLoading(true);
     try {
       await login(email, password);
-      router.push('/Home');
+      setTimeout(() => {
+        router.push('/Home');
+      }, 1000);
+      
     } catch (error: any) {
       Alert.alert('Erro', error.message);
     } finally {
@@ -53,6 +56,13 @@ const Login: React.FC = () => {
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.inputWrapper}>
+            <View>
+              <Text>Bem-vindo de volta!</Text>
+              <Text>
+                Faça login para continuar
+              </Text>
+            </View>
+
             <View style={styles.googleLogin}>
               <Image
                 source={require("@assets/images/google.png")}
@@ -95,17 +105,19 @@ const Login: React.FC = () => {
               style={{ marginTop: 30, alignSelf: "center" }}
             />
 
-            <Pressable onPress={() => router.push('/Cadastro')}>
-              <Text style={styles.link}>
-                Não tem uma conta? Criar uma agora
-              </Text>
-            </Pressable>
-            
-            <Pressable onPress={() => router.push('/RedefinirSenha')}>
-              <Text style={styles.link}>
-                Esqueci a senha
-              </Text>
-            </Pressable>
+            <View>
+              <Pressable onPress={() => router.push('/UserTypeSelection')}>
+                <Text style={styles.link}>
+                  Não tem uma conta? Criar uma agora
+                </Text>
+              </Pressable>
+              
+              <Pressable onPress={() => router.push('/RedefinirSenha')}>
+                <Text style={styles.link}>
+                  Esqueci a senha
+                </Text>
+              </Pressable>
+            </View>
           </View>
         </ScrollView>
       </TouchableWithoutFeedback>
