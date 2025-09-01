@@ -9,6 +9,7 @@ import {
   Dimensions,
   ActivityIndicator,
   Alert,
+  SafeAreaView, // Importação adicionada
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { BarChart } from 'react-native-chart-kit';
@@ -32,13 +33,13 @@ const HistoryRegister: React.FC = () => {
   });
 
   const { user } = useAuth();
-  const { 
-    loading, 
-    getRegistersByMonth, 
-    getRegisterByDate, 
-    getChartDataByMonth, 
-    hasRegisterForDate, 
-    formatDateKey 
+  const {
+    loading,
+    getRegistersByMonth,
+    getRegisterByDate,
+    getChartDataByMonth,
+    hasRegisterForDate,
+    formatDateKey
   } = useEmotionalRegister();
 
   const monthNames: string[] = [
@@ -53,7 +54,7 @@ const HistoryRegister: React.FC = () => {
     console.log('=== HISTORY REGISTER useEffect ===');
     console.log('User:', user?.uid);
     console.log('Current date:', currentDate);
-    
+
     if (user) {
       loadMonthData();
     } else {
@@ -75,20 +76,20 @@ const HistoryRegister: React.FC = () => {
 
     try {
       const registers = await getRegistersByMonth(
-        currentDate.getFullYear(), 
+        currentDate.getFullYear(),
         currentDate.getMonth()
       );
-      
+
       console.log('Registros retornados:', registers);
       console.log('Quantidade de registros:', registers.length);
-      
+
       setMonthRegisters(registers);
-      
+
       // Gerar dados do gráfico baseado nos registros
       const newChartData = getChartDataByMonth(registers);
       console.log('Novos dados do gráfico:', newChartData);
       setChartData(newChartData);
-      
+
       console.log(`✅ Carregados ${registers.length} registros para ${monthNames[currentDate.getMonth()]}`);
     } catch (error) {
       console.error('❌ Erro ao carregar dados do mês:', error);
@@ -105,29 +106,29 @@ const HistoryRegister: React.FC = () => {
     const startDay: number = firstDay.getDay();
 
     const days: (number | null)[] = [];
-    
+
     // Adicionar dias vazios do início
     for (let i = 0; i < startDay; i++) {
       days.push(null);
     }
-    
+
     // Adicionar dias do mês
     for (let i = 1; i <= daysInMonth; i++) {
       days.push(i);
     }
-    
+
     return days;
   };
 
   const changeMonth = (direction: number): void => {
     console.log('=== MUDANDO MÊS ===');
     console.log('Direção:', direction);
-    
+
     const newDate: Date = new Date(currentDate);
     newDate.setMonth(currentDate.getMonth() + direction);
-    
+
     console.log('Nova data:', newDate);
-    
+
     setCurrentDate(newDate);
     setSelectedDay(null);
     setDayData(null);
@@ -138,19 +139,19 @@ const HistoryRegister: React.FC = () => {
       console.log('❌ Dia ou usuário inválido:', { day, userId: user?.uid });
       return;
     }
-    
+
     console.log('=== SELECIONANDO DIA ===');
     console.log('Dia selecionado:', day);
-    
+
     setSelectedDay(day);
-    
+
     const dateKey: string = formatDateKey(currentDate.getFullYear(), currentDate.getMonth(), day);
     console.log('Chave da data:', dateKey);
-    
+
     try {
       const register = await getRegisterByDate(dateKey);
       console.log('Registro encontrado:', register);
-      
+
       if (register) {
         setDayData({
           selectedMood: register.selectedMood,
@@ -172,12 +173,12 @@ const HistoryRegister: React.FC = () => {
     if (!day) return false;
     const dateKey: string = formatDateKey(currentDate.getFullYear(), currentDate.getMonth(), day);
     const hasData = hasRegisterForDate(dateKey, monthRegisters);
-    
+
     // Log apenas para alguns dias para não poluir o console
     if (day <= 5) {
       console.log(`Verificando dia ${day} (${dateKey}):`, hasData);
     }
-    
+
     return hasData;
   };
 
@@ -213,164 +214,180 @@ const HistoryRegister: React.FC = () => {
   }
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity>
-          <Ionicons name="arrow-back" size={24} color="#333" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Histórico Emocional</Text>
-        <View style={{ width: 24 }} />
-      </View>
-
-
-      {/* Calendar Header */}
-      <View style={styles.calendarHeader}>
-        <TouchableOpacity onPress={() => changeMonth(-1)} disabled={loading}>
-          <Ionicons name="chevron-back" size={20} color={loading ? "#ccc" : "#666"} />
-        </TouchableOpacity>
-        
-        <Text style={styles.monthYear}>
-          {monthNames[currentDate.getMonth()]} de {currentDate.getFullYear()}
-        </Text>
-        
-        <TouchableOpacity onPress={() => changeMonth(1)} disabled={loading}>
-          <Ionicons name="chevron-forward" size={20} color={loading ? "#ccc" : "#666"} />
-        </TouchableOpacity>
-      </View>
-
-      {/* Week Days */}
-      <View style={styles.weekDaysContainer}>
-        {weekDays.map((day: string, index: number) => (
-          <Text key={index} style={styles.weekDay}>{day}</Text>
-        ))}
-      </View>
-
-      {/* Calendar Grid */}
-      <View style={styles.calendarGrid}>
-        {days.map((day: number | null, index: number) => (
-          <TouchableOpacity
-            key={index}
-            style={[
-              styles.dayCell,
-              day === selectedDay && styles.selectedDay,
-              hasDataForDay(day) && styles.dayWithData
-            ]}
-            onPress={() => selectDay(day)}
-            disabled={!day || loading}
-          >
-            {day && (
-              <Text style={[
-                styles.dayText,
-                day === selectedDay && styles.selectedDayText,
-                hasDataForDay(day) && styles.dayWithDataText
-              ]}>
-                {day}
-              </Text>
-            )}
+    // ========= INÍCIO DA MUDANÇA =========
+    <SafeAreaView style={styles.container}>
+      <ScrollView
+        style={styles.content}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Header */}
+        <View style={styles.header}>
+          <TouchableOpacity>
+            <Ionicons name="arrow-back" size={24} color="#333" />
           </TouchableOpacity>
-        ))}
-      </View>
-
-      {/* Loading indicator for day selection */}
-      {loading && selectedDay && (
-        <View style={styles.dayLoadingContainer}>
-          <ActivityIndicator size="small" color="#4ECDC4" />
-          <Text style={styles.dayLoadingText}>Carregando registro...</Text>
+          <Text style={styles.headerTitle}>Histórico Emocional</Text>
+          <View style={{ width: 24 }} />
         </View>
-      )}
 
-      {/* Chart or Day Details */}
-      {!selectedDay ? (
-        // Monthly Chart View
-        <View style={styles.chartContainer}>
-          <Text style={styles.chartTitle}>Métrica de emoções</Text>
-          <Text style={styles.chartSubtitle}>
-            {monthRegisters.length} registro{monthRegisters.length !== 1 ? 's' : ''} este mês
+
+        {/* Calendar Header */}
+        <View style={styles.calendarHeader}>
+          <TouchableOpacity onPress={() => changeMonth(-1)} disabled={loading}>
+            <Ionicons name="chevron-back" size={20} color={loading ? "#ccc" : "#666"} />
+          </TouchableOpacity>
+
+          <Text style={styles.monthYear}>
+            {monthNames[currentDate.getMonth()]} de {currentDate.getFullYear()}
           </Text>
-          
-          {monthRegisters.length > 0 ? (
-            <BarChart
-              data={chartData}
-              width={screenWidth - 40}
-              height={200}
-              yAxisLabel=""
-              yAxisSuffix=""
-              chartConfig={{
-                backgroundColor: 'transparent',
-                backgroundGradientFrom: '#FFFFFF',
-                backgroundGradientTo: '#FFFFFF',
-                decimalPlaces: 0,
-                color: (opacity: number = 1) => `rgba(100, 200, 150, ${opacity})`,
-                style: {
-                  borderRadius: 16,
-                }
-              }}
-              style={styles.chart}
-              showValuesOnTopOfBars={true}
-              withInnerLines={false}
-              fromZero={true}
-            />
-          ) : (
-            <View style={styles.noDataContainer}>
-              <Ionicons name="bar-chart-outline" size={48} color="#ccc" />
-              <Text style={styles.noDataText}>
-                Nenhum registro encontrado para este mês
-              </Text>
-              <Text style={styles.noDataSubtext}>
-                Comece registrando suas emoções diárias!
-              </Text>
-            </View>
-          )}
+
+          <TouchableOpacity onPress={() => changeMonth(1)} disabled={loading}>
+            <Ionicons name="chevron-forward" size={20} color={loading ? "#ccc" : "#666"} />
+          </TouchableOpacity>
         </View>
-      ) : (
-        // Selected Day Details
-        dayData ? (
-          <View style={styles.dayDetailsContainer}>
-            <View style={styles.moodIndicator}>
-              <View style={styles.moodIcon}>
-                <Text style={styles.moodEmoji}>
-                  {getMoodEmoji(dayData.selectedMood)}
+
+        {/* Week Days */}
+        <View style={styles.weekDaysContainer}>
+          {weekDays.map((day: string, index: number) => (
+            <Text key={index} style={styles.weekDay}>{day}</Text>
+          ))}
+        </View>
+
+        {/* Calendar Grid */}
+        <View style={styles.calendarGrid}>
+          {days.map((day: number | null, index: number) => (
+            <TouchableOpacity
+              key={index}
+              style={[
+                styles.dayCell,
+                day === selectedDay && styles.selectedDay,
+                hasDataForDay(day) && styles.dayWithData
+              ]}
+              onPress={() => selectDay(day)}
+              disabled={!day || loading}
+            >
+              {day && (
+                <Text style={[
+                  styles.dayText,
+                  day === selectedDay && styles.selectedDayText,
+                  hasDataForDay(day) && styles.dayWithDataText
+                ]}>
+                  {day}
+                </Text>
+              )}
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        {/* Loading indicator for day selection */}
+        {loading && selectedDay && (
+          <View style={styles.dayLoadingContainer}>
+            <ActivityIndicator size="small" color="#4ECDC4" />
+            <Text style={styles.dayLoadingText}>Carregando registro...</Text>
+          </View>
+        )}
+
+        {/* Chart or Day Details */}
+        {!selectedDay ? (
+          // Monthly Chart View
+          <View style={styles.chartContainer}>
+            <Text style={styles.chartTitle}>Métrica de emoções</Text>
+            <Text style={styles.chartSubtitle}>
+              {monthRegisters.length} registro{monthRegisters.length !== 1 ? 's' : ''} este mês
+            </Text>
+
+            {monthRegisters.length > 0 ? (
+              <BarChart
+                data={chartData}
+                width={screenWidth - 40}
+                height={200}
+                yAxisLabel=""
+                yAxisSuffix=""
+                chartConfig={{
+                  backgroundColor: 'transparent',
+                  backgroundGradientFrom: '#FFFFFF',
+                  backgroundGradientTo: '#FFFFFF',
+                  decimalPlaces: 0,
+                  color: (opacity: number = 1) => `rgba(100, 200, 150, ${opacity})`,
+                  style: {
+                    borderRadius: 16,
+                  }
+                }}
+                style={styles.chart}
+                showValuesOnTopOfBars={true}
+                withInnerLines={false}
+                fromZero={true}
+              />
+            ) : (
+              <View style={styles.noDataContainer}>
+                <Ionicons name="bar-chart-outline" size={48} color="#ccc" />
+                <Text style={styles.noDataText}>
+                  Nenhum registro encontrado para este mês
+                </Text>
+                <Text style={styles.noDataSubtext}>
+                  Comece registrando suas emoções diárias!
                 </Text>
               </View>
-              <View style={styles.moodInfo}>
-                <Text style={styles.moodLabel}>{dayData.selectedMood}</Text>
-                <Text style={styles.intensityPercentage}>{dayData.intensityValue}%</Text>
-              </View>
-            </View>
-            
-            <View style={styles.dayRecord}>
-              <Text style={styles.dayRecordTitle}>Registro do Dia:</Text>
-              <Text style={styles.dayRecordText}>{dayData.diaryText}</Text>
-            </View>
-
-            <View style={styles.dayRecordFooter}>
-              <Text style={styles.dayRecordDate}>
-                {selectedDay} de {monthNames[currentDate.getMonth()]}, {currentDate.getFullYear()}
-              </Text>
-            </View>
+            )}
           </View>
         ) : (
-          <View style={styles.emptyDayContainer}>
-            <Ionicons name="calendar-outline" size={48} color="#ccc" />
-            <Text style={styles.emptyDayText}>Nenhum registro encontrado para este dia</Text>
-            <Text style={styles.emptyDaySubtext}>
-              Que tal registrar suas emoções hoje?
-            </Text>
-          </View>
-        )
-      )}
+          // Selected Day Details
+          dayData ? (
+            <View style={styles.dayDetailsContainer}>
+              <View style={styles.moodIndicator}>
+                <View style={styles.moodIcon}>
+                  <Text style={styles.moodEmoji}>
+                    {getMoodEmoji(dayData.selectedMood)}
+                  </Text>
+                </View>
+                <View style={styles.moodInfo}>
+                  <Text style={styles.moodLabel}>{dayData.selectedMood}</Text>
+                  <Text style={styles.intensityPercentage}>{dayData.intensityValue}%</Text>
+                </View>
+              </View>
+
+              <View style={styles.dayRecord}>
+                <Text style={styles.dayRecordTitle}>Registro do Dia:</Text>
+                <Text style={styles.dayRecordText}>{dayData.diaryText}</Text>
+              </View>
+
+              <View style={styles.dayRecordFooter}>
+                <Text style={styles.dayRecordDate}>
+                  {selectedDay} de {monthNames[currentDate.getMonth()]}, {currentDate.getFullYear()}
+                </Text>
+              </View>
+            </View>
+          ) : (
+            <View style={styles.emptyDayContainer}>
+              <Ionicons name="calendar-outline" size={48} color="#ccc" />
+              <Text style={styles.emptyDayText}>Nenhum registro encontrado para este dia</Text>
+              <Text style={styles.emptyDaySubtext}>
+                Que tal registrar suas emoções hoje?
+              </Text>
+            </View>
+          )
+        )}
+      </ScrollView>
 
       <BottomNavigation />
-    </ScrollView>
+    </SafeAreaView>
+    // ========= FIM DA MUDANÇA =========
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8F9FA',
+    backgroundColor: '#F8FAFB',
   },
+  // ========= INÍCIO DA MUDANÇA (Estilos) =========
+  content: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingBottom: 20, // Garante um espaço no final do conteúdo
+  },
+  // ========= FIM DA MUDANÇA (Estilos) =========
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
