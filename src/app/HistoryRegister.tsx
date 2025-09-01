@@ -7,9 +7,13 @@ import {
   TouchableOpacity,
   ScrollView,
   Dimensions,
+  ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { BarChart } from 'react-native-chart-kit';
+import { useEmotionalRegister, EmotionalRegister, ChartData } from '../hooks/useEmotionalRegister';
+import { useAuth } from '../contexts/AuthContext';
 
 interface DayData {
   selectedMood: string;
@@ -17,40 +21,25 @@ interface DayData {
   diaryText: string;
 }
 
-interface EmotionalDataMap {
-  [key: string]: DayData;
-}
-
-interface ChartData {
-  labels: string[];
-  datasets: Array<{
-    data: number[];
-  }>;
-}
-
-const EmotionalHistory: React.FC = () => {
+const HistoryRegister: React.FC = () => {
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [dayData, setDayData] = useState<DayData | null>(null);
+  const [monthRegisters, setMonthRegisters] = useState<EmotionalRegister[]>([]);
+  const [chartData, setChartData] = useState<ChartData>({
+    labels: ['😢', '😟', '😐', '😊', '😄', '🤩'],
+    datasets: [{ data: [0, 0, 0, 0, 0, 0] }]
+  });
 
-  // Mock data - substituir pelos dados reais do dailyRegister
-  const mockEmotionalData: EmotionalDataMap = {
-    '2025-04-18': {
-      selectedMood: 'Muito bem',
-      intensityValue: 60,
-      diaryText: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin blandit elit adipiscing elit. Proin blandit elit sed sem ornare, suscipit orci pharetra, pharetra massa.'
-    },
-    '2025-04-15': {
-      selectedMood: 'Bem',
-      intensityValue: 75,
-      diaryText: 'Dia produtivo e tranquilo.'
-    },
-    '2025-04-10': {
-      selectedMood: 'Neutro',
-      intensityValue: 50,
-      diaryText: 'Dia normal, sem muitos acontecimentos.'
-    }
-  };
+  const { user } = useAuth();
+  const { 
+    loading, 
+    getRegistersByMonth, 
+    getRegisterByDate, 
+    getChartDataByMonth, 
+    hasRegisterForDate, 
+    formatDateKey 
+  } = useEmotionalRegister();
 
   const monthNames: string[] = [
     'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
@@ -58,6 +47,54 @@ const EmotionalHistory: React.FC = () => {
   ];
 
   const weekDays: string[] = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+
+  // Carrega os dados do mês atual ao inicializar o componente
+  useEffect(() => {
+    console.log('=== HISTORY REGISTER useEffect ===');
+    console.log('User:', user?.uid);
+    console.log('Current date:', currentDate);
+    
+    if (user) {
+      loadMonthData();
+    } else {
+      console.log('❌ Usuário não logado');
+    }
+  }, [currentDate, user]);
+
+  const loadMonthData = async () => {
+    if (!user) {
+      console.log('❌ Usuário não autenticado no loadMonthData');
+      Alert.alert('Erro', 'Você precisa estar logado para ver o histórico.');
+      return;
+    }
+
+    console.log('=== CARREGANDO DADOS DO MÊS ===');
+    console.log('Ano:', currentDate.getFullYear());
+    console.log('Mês:', currentDate.getMonth());
+    console.log('Nome do mês:', monthNames[currentDate.getMonth()]);
+
+    try {
+      const registers = await getRegistersByMonth(
+        currentDate.getFullYear(), 
+        currentDate.getMonth()
+      );
+      
+      console.log('Registros retornados:', registers);
+      console.log('Quantidade de registros:', registers.length);
+      
+      setMonthRegisters(registers);
+      
+      // Gerar dados do gráfico baseado nos registros
+      const newChartData = getChartDataByMonth(registers);
+      console.log('Novos dados do gráfico:', newChartData);
+      setChartData(newChartData);
+      
+      console.log(`✅ Carregados ${registers.length} registros para ${monthNames[currentDate.getMonth()]}`);
+    } catch (error) {
+      console.error('❌ Erro ao carregar dados do mês:', error);
+      Alert.alert('Erro', 'Não foi possível carregar os dados do histórico.');
+    }
+  };
 
   const getDaysInMonth = (date: Date): (number | null)[] => {
     const year: number = date.getFullYear();
@@ -82,41 +119,66 @@ const EmotionalHistory: React.FC = () => {
     return days;
   };
 
-  const formatDateKey = (year: number, month: number, day: number): string => {
-    return `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-  };
-
   const changeMonth = (direction: number): void => {
+    console.log('=== MUDANDO MÊS ===');
+    console.log('Direção:', direction);
+    
     const newDate: Date = new Date(currentDate);
     newDate.setMonth(currentDate.getMonth() + direction);
+    
+    console.log('Nova data:', newDate);
+    
     setCurrentDate(newDate);
     setSelectedDay(null);
     setDayData(null);
   };
 
-  const selectDay = (day: number | null): void => {
-    if (!day) return;
+  const selectDay = async (day: number | null): Promise<void> => {
+    if (!day || !user) {
+      console.log('❌ Dia ou usuário inválido:', { day, userId: user?.uid });
+      return;
+    }
+    
+    console.log('=== SELECIONANDO DIA ===');
+    console.log('Dia selecionado:', day);
     
     setSelectedDay(day);
+    
     const dateKey: string = formatDateKey(currentDate.getFullYear(), currentDate.getMonth(), day);
-    const data: DayData | undefined = mockEmotionalData[dateKey];
-    setDayData(data || null);
+    console.log('Chave da data:', dateKey);
+    
+    try {
+      const register = await getRegisterByDate(dateKey);
+      console.log('Registro encontrado:', register);
+      
+      if (register) {
+        setDayData({
+          selectedMood: register.selectedMood,
+          intensityValue: register.intensityValue,
+          diaryText: register.diaryText
+        });
+        console.log('✅ Dados do dia definidos');
+      } else {
+        setDayData(null);
+        console.log('❌ Nenhum registro para este dia');
+      }
+    } catch (error) {
+      console.error('❌ Erro ao buscar registro do dia:', error);
+      setDayData(null);
+    }
   };
 
   const hasDataForDay = (day: number | null): boolean => {
     if (!day) return false;
     const dateKey: string = formatDateKey(currentDate.getFullYear(), currentDate.getMonth(), day);
-    return !!mockEmotionalData[dateKey];
-  };
-
-  const getChartData = (): ChartData => {
-    // Mock data para o gráfico mensal
-    return {
-      labels: ['😢', '😟', '😐', '😊', '😄'],
-      datasets: [{
-        data: [20, 30, 25, 35, 40]
-      }]
-    };
+    const hasData = hasRegisterForDate(dateKey, monthRegisters);
+    
+    // Log apenas para alguns dias para não poluir o console
+    if (day <= 5) {
+      console.log(`Verificando dia ${day} (${dateKey}):`, hasData);
+    }
+    
+    return hasData;
   };
 
   const getMoodEmoji = (mood: string): string => {
@@ -134,6 +196,22 @@ const EmotionalHistory: React.FC = () => {
   const days: (number | null)[] = getDaysInMonth(currentDate);
   const screenWidth: number = Dimensions.get('window').width;
 
+  console.log('=== RENDER ===');
+  console.log('Loading:', loading);
+  console.log('Month registers length:', monthRegisters.length);
+  console.log('Selected day:', selectedDay);
+  console.log('Day data:', dayData);
+
+  // Mostrar loading se estiver carregando dados
+  if (loading && monthRegisters.length === 0) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#4ECDC4" />
+        <Text style={styles.loadingText}>Carregando histórico...</Text>
+      </View>
+    );
+  }
+
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       {/* Header */}
@@ -145,18 +223,19 @@ const EmotionalHistory: React.FC = () => {
         <View style={{ width: 24 }} />
       </View>
 
+
       {/* Calendar Header */}
       <View style={styles.calendarHeader}>
-        <TouchableOpacity onPress={() => changeMonth(-1)}>
-          <Ionicons name="chevron-back" size={20} color="#666" />
+        <TouchableOpacity onPress={() => changeMonth(-1)} disabled={loading}>
+          <Ionicons name="chevron-back" size={20} color={loading ? "#ccc" : "#666"} />
         </TouchableOpacity>
         
         <Text style={styles.monthYear}>
           {monthNames[currentDate.getMonth()]} de {currentDate.getFullYear()}
         </Text>
         
-        <TouchableOpacity onPress={() => changeMonth(1)}>
-          <Ionicons name="chevron-forward" size={20} color="#666" />
+        <TouchableOpacity onPress={() => changeMonth(1)} disabled={loading}>
+          <Ionicons name="chevron-forward" size={20} color={loading ? "#ccc" : "#666"} />
         </TouchableOpacity>
       </View>
 
@@ -178,7 +257,7 @@ const EmotionalHistory: React.FC = () => {
               hasDataForDay(day) && styles.dayWithData
             ]}
             onPress={() => selectDay(day)}
-            disabled={!day}
+            disabled={!day || loading}
           >
             {day && (
               <Text style={[
@@ -193,32 +272,56 @@ const EmotionalHistory: React.FC = () => {
         ))}
       </View>
 
+      {/* Loading indicator for day selection */}
+      {loading && selectedDay && (
+        <View style={styles.dayLoadingContainer}>
+          <ActivityIndicator size="small" color="#4ECDC4" />
+          <Text style={styles.dayLoadingText}>Carregando registro...</Text>
+        </View>
+      )}
+
       {/* Chart or Day Details */}
       {!selectedDay ? (
         // Monthly Chart View
         <View style={styles.chartContainer}>
           <Text style={styles.chartTitle}>Métrica de emoções</Text>
-          <BarChart
-            data={getChartData()}
-            width={screenWidth - 40}
-            height={200}
-            yAxisLabel=""
-            yAxisSuffix=""
-            chartConfig={{
-              backgroundColor: 'transparent',
-              backgroundGradientFrom: '#FFFFFF',
-              backgroundGradientTo: '#FFFFFF',
-              decimalPlaces: 0,
-              color: (opacity: number = 1) => `rgba(100, 200, 150, ${opacity})`,
-              style: {
-                borderRadius: 16,
-              }
-            }}
-            style={styles.chart}
-            showValuesOnTopOfBars={false}
-            withInnerLines={false}
-            fromZero={true}
-          />
+          <Text style={styles.chartSubtitle}>
+            {monthRegisters.length} registro{monthRegisters.length !== 1 ? 's' : ''} este mês
+          </Text>
+          
+          {monthRegisters.length > 0 ? (
+            <BarChart
+              data={chartData}
+              width={screenWidth - 40}
+              height={200}
+              yAxisLabel=""
+              yAxisSuffix=""
+              chartConfig={{
+                backgroundColor: 'transparent',
+                backgroundGradientFrom: '#FFFFFF',
+                backgroundGradientTo: '#FFFFFF',
+                decimalPlaces: 0,
+                color: (opacity: number = 1) => `rgba(100, 200, 150, ${opacity})`,
+                style: {
+                  borderRadius: 16,
+                }
+              }}
+              style={styles.chart}
+              showValuesOnTopOfBars={true}
+              withInnerLines={false}
+              fromZero={true}
+            />
+          ) : (
+            <View style={styles.noDataContainer}>
+              <Ionicons name="bar-chart-outline" size={48} color="#ccc" />
+              <Text style={styles.noDataText}>
+                Nenhum registro encontrado para este mês
+              </Text>
+              <Text style={styles.noDataSubtext}>
+                Comece registrando suas emoções diárias!
+              </Text>
+            </View>
+          )}
         </View>
       ) : (
         // Selected Day Details
@@ -230,24 +333,36 @@ const EmotionalHistory: React.FC = () => {
                   {getMoodEmoji(dayData.selectedMood)}
                 </Text>
               </View>
-              <Text style={styles.intensityPercentage}>{dayData.intensityValue}%</Text>
+              <View style={styles.moodInfo}>
+                <Text style={styles.moodLabel}>{dayData.selectedMood}</Text>
+                <Text style={styles.intensityPercentage}>{dayData.intensityValue}%</Text>
+              </View>
             </View>
             
             <View style={styles.dayRecord}>
               <Text style={styles.dayRecordTitle}>Registro do Dia:</Text>
               <Text style={styles.dayRecordText}>{dayData.diaryText}</Text>
             </View>
+
+            <View style={styles.dayRecordFooter}>
+              <Text style={styles.dayRecordDate}>
+                {selectedDay} de {monthNames[currentDate.getMonth()]}, {currentDate.getFullYear()}
+              </Text>
+            </View>
           </View>
         ) : (
           <View style={styles.emptyDayContainer}>
+            <Ionicons name="calendar-outline" size={48} color="#ccc" />
             <Text style={styles.emptyDayText}>Nenhum registro encontrado para este dia</Text>
+            <Text style={styles.emptyDaySubtext}>
+              Que tal registrar suas emoções hoje?
+            </Text>
           </View>
         )
       )}
 
       <BottomNavigation />
     </ScrollView>
-    
   );
 };
 
@@ -255,6 +370,28 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F8F9FA',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F8F9FA',
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: '#666',
+  },
+  dayLoadingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 20,
+  },
+  dayLoadingText: {
+    marginLeft: 8,
+    fontSize: 14,
+    color: '#666',
   },
   header: {
     flexDirection: 'row',
@@ -342,10 +479,31 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
     color: '#333',
+    marginBottom: 5,
+  },
+  chartSubtitle: {
+    fontSize: 12,
+    color: '#666',
     marginBottom: 20,
   },
   chart: {
     borderRadius: 16,
+  },
+  noDataContainer: {
+    alignItems: 'center',
+    paddingVertical: 40,
+  },
+  noDataText: {
+    fontSize: 16,
+    color: '#999',
+    marginTop: 16,
+    textAlign: 'center',
+  },
+  noDataSubtext: {
+    fontSize: 14,
+    color: '#ccc',
+    marginTop: 8,
+    textAlign: 'center',
   },
   dayDetailsContainer: {
     backgroundColor: 'white',
@@ -365,7 +523,16 @@ const styles = StyleSheet.create({
     marginRight: 15,
   },
   moodEmoji: {
-    fontSize: 24,
+    fontSize: 32,
+  },
+  moodInfo: {
+    flex: 1,
+  },
+  moodLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 4,
   },
   intensityPercentage: {
     fontSize: 24,
@@ -376,6 +543,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8F9FA',
     borderRadius: 12,
     padding: 15,
+    marginBottom: 15,
   },
   dayRecordTitle: {
     fontSize: 14,
@@ -388,6 +556,17 @@ const styles = StyleSheet.create({
     color: '#666',
     lineHeight: 20,
   },
+  dayRecordFooter: {
+    alignItems: 'center',
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: '#E0E0E0',
+  },
+  dayRecordDate: {
+    fontSize: 12,
+    color: '#999',
+    fontStyle: 'italic',
+  },
   emptyDayContainer: {
     backgroundColor: 'white',
     marginTop: 10,
@@ -397,28 +576,15 @@ const styles = StyleSheet.create({
   emptyDayText: {
     fontSize: 16,
     color: '#999',
+    marginTop: 16,
+    textAlign: 'center',
   },
-  bottomNav: {
-    flexDirection: 'row',
-    backgroundColor: '#4ECDC4',
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-    alignItems: 'center',
-    justifyContent: 'space-around',
-    marginTop: 20,
-  },
-  navItem: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  addButton: {
-    backgroundColor: 'white',
-    borderRadius: 25,
-    width: 50,
-    height: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
+  emptyDaySubtext: {
+    fontSize: 14,
+    color: '#ccc',
+    marginTop: 8,
+    textAlign: 'center',
   },
 });
 
-export default EmotionalHistory;
+export default HistoryRegister;
