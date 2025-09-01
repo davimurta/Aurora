@@ -53,7 +53,8 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
           router.push("/DailyRegister");
           break;
         case "add":
-          router.push("/AddArticle");
+          userData?.userType === "psicologo" ?
+          router.push("/AddArticle") : router.push("/HistoryRegister")
           console.log("Botão add pressionado - implementar rota");
           break;
         case "chat":

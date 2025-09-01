@@ -3,12 +3,12 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAW75zDx9MJasZMKPQhgMkduqrznuSiRKk",
-  authDomain: "aurora-96140.firebaseapp.com",
-  projectId: "aurora-96140",
-  storageBucket: "aurora-96140.firebasestorage.app",
-  messagingSenderId: "573597509865",
-  appId: "1:573597509865:web:1b88e3a1f9f3823edb6878"
+  apiKey: "AIzaSyCawFSSzDXVeIVz4iyyFJ1KOsy4jmT0Zj4",
+  authDomain: "aurora-482f9.firebaseapp.com",
+  projectId: "aurora-482f9",
+  storageBucket: "aurora-482f9.firebasestorage.app",
+  messagingSenderId: "364444154741",
+  appId: "1:364444154741:web:81d3e8d9fc4a5f61f5b13c"
 };
 
 console.log('🔥 Inicializando Firebase...');
