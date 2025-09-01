@@ -173,15 +173,15 @@ ANALYTICS_KEY=sua_chave_analytics
 - [x] **Login com autenticação** (Firebase)
 - [x] **Cadastro de usuários** (pacientes)
 - [x] **Cadastro de psicólogos** (com validação de documentos)
-- [ ] **Diferenciação entre perfis** (paciente/psicólogo)
-- [ ] **Aceite dos termos e condições** no cadastro
+- [x] **Diferenciação entre perfis** (paciente/psicólogo)
+- [x] **Aceite dos termos e condições** no cadastro
 
 ### Funcionalidades do Paciente
-- [ ] **Registro diário de bem-estar** (emoção, intensidade, descrição)
-- [ ] **Histórico de registros** com filtros e busca
+- [x] **Registro diário de bem-estar** (emoção, intensidade, descrição)
+- [x] **Histórico de registros** com filtros e busca
 - [ ] **Gráficos de progresso emocional** (weekly/monthly views)
 - [ ] **Notificações de lembrete** personalizáveis
-- [ ] **Exportar relatório emocional** (PDF)
+- [x] **Exportar relatório emocional** (PDF)
 
 ### Funcionalidades do Psicólogo
 - [ ] **Gestão de conteúdo do blog** (CRUD completo)
