@@ -22,9 +22,9 @@ import Animated, {
 } from 'react-native-reanimated';
 import BottomNavigation from '../components/BottonNavigation';
 import { useEmotionalRegister } from '../hooks/useEmotionalRegister';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuthController } from '../hooks/useAuthController';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 interface MoodOption {
   id: number;
@@ -43,8 +43,8 @@ const DailyRegisterScreen: React.FC = () => {
   const [intensityValue, setIntensityValue] = useState<number>(0.5);
   const [diaryText, setDiaryText] = useState<string>('');
   
-  const { user } = useAuth();
-  const { saveRegister, loading, getMoodLabel } = useEmotionalRegister();
+  const { user, loading } = useAuthController();
+  const { saveRegister, getMoodLabel } = useEmotionalRegister();
   
   const sliderPosition = useSharedValue(0.5);
   const buttonScale = useSharedValue(1);
@@ -160,8 +160,7 @@ const DailyRegisterScreen: React.FC = () => {
         ]
       );
 
-    } catch (error) {
-      console.error('Erro ao salvar registro:', error);
+    } catch {
       Alert.alert('Erro', 'Não foi possível salvar seu registro. Tente novamente.');
     }
   };

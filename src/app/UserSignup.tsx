@@ -12,8 +12,9 @@ import {
   Platform,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { useAuth, PacienteData } from '../contexts/AuthContext';
 import { router } from 'expo-router';
+import { useAuthController } from '../hooks/useAuthController';
+import { PacienteData } from '../types/auth.types';
 
 const UserSignup: React.FC = () => {
   const [formData, setFormData] = useState<PacienteData>({
@@ -28,7 +29,7 @@ const UserSignup: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
 
-  const { registerPaciente } = useAuth();
+  const { registerPaciente } = useAuthController();
 
   const handleInputChange = (field: keyof PacienteData) => (value: string) => {
     setFormData(prev => ({

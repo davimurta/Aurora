@@ -14,26 +14,26 @@ import {
 } from "react-native";
 import Input from "@components/Input";
 import Button from "@components/Button";
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import Icon from "react-native-vector-icons/MaterialIcons";
 import { router } from "expo-router";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuthController } from '../hooks/useAuthController';
 
 const RedefinirSenha: React.FC = () => {
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
-  
-  const { resetPassword } = useAuth();
+
+  const { resetPassword } = useAuthController();
 
   const handleResetPassword = async () => {
     if (!email) {
-      Alert.alert('Erro', 'Por favor, digite seu email');
+      Alert.alert("Erro", "Por favor, digite seu email");
       return;
     }
 
     // Validação básica de email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      Alert.alert('Erro', 'Por favor, digite um email válido');
+      Alert.alert("Erro", "Por favor, digite um email válido");
       return;
     }
 
@@ -41,12 +41,12 @@ const RedefinirSenha: React.FC = () => {
     try {
       await resetPassword(email);
       Alert.alert(
-        'Email Enviado!',
-        'Um link para redefinir sua senha foi enviado para seu email. Verifique sua caixa de entrada e spam.',
-        [{ text: 'OK', onPress: () => router.push('/') }]
+        "Email Enviado!",
+        "Um link para redefinir sua senha foi enviado para seu email. Verifique sua caixa de entrada e spam.",
+        [{ text: "OK", onPress: () => router.push("/") }]
       );
     } catch (error: any) {
-      Alert.alert('Erro', error.message);
+      Alert.alert("Erro", error.message);
     } finally {
       setLoading(false);
     }
@@ -72,7 +72,8 @@ const RedefinirSenha: React.FC = () => {
                 </View>
                 <Text style={styles.title}>Redefinir Senha</Text>
                 <Text style={styles.subtitle}>
-                  Digite seu email para receber as instruções de redefinição de senha
+                  Digite seu email para receber as instruções de redefinição de
+                  senha
                 </Text>
               </View>
 
@@ -106,7 +107,10 @@ const RedefinirSenha: React.FC = () => {
                   </Text>
                 </View>
 
-                <Pressable onPress={() => router.push('/')} style={styles.backButton}>
+                <Pressable
+                  onPress={() => router.push("/")}
+                  style={styles.backButton}
+                >
                   <Icon name="arrow-back" size={20} color="#4ECDC4" />
                   <Text style={styles.backText}>Voltar para o login</Text>
                 </Pressable>
@@ -122,22 +126,22 @@ const RedefinirSenha: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: "#f8f9fa",
   },
   keyboardAvoid: {
     flex: 1,
   },
   scrollContainer: {
     flexGrow: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
     paddingHorizontal: 24,
     paddingVertical: 40,
   },
   content: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 16,
     padding: 24,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2,
@@ -147,7 +151,7 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   header: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 32,
   },
   iconContainer: {
@@ -155,15 +159,15 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: "bold",
+    color: "#333",
     marginBottom: 8,
-    textAlign: 'center',
+    textAlign: "center",
   },
   subtitle: {
     fontSize: 16,
-    color: '#666',
-    textAlign: 'center',
+    color: "#666",
+    textAlign: "center",
     lineHeight: 22,
   },
   form: {
@@ -171,35 +175,35 @@ const styles = StyleSheet.create({
   },
   submitButton: {
     marginTop: 10,
-    alignSelf: 'stretch',
+    alignSelf: "stretch",
   },
   infoContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f0f8ff',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#f0f8ff",
     padding: 12,
     borderRadius: 8,
     marginTop: 8,
   },
   infoText: {
     fontSize: 12,
-    color: '#666',
+    color: "#666",
     marginLeft: 8,
     flex: 1,
     lineHeight: 16,
   },
   backButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     paddingVertical: 12,
     marginTop: 16,
   },
   backText: {
     fontSize: 16,
-    color: '#4ECDC4',
+    color: "#4ECDC4",
     marginLeft: 8,
-    fontWeight: '500',
+    fontWeight: "500",
   },
 });
 

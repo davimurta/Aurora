@@ -13,7 +13,7 @@ import {
   Pressable,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuthController } from '../hooks/useAuthController';
 
 interface ActivityItem {
   id: string;
@@ -30,12 +30,9 @@ interface PersonalDataItem {
 }
 
 const Profile: React.FC = () => {
-  const [userImage, setUserImage] = useState<string | null>(null);
+  const [userImage ] = useState<string | null>(null);
   const [showPersonalData, setShowPersonalData] = useState<boolean>(false);
-  const { userData } = useAuth();
-
-  const userName = "Maria Silva";
-  const userEmail = "maria.silva@email.com";
+  const { userData } = useAuthController();
 
   const recentActivities: ActivityItem[] = [
     {
@@ -102,9 +99,9 @@ const Profile: React.FC = () => {
 
   const handleImagePicker = () => {
     Alert.alert("Alterar Foto", "Escolha uma opção", [
-      { text: "Câmera", onPress: () => console.log("Camera") },
-      { text: "Galeria", onPress: () => console.log("Gallery") },
-      { text: "Cancelar", style: "cancel" },
+      { text: "Câmera"},
+      { text: "Galeria"},
+      { text: "Cancelar"},
     ]);
   };
 

@@ -105,7 +105,7 @@ const AddArticle: React.FC = () => {
           content.substring(selectionEnd);
         setContent(newContent);
       }
-    } catch (error) {
+    } catch {
       Alert.alert('Erro', 'Erro ao selecionar imagem.');
     }
   };
@@ -133,9 +133,9 @@ const AddArticle: React.FC = () => {
             }
           }
         ]);
-      }, 1500);
+      });
       
-    } catch (error) {
+    } catch {
       setIsLoading(false);
       Alert.alert('Erro', 'Erro ao criar matéria. Tente novamente.');
     }
@@ -147,7 +147,7 @@ const AddArticle: React.FC = () => {
   };
 
   const renderContentAsHTML = () => {
-    let htmlContent = content
+    const htmlContent = content
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
       .replace(/\*(.*?)\*/g, '<em>$1</em>')
       .replace(/\n/g, '<br />');

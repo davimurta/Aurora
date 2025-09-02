@@ -7,18 +7,17 @@ import {
   SafeAreaView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuthController } from '../hooks/useAuthController';
 import { router } from 'expo-router';
 
 const PendingApproval: React.FC = () => {
-  const { logout } = useAuth();
+  const { logout } = useAuthController();
 
   const handleLogout = async () => {
     try {
       await logout();
       router.replace('/');
-    } catch (error) {
-      console.error('Erro ao fazer logout:', error);
+    } catch {
     }
   };
 

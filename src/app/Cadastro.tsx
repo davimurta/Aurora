@@ -15,7 +15,7 @@ import {
 import Input from "@components/Input";
 import Button from "@components/Button";
 import { router } from "expo-router";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuthController } from '../hooks/useAuthController';
 import { db } from "../services/firebaseConfig";
 import { collection, addDoc } from 'firebase/firestore';
 
@@ -25,59 +25,27 @@ const Cadastro = () => {
   const [displayName, setDisplayName] = useState('');
   const [loading, setLoading] = useState(false);
   
-  const { register } = useAuth();
-
-  // Função para testar Firestore
-  const testFirestore = async () => {
-    try {
-      console.log('Testando Firestore...');
-      const testData = {
-        message: 'Teste de conexão',
-        timestamp: new Date(),
-      };
-      
-      const docRef = await addDoc(collection(db, 'teste'), testData);
-      console.log('✅ Documento de teste criado:', docRef.id);
-      Alert.alert('Sucesso', `Firestore funcionando! ID: ${docRef.id}`);
-    } catch (error) {
-      console.error('❌ Erro no teste do Firestore:', error);
-      Alert.alert(
-        'Erro',
-        `Firestore não funcionando: ${
-          error instanceof Error ? error.message : String(error)
-        }`
-      );
-    }
-  };
+  const { register } = useAuthController();
 
   const handleRegister = async () => {
-    console.log('Iniciando processo de cadastro...');
-    console.log('Email:', email);
-    console.log('Nome:', displayName);
-    console.log('Senha length:', password.length);
     
     if (!email || !password || !displayName) {
-      console.log('Campos obrigatórios não preenchidos');
       Alert.alert('Erro', 'Por favor, preencha todos os campos');
       return;
     }
 
     if (password.length < 6) {
-      console.log('Senha muito curta');
       Alert.alert('Erro', 'A senha deve ter pelo menos 6 caracteres');
       return;
     }
 
     setLoading(true);
     try {
-      console.log('Chamando função de registro...');
       await register(email, password, displayName);
-      console.log('Cadastro realizado com sucesso!');
       Alert.alert('Sucesso', 'Conta criada com sucesso!', [
         { text: 'OK', onPress: () => router.push('/UserTypeSelection') }
       ]);
     } catch (error: any) {
-      console.error('Erro no cadastro:', error);
       Alert.alert('Erro', error.message || 'Erro desconhecido');
     } finally {
       setLoading(false);
@@ -146,15 +114,6 @@ const Cadastro = () => {
               textColor="#fff"
               loading={loading}
               style={{ marginTop: 30, alignSelf: "center" }}
-            />
-
-            {/* Botão temporário para teste do Firestore */}
-            <Button
-              title="Teste Firestore"
-              onPress={testFirestore}
-              backgroundColor="#FF6B6B"
-              textColor="#fff"
-              style={{ marginTop: 10, alignSelf: "center" }}
             />
 
             <Pressable onPress={() => router.push('/')}>

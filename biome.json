@@ -1,0 +1,154 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.2.2/schema.json",
+  "formatter": {
+    "enabled": true,
+    "formatWithErrors": false,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineEnding": "lf",
+    "lineWidth": 100,
+    "attributePosition": "auto",
+    "includes": [
+      "**",
+      "!**/node_modules/**",
+      "!**/dist/**",
+      "!**/.expo/**",
+      "!**/.expo-shared/**",
+      "!**/expo-env.d.ts",
+      "!**/jest.setup.js",
+      "!**/jest.config.js",
+      "!**/coverage",
+      "!**/ios/**",
+      "!**/android/**"
+    ]
+  },
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": false,
+      "complexity": {
+        "noExtraBooleanCast": "warn",
+        "noUselessConstructor": "warn",
+        "noUselessLoneBlockStatements": "warn",
+        "noUselessRename": "warn",
+        "noUselessTernary": "warn",
+        "noVoid": "warn",
+        "useOptionalChain": "warn",
+        "noBannedTypes": "error",
+        "noArguments": "warn",
+        "noCommaOperator": "warn"
+      },
+      "correctness": {
+        "noConstAssign": "error",
+        "noConstantCondition": "warn",
+        "noEmptyCharacterClassInRegex": "warn",
+        "noEmptyPattern": "warn",
+        "noGlobalObjectCalls": "warn",
+        "noInnerDeclarations": "warn",
+        "noInvalidConstructorSuper": "warn",
+        "noSelfAssign": "warn",
+        "noSwitchDeclarations": "warn",
+        "noUnreachable": "warn",
+        "noUnreachableSuper": "warn",
+        "noUnusedLabels": "error",
+        "noUnusedVariables": "error",
+        "noUndeclaredVariables": "error",
+        "useExhaustiveDependencies": "error",
+        "useHookAtTopLevel": "error",
+        "useIsNan": "error",
+        "noInvalidBuiltinInstantiation": "error",
+        "useValidTypeof": "error",
+        "noUnusedFunctionParameters": "error"
+      },
+      "security": {
+        "noGlobalEval": "warn"
+      },
+      "style": {
+        "useBlockStatements": "off",
+        "useConst": "warn",
+        "useConsistentArrayType": {
+          "level": "warn",
+          "options": {
+            "syntax": "shorthand"
+          }
+        },
+        "useArrayLiterals": "warn"
+      },
+      "suspicious": {
+        "noCatchAssign": "warn",
+        "noCompareNegZero": "warn",
+        "noDebugger": "warn",
+        "noDoubleEquals": "warn",
+        "noDuplicateCase": "error",
+        "noDuplicateClassMembers": "warn",
+        "noDuplicateObjectKeys": "error",
+        "noDuplicateParameters": "error",
+        "noFallthroughSwitchClause": "warn",
+        "noFunctionAssign": "error",
+        "noGlobalAssign": "warn",
+        "noLabelVar": "warn",
+        "noRedeclare": "warn",
+        "noSelfCompare": "warn",
+        "noShadowRestrictedNames": "warn",
+        "noUnsafeNegation": "warn",
+        "useGetterReturn": "warn",
+        "noExtraNonNullAssertion": "warn",
+        "noWith": "warn",
+        "noVar": "warn",
+        "noConsole": "error"
+      }
+    },
+    "includes": [
+      "**",
+      "!**/webpack.config.js",
+      "!**/node_modules/**",
+      "!**/web-build/**",
+      "!**/dist/**",
+      "!**/.expo/**",
+      "!**/.expo-shared/**",
+      "!**/expo-env.d.ts",
+      "!**/jest.setup.js",
+      "!**/jest.config.js",
+      "!**/coverage",
+      "!**/ios/**",
+      "!**/android/**"
+    ]
+  },
+  "javascript": {
+    "formatter": {
+      "jsxQuoteStyle": "double",
+      "quoteProperties": "asNeeded",
+      "trailingCommas": "es5",
+      "semicolons": "asNeeded",
+      "arrowParentheses": "always",
+      "bracketSpacing": true,
+      "bracketSameLine": false,
+      "quoteStyle": "single",
+      "attributePosition": "auto"
+    },
+    "globals": []
+  },
+  "overrides": [
+    {
+      "includes": [
+        "**/__tests__/**/*",
+        "**/*.test.ts",
+        "**/*.test.tsx"
+      ],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noUndeclaredVariables": "off"
+          }
+        }
+      }
+    }
+  ]
+}

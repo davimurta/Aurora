@@ -14,7 +14,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { BarChart } from 'react-native-chart-kit';
 import { useEmotionalRegister, EmotionalRegister, ChartData } from '../hooks/useEmotionalRegister';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuthController } from '../hooks/useAuthController';
 
 interface DayData {
   selectedMood: string;
@@ -32,9 +32,8 @@ const HistoryRegister: React.FC = () => {
     datasets: [{ data: [0, 0, 0, 0, 0, 0] }]
   });
 
-  const { user } = useAuth();
+  const { user, loading } = useAuthController();
   const {
-    loading,
     getRegistersByMonth,
     getRegisterByDate,
     getChartDataByMonth,
@@ -49,30 +48,17 @@ const HistoryRegister: React.FC = () => {
 
   const weekDays: string[] = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
-  // Carrega os dados do mês atual ao inicializar o componente
   useEffect(() => {
-    console.log('=== HISTORY REGISTER useEffect ===');
-    console.log('User:', user?.uid);
-    console.log('Current date:', currentDate);
-
     if (user) {
       loadMonthData();
-    } else {
-      console.log('❌ Usuário não logado');
     }
-  }, [currentDate, user]);
+  }, [user, loadMonthData]);
 
   const loadMonthData = async () => {
     if (!user) {
-      console.log('❌ Usuário não autenticado no loadMonthData');
       Alert.alert('Erro', 'Você precisa estar logado para ver o histórico.');
       return;
     }
-
-    console.log('=== CARREGANDO DADOS DO MÊS ===');
-    console.log('Ano:', currentDate.getFullYear());
-    console.log('Mês:', currentDate.getMonth());
-    console.log('Nome do mês:', monthNames[currentDate.getMonth()]);
 
     try {
       const registers = await getRegistersByMonth(
@@ -80,19 +66,13 @@ const HistoryRegister: React.FC = () => {
         currentDate.getMonth()
       );
 
-      console.log('Registros retornados:', registers);
-      console.log('Quantidade de registros:', registers.length);
 
       setMonthRegisters(registers);
 
-      // Gerar dados do gráfico baseado nos registros
       const newChartData = getChartDataByMonth(registers);
-      console.log('Novos dados do gráfico:', newChartData);
       setChartData(newChartData);
 
-      console.log(`✅ Carregados ${registers.length} registros para ${monthNames[currentDate.getMonth()]}`);
-    } catch (error) {
-      console.error('❌ Erro ao carregar dados do mês:', error);
+    } catch {
       Alert.alert('Erro', 'Não foi possível carregar os dados do histórico.');
     }
   };
@@ -121,13 +101,9 @@ const HistoryRegister: React.FC = () => {
   };
 
   const changeMonth = (direction: number): void => {
-    console.log('=== MUDANDO MÊS ===');
-    console.log('Direção:', direction);
 
     const newDate: Date = new Date(currentDate);
     newDate.setMonth(currentDate.getMonth() + direction);
-
-    console.log('Nova data:', newDate);
 
     setCurrentDate(newDate);
     setSelectedDay(null);
@@ -136,21 +112,16 @@ const HistoryRegister: React.FC = () => {
 
   const selectDay = async (day: number | null): Promise<void> => {
     if (!day || !user) {
-      console.log('❌ Dia ou usuário inválido:', { day, userId: user?.uid });
       return;
     }
 
-    console.log('=== SELECIONANDO DIA ===');
-    console.log('Dia selecionado:', day);
 
     setSelectedDay(day);
 
     const dateKey: string = formatDateKey(currentDate.getFullYear(), currentDate.getMonth(), day);
-    console.log('Chave da data:', dateKey);
 
     try {
       const register = await getRegisterByDate(dateKey);
-      console.log('Registro encontrado:', register);
 
       if (register) {
         setDayData({
@@ -158,13 +129,10 @@ const HistoryRegister: React.FC = () => {
           intensityValue: register.intensityValue,
           diaryText: register.diaryText
         });
-        console.log('✅ Dados do dia definidos');
       } else {
         setDayData(null);
-        console.log('❌ Nenhum registro para este dia');
       }
-    } catch (error) {
-      console.error('❌ Erro ao buscar registro do dia:', error);
+    } catch {
       setDayData(null);
     }
   };
@@ -173,11 +141,6 @@ const HistoryRegister: React.FC = () => {
     if (!day) return false;
     const dateKey: string = formatDateKey(currentDate.getFullYear(), currentDate.getMonth(), day);
     const hasData = hasRegisterForDate(dateKey, monthRegisters);
-
-    // Log apenas para alguns dias para não poluir o console
-    if (day <= 5) {
-      console.log(`Verificando dia ${day} (${dateKey}):`, hasData);
-    }
 
     return hasData;
   };
@@ -197,13 +160,6 @@ const HistoryRegister: React.FC = () => {
   const days: (number | null)[] = getDaysInMonth(currentDate);
   const screenWidth: number = Dimensions.get('window').width;
 
-  console.log('=== RENDER ===');
-  console.log('Loading:', loading);
-  console.log('Month registers length:', monthRegisters.length);
-  console.log('Selected day:', selectedDay);
-  console.log('Day data:', dayData);
-
-  // Mostrar loading se estiver carregando dados
   if (loading && monthRegisters.length === 0) {
     return (
       <View style={styles.loadingContainer}>

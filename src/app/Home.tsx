@@ -12,7 +12,6 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useRouter } from 'expo-router';
-import { useAuth } from '../contexts/AuthContext';
 
 interface CardItem {
   id: string;
@@ -57,7 +56,6 @@ const Home: React.FC<HomeProps> = ({
   onNavigateToBlogPost, 
   onNavigateToActivity 
 }) => {
-  const { userData } = useAuth();
   const router = useRouter();
 
   const activities = [
@@ -229,14 +227,6 @@ const Home: React.FC<HomeProps> = ({
       onNavigateToBlogPost(postId);
     } else {
       router.push(`/BlogPost?id=${postId}`);
-    }
-  };
-
-  const handleActivityNavigation = (activityId: string) => {
-    if (onNavigateToActivity) {
-      onNavigateToActivity(activityId);
-    } else {
-      console.log('Navegando para atividade:', activityId);
     }
   };
 

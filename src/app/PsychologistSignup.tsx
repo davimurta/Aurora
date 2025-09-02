@@ -16,8 +16,9 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import * as DocumentPicker from 'expo-document-picker';
-import { useAuth, PsicologoData } from '../contexts/AuthContext';
+import { useAuthController } from '../hooks/useAuthController';
 import { router } from 'expo-router';
+import { PsicologoData } from '../types/auth.types';
 
 interface DocumentFile {
   uri: string;
@@ -52,7 +53,7 @@ const PsychologistSignup: React.FC = () => {
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [showSpecialtyModal, setShowSpecialtyModal] = useState(false);
 
-  const { registerPsicologo } = useAuth();
+  const { registerPsicologo } = useAuthController();
 
   const specialties = [
     'Psicologia Clínica',
@@ -98,7 +99,7 @@ const PsychologistSignup: React.FC = () => {
           },
         }));
       }
-    } catch (error) {
+    } catch {
       Alert.alert('Erro', 'Erro ao selecionar documento');
     }
   };
@@ -161,7 +162,7 @@ const PsychologistSignup: React.FC = () => {
     setIsLoading(true);
     
     try {
-      await registerPsicologo(formData, documents);
+      await registerPsicologo(formData);
       
       Alert.alert(
         'Solicitação Enviada!', 
