@@ -22,7 +22,6 @@ export const useAuthController = () => {
 
     authController.addListener(handleAuthStateChange);
 
-    // Estados iniciais
     setUser(authController.getUser());
     setUserData(authController.getUserData());
     setLoading(authController.isLoading());
@@ -33,12 +32,10 @@ export const useAuthController = () => {
   }, [authController]);
 
   return {
-    // Estados
     user,
     userData,
     loading,
     
-    // Ações
     login: (email: string, password: string) => authController.login(email, password),
     register: (email: string, password: string, displayName: string) => 
       authController.register(email, password, displayName),

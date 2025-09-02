@@ -201,7 +201,6 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   
-  // Header Section
   headerSection: {
     alignItems: 'center',
     marginBottom: 40,
@@ -248,7 +247,6 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
 
-  // Form Section
   formSection: {
     flex: 1,
     marginBottom: 30,
@@ -276,7 +274,6 @@ const styles = StyleSheet.create({
     color: '#2C3E50',
   },
   
-  // Divider
   dividerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -294,7 +291,6 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
 
-  // Inputs
   inputContainer: {
     marginBottom: 20,
   },
@@ -320,7 +316,6 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
 
-  // Forgot Password
   forgotPasswordContainer: {
     alignItems: 'flex-end',
     marginBottom: 32,
@@ -335,7 +330,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 
-  // Login Button
   loginButtonContainer: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -358,7 +352,6 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
 
-  // Footer Section
   footerSection: {
     alignItems: 'center',
     paddingVertical: 20,
@@ -381,7 +374,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 
-  // Shadow utility
   shadowButton: {
     shadowColor: '#000',
     shadowOffset: {

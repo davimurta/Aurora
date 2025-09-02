@@ -30,7 +30,6 @@ const RedefinirSenha: React.FC = () => {
       return;
     }
 
-    // Validação básica de email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       Alert.alert("Erro", "Por favor, digite um email válido");

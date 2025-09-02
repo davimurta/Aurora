@@ -21,7 +21,7 @@ type InputProps = TextInputProps & {
 const regexPatterns: Record<InputType, RegExp> = {
   email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
   cpf: /^\d{3}\.\d{3}\.\d{3}-\d{2}$/,
-  senha: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/, // mínimo 6 caracteres com letra e número
+  senha: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/,
   texto: /.*/,
 };
 

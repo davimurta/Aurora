@@ -9,7 +9,7 @@ import {
   Dimensions,
   ActivityIndicator,
   Alert,
-  SafeAreaView, // Importação adicionada
+  SafeAreaView,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { BarChart } from 'react-native-chart-kit';
@@ -87,12 +87,10 @@ const HistoryRegister: React.FC = () => {
 
     const days: (number | null)[] = [];
 
-    // Adicionar dias vazios do início
     for (let i = 0; i < startDay; i++) {
       days.push(null);
     }
 
-    // Adicionar dias do mês
     for (let i = 1; i <= daysInMonth; i++) {
       days.push(i);
     }
@@ -170,7 +168,6 @@ const HistoryRegister: React.FC = () => {
   }
 
   return (
-    // ========= INÍCIO DA MUDANÇA =========
     <SafeAreaView style={styles.container}>
       <ScrollView
         style={styles.content}
@@ -245,7 +242,6 @@ const HistoryRegister: React.FC = () => {
 
         {/* Chart or Day Details */}
         {!selectedDay ? (
-          // Monthly Chart View
           <View style={styles.chartContainer}>
             <Text style={styles.chartTitle}>Métrica de emoções</Text>
             <Text style={styles.chartSubtitle}>
@@ -287,7 +283,6 @@ const HistoryRegister: React.FC = () => {
             )}
           </View>
         ) : (
-          // Selected Day Details
           dayData ? (
             <View style={styles.dayDetailsContainer}>
               <View style={styles.moodIndicator}>
@@ -327,7 +322,6 @@ const HistoryRegister: React.FC = () => {
 
       <BottomNavigation />
     </SafeAreaView>
-    // ========= FIM DA MUDANÇA =========
   );
 };
 
@@ -336,14 +330,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F8FAFB',
   },
-  // ========= INÍCIO DA MUDANÇA (Estilos) =========
   content: {
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: 20, // Garante um espaço no final do conteúdo
+    paddingBottom: 20,
   },
-  // ========= FIM DA MUDANÇA (Estilos) =========
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',

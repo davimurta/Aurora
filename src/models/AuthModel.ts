@@ -60,7 +60,6 @@ function getErrorMessage(errorCode: string): string {
 }
 
 export const AuthModel = {
-  // Buscar dados do usuário no Firestore
   async getUserDataFromFirestore(uid: string): Promise<UserData | null> {
     try {
       const userDoc = await getDoc(doc(db, "users", uid));
@@ -73,7 +72,6 @@ export const AuthModel = {
     }
   },
 
-  // Login do usuário
   async login(email: string, password: string): Promise<User> {
     try {
       const result = await signInWithEmailAndPassword(auth, email, password);
@@ -86,7 +84,6 @@ export const AuthModel = {
     }
   },
 
-  // Registro básico
   async register(
     email: string,
     password: string,
@@ -114,10 +111,8 @@ export const AuthModel = {
   async registerPaciente(data: PacienteData): Promise<User> {
     try {
 
-      // Validações
       validatePacienteData(data);
 
-      // Criar usuário no Authentication
       const result = await createUserWithEmailAndPassword(
         auth,
         data.email,
@@ -128,7 +123,6 @@ export const AuthModel = {
         displayName: data.nome,
       });
 
-      // Salvar dados básicos do usuário
       await setDoc(doc(db, "users", result.user.uid), {
         uid: result.user.uid,
         email: data.email,
@@ -137,7 +131,6 @@ export const AuthModel = {
         createdAt: serverTimestamp(),
       });
 
-      // Salvar dados específicos do paciente
       await setDoc(doc(db, "pacientes", result.user.uid), {
         nome: data.nome,
         cpf: data.cpf,
@@ -155,17 +148,14 @@ export const AuthModel = {
     }
   },
 
-  // Registro de psicólogo
   async registerPsicologo(
     data: PsicologoData,
     documents?: unknown
   ): Promise<User> {
     try {
 
-      // Validações
       validatePsicologoData(data);
 
-      // Criar usuário no Authentication
       const result = await createUserWithEmailAndPassword(
         auth,
         data.email,
@@ -176,17 +166,15 @@ export const AuthModel = {
         displayName: data.nome,
       });
 
-      // Salvar dados básicos do usuário
       await setDoc(doc(db, "users", result.user.uid), {
         uid: result.user.uid,
         email: data.email,
         displayName: data.nome,
         userType: "psicologo" as UserType,
-        isApproved: false, // Psicólogos precisam de aprovação
+        isApproved: false,
         createdAt: serverTimestamp(),
       });
 
-      // Salvar dados específicos do psicólogo
       await setDoc(doc(db, "psicologos", result.user.uid), {
         nome: data.nome,
         cpf: data.cpf,
@@ -212,7 +200,6 @@ export const AuthModel = {
     }
   },
 
-  // Reset de senha
   async resetPassword(email: string): Promise<void> {
     try {
       await sendPasswordResetEmail(auth, email);
@@ -224,7 +211,6 @@ export const AuthModel = {
     }
   },
 
-  // Logout
   async logout(): Promise<void> {
     try {
       await signOut(auth);
@@ -233,7 +219,6 @@ export const AuthModel = {
     }
   },
 
-  // Observer de mudança de autenticação
   onAuthStateChanged(callback: (user: User | null) => void) {
     return onAuthStateChanged(auth, callback);
   },

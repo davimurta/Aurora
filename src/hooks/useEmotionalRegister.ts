@@ -57,7 +57,6 @@ export const useEmotionalRegister = () => {
     { id: 6, icon: 'mood', label: 'Radiante', color: '#45B7D1' },
   ]
 
-  // Função para salvar um novo registro
   const saveRegister = async (data: CreateRegisterData): Promise<void> => {
     if (!user) {
       throw new Error('Usuário não autenticado')
@@ -66,7 +65,7 @@ export const useEmotionalRegister = () => {
     setLoading(true)
     try {
       const today = new Date()
-      const dateString = today.toISOString().split('T')[0] // YYYY-MM-DD
+      const dateString = today.toISOString().split('T')[0]
 
       const registerId = `${user.uid}_${dateString}`
 
@@ -89,7 +88,6 @@ export const useEmotionalRegister = () => {
     }
   }
 
-  // Função para buscar registros de um mês específico
   const getRegistersByMonth = async (year: number, month: number): Promise<EmotionalRegister[]> => {
     if (!user) {
       return []
@@ -97,7 +95,6 @@ export const useEmotionalRegister = () => {
 
     setLoading(true)
     try {
-      // Criar datas de início e fim do mês
       const startDate = `${year}-${String(month + 1).padStart(2, '0')}-01`
       const lastDay = new Date(year, month + 1, 0).getDate()
       const endDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(lastDay).padStart(
@@ -131,7 +128,6 @@ export const useEmotionalRegister = () => {
     }
   }
 
-  // Função para buscar registro de uma data específica
   const getRegisterByDate = async (dateString: string): Promise<EmotionalRegister | null> => {
     if (!user) {
       return null
@@ -157,7 +153,6 @@ export const useEmotionalRegister = () => {
     }
   }
 
-  // Função para gerar dados do gráfico
   const getChartDataByMonth = (monthRegisters: EmotionalRegister[]): ChartData => {
     const moodCounts = {
       'Muito triste': 0,
@@ -193,19 +188,16 @@ export const useEmotionalRegister = () => {
     return chartData
   }
 
-  // Função para converter moodId em label
   const getMoodLabel = (moodId: number): string => {
     const mood = moodOptions.find((m) => m.id === moodId)
     return mood ? mood.label : 'Neutro'
   }
 
-  // Função para verificar se existe registro para uma data
   const hasRegisterForDate = (dateString: string, monthRegisters: EmotionalRegister[]): boolean => {
     const hasRegister = monthRegisters.some((register) => register.date === dateString)
     return hasRegister
   }
 
-  // Função para formatar data para string
   const formatDateKey = (year: number, month: number, day: number): string => {
     return `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
   }

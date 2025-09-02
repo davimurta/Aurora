@@ -139,7 +139,7 @@ const DailyRegisterScreen: React.FC = () => {
       await saveRegister({
         selectedMood: selectedMoodLabel,
         moodId: selectedMood!,
-        intensityValue: Math.round(intensityValue * 100), // Converte para porcentagem
+        intensityValue: Math.round(intensityValue * 100),
         diaryText: diaryText.trim(),
       });
 
@@ -150,7 +150,6 @@ const DailyRegisterScreen: React.FC = () => {
           {
             text: 'OK',
             onPress: () => {
-              // Limpar formulário após salvar
               setSelectedMood(null);
               setIntensityValue(0.5);
               setDiaryText('');
