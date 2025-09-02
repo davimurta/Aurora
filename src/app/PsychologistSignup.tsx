@@ -16,22 +16,9 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import * as DocumentPicker from 'expo-document-picker';
-
-interface PsychologistSignupData {
-  nome: string;
-  email: string;
-  cpf: string;
-  telefone: string;
-  dataNascimento: string;
-  crp: string;
-  especialidade: string;
-  instituicaoFormacao: string;
-  anoFormacao: string;
-  experiencia: string;
-  biografia: string;
-  senha: string;
-  confirmarSenha: string;
-}
+import { useAuthController } from '../hooks/useAuthController';
+import { router } from 'expo-router';
+import { PsicologoData } from '../types/auth.types';
 
 interface DocumentFile {
   uri: string;
@@ -40,7 +27,7 @@ interface DocumentFile {
 }
 
 const PsychologistSignup: React.FC = () => {
-  const [formData, setFormData] = useState<PsychologistSignupData>({
+  const [formData, setFormData] = useState<PsicologoData>({
     nome: '',
     email: '',
     cpf: '',
@@ -66,6 +53,8 @@ const PsychologistSignup: React.FC = () => {
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [showSpecialtyModal, setShowSpecialtyModal] = useState(false);
 
+  const { registerPsicologo } = useAuthController();
+
   const specialties = [
     'Psicologia Clínica',
     'Psicologia Hospitalar',
@@ -85,7 +74,7 @@ const PsychologistSignup: React.FC = () => {
     'Psicologia Geriátrica',
   ];
 
-  const handleInputChange = (field: keyof PsychologistSignupData) => (value: string) => {
+  const handleInputChange = (field: keyof PsicologoData) => (value: string) => {
     setFormData(prev => ({
       ...prev,
       [field]: value,
@@ -110,7 +99,7 @@ const PsychologistSignup: React.FC = () => {
           },
         }));
       }
-    } catch (error) {
+    } catch {
       Alert.alert('Erro', 'Erro ao selecionar documento');
     }
   };
@@ -173,7 +162,7 @@ const PsychologistSignup: React.FC = () => {
     setIsLoading(true);
     
     try {
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      await registerPsicologo(formData);
       
       Alert.alert(
         'Solicitação Enviada!', 
@@ -182,14 +171,14 @@ const PsychologistSignup: React.FC = () => {
           {
             text: 'OK',
             onPress: () => {
-              console.log('Psicólogo cadastrado:', { formData, documents });
+              router.push('/');
             }
           }
         ]
       );
       
-    } catch (error) {
-      Alert.alert('Erro', 'Erro ao enviar solicitação. Tente novamente.');
+    } catch (error: any) {
+      Alert.alert('Erro', error.message || 'Erro ao enviar solicitação. Tente novamente.');
     } finally {
       setIsLoading(false);
     }

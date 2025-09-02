@@ -11,6 +11,7 @@ import {
   Image,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useRouter } from 'expo-router';
 
 interface CardItem {
   id: string;
@@ -55,6 +56,8 @@ const Home: React.FC<HomeProps> = ({
   onNavigateToBlogPost, 
   onNavigateToActivity 
 }) => {
+  const router = useRouter();
+
   const activities = [
     { 
       id: '1', 
@@ -185,7 +188,7 @@ const Home: React.FC<HomeProps> = ({
     <TouchableOpacity 
       key={item.id} 
       style={styles.blogCard}
-      onPress={() => onNavigateToBlogPost?.(item.id)}
+      onPress={() => handleBlogNavigation(item.id)}
     >
       <View style={styles.blogCardContent}>
         <View style={styles.blogImagePlaceholder}>
@@ -223,15 +226,7 @@ const Home: React.FC<HomeProps> = ({
     if (onNavigateToBlogPost) {
       onNavigateToBlogPost(postId);
     } else {
-      console.log('Navegando para post:', postId);
-    }
-  };
-
-  const handleActivityNavigation = (activityId: string) => {
-    if (onNavigateToActivity) {
-      onNavigateToActivity(activityId);
-    } else {
-      console.log('Navegando para atividade:', activityId);
+      router.push(`/BlogPost?id=${postId}`);
     }
   };
 

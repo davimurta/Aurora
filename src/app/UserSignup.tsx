@@ -1,4 +1,3 @@
-import BottomNavigation from '@/src/components/BottonNavigation';
 import Input from '@/src/components/Input';
 import React, { useState } from 'react';
 import {
@@ -13,19 +12,12 @@ import {
   Platform,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-
-interface UserSignupData {
-  nome: string;
-  email: string;
-  cpf: string;
-  telefone: string;
-  dataNascimento: string;
-  senha: string;
-  confirmarSenha: string;
-}
+import { router } from 'expo-router';
+import { useAuthController } from '../hooks/useAuthController';
+import { PacienteData } from '../types/auth.types';
 
 const UserSignup: React.FC = () => {
-  const [formData, setFormData] = useState<UserSignupData>({
+  const [formData, setFormData] = useState<PacienteData>({
     nome: '',
     email: '',
     cpf: '',
@@ -37,7 +29,9 @@ const UserSignup: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
 
-  const handleInputChange = (field: keyof UserSignupData) => (value: string) => {
+  const { registerPaciente } = useAuthController();
+
+  const handleInputChange = (field: keyof PacienteData) => (value: string) => {
     setFormData(prev => ({
       ...prev,
       [field]: value,
@@ -82,6 +76,11 @@ const UserSignup: React.FC = () => {
       return false;
     }
 
+    if (senha.length < 6) {
+      Alert.alert('Erro', 'A senha deve ter pelo menos 6 caracteres');
+      return false;
+    }
+
     if (!acceptTerms) {
       Alert.alert('Erro', 'Você deve aceitar os termos e condições');
       return false;
@@ -96,23 +95,23 @@ const UserSignup: React.FC = () => {
     setIsLoading(true);
     
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await registerPaciente(formData);
       
       Alert.alert(
         'Sucesso!', 
-        'Conta criada com sucesso! Verifique seu email para ativar sua conta.',
+        'Conta criada com sucesso! Você já pode fazer login.',
         [
           {
             text: 'OK',
             onPress: () => {
-              console.log('Usuário cadastrado:', formData);
+              router.push('/');
             }
           }
         ]
       );
       
-    } catch (error) {
-      Alert.alert('Erro', 'Erro ao criar conta. Tente novamente.');
+    } catch (error: any) {
+      Alert.alert('Erro', error.message || 'Erro ao criar conta. Tente novamente.');
     } finally {
       setIsLoading(false);
     }
@@ -146,7 +145,7 @@ const UserSignup: React.FC = () => {
             <View style={styles.iconContainer}>
               <Icon name="person-add" size={40} color="#4ECDC4" />
             </View>
-            <Text style={styles.headerTitle}>Criar Conta</Text>
+            <Text style={styles.headerTitle}>Criar Conta - Paciente</Text>
             <Text style={styles.headerSubtitle}>
               Junte-se à nossa comunidade de bem-estar mental
             </Text>
@@ -272,7 +271,7 @@ const UserSignup: React.FC = () => {
             {/* Login Link */}
             <View style={styles.loginLinkContainer}>
               <Text style={styles.loginLinkText}>Já tem uma conta? </Text>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => router.push('/')}>
                 <Text style={styles.loginLink}>Fazer login</Text>
               </TouchableOpacity>
             </View>

@@ -9,6 +9,7 @@ import {
   ScrollView,
   Dimensions,
   StatusBar,
+  Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { PanGestureHandler, GestureHandlerRootView, PanGestureHandlerGestureEvent } from 'react-native-gesture-handler';
@@ -20,8 +21,10 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import BottomNavigation from '../components/BottonNavigation';
+import { useEmotionalRegister } from '../hooks/useEmotionalRegister';
+import { useAuthController } from '../hooks/useAuthController';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 interface MoodOption {
   id: number;
@@ -40,6 +43,8 @@ const DailyRegisterScreen: React.FC = () => {
   const [intensityValue, setIntensityValue] = useState<number>(0.5);
   const [diaryText, setDiaryText] = useState<string>('');
   
+  const { user, loading } = useAuthController();
+  const { saveRegister, getMoodLabel } = useEmotionalRegister();
   
   const sliderPosition = useSharedValue(0.5);
   const buttonScale = useSharedValue(1);
@@ -95,15 +100,77 @@ const DailyRegisterScreen: React.FC = () => {
     setSelectedMood(moodId);
   };
 
-  const handleSubmit = () => {
+  const validateForm = (): boolean => {
+    if (!selectedMood) {
+      Alert.alert('Erro', 'Por favor, selecione seu humor atual.');
+      return false;
+    }
+
+    if (diaryText.trim().length === 0) {
+      Alert.alert('Erro', 'Por favor, escreva algo sobre seu dia.');
+      return false;
+    }
+
+    if (diaryText.length > 500) {
+      Alert.alert('Erro', 'O texto do diário não pode ter mais de 500 caracteres.');
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleSubmit = async () => {
+    if (!validateForm()) {
+      return;
+    }
+
+    if (!user) {
+      Alert.alert('Erro', 'Você precisa estar logado para salvar um registro.');
+      return;
+    }
+
     buttonScale.value = withSpring(0.95, {}, () => {
       buttonScale.value = withSpring(1);
     });
 
-    console.log('Registro diário:', {
-      mood: selectedMood,
-      intensity: intensityValue,
-      text: diaryText,
+    try {
+      const selectedMoodLabel = getMoodLabel(selectedMood!);
+      
+      await saveRegister({
+        selectedMood: selectedMoodLabel,
+        moodId: selectedMood!,
+        intensityValue: Math.round(intensityValue * 100), // Converte para porcentagem
+        diaryText: diaryText.trim(),
+      });
+
+      Alert.alert(
+        'Sucesso', 
+        'Seu registro emocional foi salvo com sucesso!',
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              // Limpar formulário após salvar
+              setSelectedMood(null);
+              setIntensityValue(0.5);
+              setDiaryText('');
+              sliderPosition.value = withSpring(0.5);
+            }
+          }
+        ]
+      );
+
+    } catch {
+      Alert.alert('Erro', 'Não foi possível salvar seu registro. Tente novamente.');
+    }
+  };
+
+  const getCurrentDate = (): string => {
+    return new Date().toLocaleDateString('pt-BR', { 
+      weekday: 'long', 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
     });
   };
 
@@ -120,12 +187,7 @@ const DailyRegisterScreen: React.FC = () => {
           <View style={styles.welcomeSection}>
             <Text style={styles.welcomeText}>Como você está hoje?</Text>
             <Text style={styles.dateText}>
-              {new Date().toLocaleDateString('pt-BR', { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
-              })}
+              {getCurrentDate()}
             </Text>
           </View>
 
@@ -224,9 +286,15 @@ const DailyRegisterScreen: React.FC = () => {
                 value={diaryText}
                 onChangeText={setDiaryText}
                 textAlignVertical="top"
+                maxLength={500}
               />
               <View style={styles.textInputFooter}>
-                <Text style={styles.characterCount}>{diaryText.length}/500</Text>
+                <Text style={[
+                  styles.characterCount,
+                  diaryText.length > 450 && { color: '#FF6B6B' }
+                ]}>
+                  {diaryText.length}/500
+                </Text>
               </View>
             </View>
           </View>
@@ -234,12 +302,23 @@ const DailyRegisterScreen: React.FC = () => {
           {/* Submit Button */}
           <Animated.View style={animatedButtonStyle}>
             <TouchableOpacity 
-              style={styles.submitButton} 
+              style={[
+                styles.submitButton,
+                loading && styles.submitButtonDisabled
+              ]} 
               onPress={handleSubmit}
               activeOpacity={0.8}
+              disabled={loading}
             >
-              <Icon name="check" size={24} color="#FFFFFF" style={styles.submitButtonIcon} />
-              <Text style={styles.submitButtonText}>Salvar Registro</Text>
+              <Icon 
+                name={loading ? "hourglass-empty" : "check"} 
+                size={24} 
+                color="#FFFFFF" 
+                style={styles.submitButtonIcon} 
+              />
+              <Text style={styles.submitButtonText}>
+                {loading ? 'Salvando...' : 'Salvar Registro'}
+              </Text>
             </TouchableOpacity>
           </Animated.View>
         </ScrollView>
@@ -254,38 +333,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F8FAFB',
-  },
-  header: {
-    backgroundColor: '#4ECDC4',
-    paddingTop: 10,
-    paddingBottom: 20,
-    borderBottomLeftRadius: 25,
-    borderBottomRightRadius: 25,
-    elevation: 8,
-    shadowColor: '#4ECDC4',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-  },
-  headerContent: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 24,
-  },
-  logo: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#FFFFFF',
-    letterSpacing: 1,
-  },
-  profileButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   content: {
     flex: 1,
@@ -475,6 +522,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 6,
   },
+  submitButtonDisabled: {
+    backgroundColor: '#A0A0A0',
+    elevation: 2,
+    shadowOpacity: 0.1,
+  },
   submitButtonIcon: {
     marginRight: 8,
   },
@@ -482,52 +534,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     color: '#FFFFFF',
-  },
-  bottomNav: {
-    backgroundColor: '#4ECDC4',
-    paddingTop: 12,
-    paddingBottom: 12,
-    borderTopLeftRadius: 25,
-    borderTopRightRadius: 25,
-    elevation: 8,
-    shadowColor: '#4ECDC4',
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-  },
-  navContent: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-  },
-  navItem: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  navIconContainer: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  navItemCenter: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  centerNavButton: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: '#FFFFFF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 6,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
   },
 });
 

@@ -88,11 +88,11 @@ const Chat: React.FC = () => {
             : msg
         )
       );
-    }, 500);
+    });
 
     setTimeout(() => {
       setIsTyping(true);
-    }, 1000);
+    });
 
     setTimeout(() => {
       setIsTyping(false);
@@ -104,7 +104,7 @@ const Chat: React.FC = () => {
         status: 'read'
       };
       setMessages(prev => [...prev, botMessage]);
-    }, 2500);
+    });
   };
 
   const formatTime = (date: Date): string => {

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -10,12 +10,48 @@ import {
   Image,
   Text,
   Pressable,
+  Alert,
 } from "react-native";
 import Input from "@components/Input";
 import Button from "@components/Button";
 import { router } from "expo-router";
+import { useAuthController } from '../hooks/useAuthController';
+import { db } from "../services/firebaseConfig";
+import { collection, addDoc } from 'firebase/firestore';
 
-const index = () => {
+const Cadastro = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [displayName, setDisplayName] = useState('');
+  const [loading, setLoading] = useState(false);
+  
+  const { register } = useAuthController();
+
+  const handleRegister = async () => {
+    
+    if (!email || !password || !displayName) {
+      Alert.alert('Erro', 'Por favor, preencha todos os campos');
+      return;
+    }
+
+    if (password.length < 6) {
+      Alert.alert('Erro', 'A senha deve ter pelo menos 6 caracteres');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await register(email, password, displayName);
+      Alert.alert('Sucesso', 'Conta criada com sucesso!', [
+        { text: 'OK', onPress: () => router.push('/UserTypeSelection') }
+      ]);
+    } catch (error: any) {
+      Alert.alert('Erro', error.message || 'Erro desconhecido');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <KeyboardAvoidingView
       style={styles.container}
@@ -41,17 +77,21 @@ const index = () => {
             <Input
               style={styles.input}
               label="Nome completo"
-              type="email"
+              type="texto"
               placeholder="Digite seu nome completo"
-              keyboardType="email-address" 
-              iconName="email" 
+              value={displayName}
+              onChangeText={setDisplayName}
+              iconName="person"
             />
+            
             <Input
               style={styles.input}
               label="Email"
               type="email"
               placeholder="Digite seu email"
               keyboardType="email-address"
+              value={email}
+              onChangeText={setEmail}
               iconName="email"
             />
 
@@ -61,16 +101,18 @@ const index = () => {
               type="senha"
               placeholder="Digite sua senha"
               secureTextEntry
+              value={password}
+              onChangeText={setPassword}
               iconName="lock"
             />
 
             <Button
               title="Cadastrar"
               iconName="login"
-              onPress={() => router.push("/UserTypeSelection")}
+              onPress={handleRegister}
               backgroundColor="#4ECDC4"
               textColor="#fff"
-              loading={false}
+              loading={loading}
               style={{ marginTop: 30, alignSelf: "center" }}
             />
 
@@ -84,7 +126,7 @@ const index = () => {
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -136,5 +178,4 @@ const styles = StyleSheet.create({
   },
 });
 
-
-export default index
+export default Cadastro;
