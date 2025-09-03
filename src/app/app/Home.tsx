@@ -1,4 +1,4 @@
-import BottomNavigation from '@/src/components/BottonNavigation';
+import BottomNavigation from '@components/BottonNavigation';
 import React, { JSX } from 'react';
 import {
   View,
@@ -226,7 +226,7 @@ const Home: React.FC<HomeProps> = ({
     if (onNavigateToBlogPost) {
       onNavigateToBlogPost(postId);
     } else {
-      router.push(`/BlogPost?id=${postId}`);
+      router.push(`/app/BlogPost?id=${postId}`);
     }
   };
 

@@ -7,7 +7,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { useAuthController } from '../hooks/useAuthController';
+import { useAuthController } from '../../hooks/useAuthController';
 import { router } from 'expo-router';
 
 const PendingApproval: React.FC = () => {

@@ -1,5 +1,5 @@
-import BottomNavigation from '@/src/components/BottonNavigation';
-import Input from '@/src/components/Input';
+import BottomNavigation from '@components/BottonNavigation';
+import Input from '@components/Input';
 import React, { useState } from 'react';
 import {
   View,
@@ -16,9 +16,9 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import * as DocumentPicker from 'expo-document-picker';
-import { useAuthController } from '../hooks/useAuthController';
+import { useAuthController } from '../../hooks/useAuthController';
 import { router } from 'expo-router';
-import { PsicologoData } from '../types/auth.types';
+import { PsicologoData } from '../../types/auth.types';
 
 interface DocumentFile {
   uri: string;
@@ -291,7 +291,7 @@ const PsychologistSignup: React.FC = () => {
               keyboardType="numeric"
               maxLength={14}
               value={formData.cpf}
-              onChangeText={(value) => {
+              onChangeText={(value: string) => {
                 const formatted = formatCPF(value);
                 handleInputChange('cpf')(formatted);
               }}
@@ -305,7 +305,7 @@ const PsychologistSignup: React.FC = () => {
               keyboardType="phone-pad"
               maxLength={15}
               value={formData.telefone}
-              onChangeText={(value) => {
+              onChangeText={(value: string) => {
                 const formatted = formatPhone(value);
                 handleInputChange('telefone')(formatted);
               }}
@@ -319,7 +319,7 @@ const PsychologistSignup: React.FC = () => {
               keyboardType="numeric"
               maxLength={10}
               value={formData.dataNascimento}
-              onChangeText={(value) => {
+              onChangeText={(value: string) => {
                 const formatted = formatDate(value);
                 handleInputChange('dataNascimento')(formatted);
               }}
@@ -336,7 +336,7 @@ const PsychologistSignup: React.FC = () => {
               keyboardType="numeric"
               maxLength={8}
               value={formData.crp}
-              onChangeText={(value) => {
+              onChangeText={(value: string) => {
                 const formatted = formatCRP(value);
                 handleInputChange('crp')(formatted);
               }}

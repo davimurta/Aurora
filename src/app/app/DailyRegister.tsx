@@ -20,9 +20,9 @@ import Animated, {
   runOnJS,
   withSpring,
 } from 'react-native-reanimated';
-import BottomNavigation from '../components/BottonNavigation';
-import { useEmotionalRegister } from '../hooks/useEmotionalRegister';
-import { useAuthController } from '../hooks/useAuthController';
+import BottomNavigation from '../../components/BottonNavigation';
+import { useEmotionalRegister } from '../../hooks/useEmotionalRegister';
+import { useAuthController } from '../../hooks/useAuthController';
 
 const { width } = Dimensions.get('window');
 

@@ -1,5 +1,5 @@
-import BottomNavigation from '@/src/components/BottonNavigation';
-import React, { useState, useEffect } from 'react';
+import BottomNavigation from '@components/BottonNavigation'
+import React, { useState, useEffect } from 'react'
 import {
   View,
   Text,
@@ -10,153 +10,157 @@ import {
   ActivityIndicator,
   Alert,
   SafeAreaView,
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { BarChart } from 'react-native-chart-kit';
-import { useEmotionalRegister, EmotionalRegister, ChartData } from '../hooks/useEmotionalRegister';
-import { useAuthController } from '../hooks/useAuthController';
+} from 'react-native'
+import { Ionicons } from '@expo/vector-icons'
+import { BarChart } from 'react-native-chart-kit'
+import { useEmotionalRegister } from '../../hooks/useEmotionalRegister'
+import { EmotionalRegister, ChartData } from '../../models/emotionalRegister'
+import { useAuthController } from '../../hooks/useAuthController'
 
 interface DayData {
-  selectedMood: string;
-  intensityValue: number;
-  diaryText: string;
+  selectedMood: string
+  intensityValue: number
+  diaryText: string
 }
 
 const HistoryRegister: React.FC = () => {
-  const [currentDate, setCurrentDate] = useState<Date>(new Date());
-  const [selectedDay, setSelectedDay] = useState<number | null>(null);
-  const [dayData, setDayData] = useState<DayData | null>(null);
-  const [monthRegisters, setMonthRegisters] = useState<EmotionalRegister[]>([]);
+  const [currentDate, setCurrentDate] = useState<Date>(new Date())
+  const [selectedDay, setSelectedDay] = useState<number | null>(null)
+  const [dayData, setDayData] = useState<DayData | null>(null)
+  const [monthRegisters, setMonthRegisters] = useState<EmotionalRegister[]>([])
   const [chartData, setChartData] = useState<ChartData>({
     labels: ['😢', '😟', '😐', '😊', '😄', '🤩'],
-    datasets: [{ data: [0, 0, 0, 0, 0, 0] }]
-  });
+    datasets: [{ data: [0, 0, 0, 0, 0, 0] }],
+  })
 
-  const { user, loading } = useAuthController();
+  const { user, loading } = useAuthController()
   const {
     getRegistersByMonth,
     getRegisterByDate,
     getChartDataByMonth,
     hasRegisterForDate,
-    formatDateKey
-  } = useEmotionalRegister();
+    formatDateKey,
+  } = useEmotionalRegister()
 
   const monthNames: string[] = [
-    'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
-    'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
-  ];
+    'Janeiro',
+    'Fevereiro',
+    'Março',
+    'Abril',
+    'Maio',
+    'Junho',
+    'Julho',
+    'Agosto',
+    'Setembro',
+    'Outubro',
+    'Novembro',
+    'Dezembro',
+  ]
 
-  const weekDays: string[] = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+  const weekDays: string[] = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
 
   useEffect(() => {
     if (user) {
-      loadMonthData();
+      loadMonthData()
     }
-  }, [user, loadMonthData]);
+  }, [user])
 
   const loadMonthData = async () => {
     if (!user) {
-      Alert.alert('Erro', 'Você precisa estar logado para ver o histórico.');
-      return;
+      Alert.alert('Erro', 'Você precisa estar logado para ver o histórico.')
+      return
     }
 
     try {
-      const registers = await getRegistersByMonth(
-        currentDate.getFullYear(),
-        currentDate.getMonth()
-      );
+      const registers = await getRegistersByMonth(currentDate.getFullYear(), currentDate.getMonth())
 
+      setMonthRegisters(registers)
 
-      setMonthRegisters(registers);
-
-      const newChartData = getChartDataByMonth(registers);
-      setChartData(newChartData);
-
+      const newChartData = getChartDataByMonth(registers)
+      setChartData(newChartData)
     } catch {
-      Alert.alert('Erro', 'Não foi possível carregar os dados do histórico.');
+      Alert.alert('Erro', 'Não foi possível carregar os dados do histórico.')
     }
-  };
+  }
 
   const getDaysInMonth = (date: Date): (number | null)[] => {
-    const year: number = date.getFullYear();
-    const month: number = date.getMonth();
-    const firstDay: Date = new Date(year, month, 1);
-    const lastDay: Date = new Date(year, month + 1, 0);
-    const daysInMonth: number = lastDay.getDate();
-    const startDay: number = firstDay.getDay();
+    const year: number = date.getFullYear()
+    const month: number = date.getMonth()
+    const firstDay: Date = new Date(year, month, 1)
+    const lastDay: Date = new Date(year, month + 1, 0)
+    const daysInMonth: number = lastDay.getDate()
+    const startDay: number = firstDay.getDay()
 
-    const days: (number | null)[] = [];
+    const days: (number | null)[] = []
 
     for (let i = 0; i < startDay; i++) {
-      days.push(null);
+      days.push(null)
     }
 
     for (let i = 1; i <= daysInMonth; i++) {
-      days.push(i);
+      days.push(i)
     }
 
-    return days;
-  };
+    return days
+  }
 
   const changeMonth = (direction: number): void => {
+    const newDate: Date = new Date(currentDate)
+    newDate.setMonth(currentDate.getMonth() + direction)
 
-    const newDate: Date = new Date(currentDate);
-    newDate.setMonth(currentDate.getMonth() + direction);
-
-    setCurrentDate(newDate);
-    setSelectedDay(null);
-    setDayData(null);
-  };
+    setCurrentDate(newDate)
+    setSelectedDay(null)
+    setDayData(null)
+  }
 
   const selectDay = async (day: number | null): Promise<void> => {
     if (!day || !user) {
-      return;
+      return
     }
 
+    setSelectedDay(day)
 
-    setSelectedDay(day);
-
-    const dateKey: string = formatDateKey(currentDate.getFullYear(), currentDate.getMonth(), day);
+    const dateKey: string = formatDateKey(currentDate.getFullYear(), currentDate.getMonth(), day)
 
     try {
-      const register = await getRegisterByDate(dateKey);
+      const register = await getRegisterByDate(dateKey)
 
       if (register) {
         setDayData({
           selectedMood: register.selectedMood,
           intensityValue: register.intensityValue,
-          diaryText: register.diaryText
-        });
+          diaryText: register.diaryText,
+        })
       } else {
-        setDayData(null);
+        setDayData(null)
       }
     } catch {
-      setDayData(null);
+      setDayData(null)
     }
-  };
+  }
 
   const hasDataForDay = (day: number | null): boolean => {
-    if (!day) return false;
-    const dateKey: string = formatDateKey(currentDate.getFullYear(), currentDate.getMonth(), day);
-    const hasData = hasRegisterForDate(dateKey, monthRegisters);
+    if (!day) return false
+    const dateKey: string = formatDateKey(currentDate.getFullYear(), currentDate.getMonth(), day)
+    const hasData = hasRegisterForDate(dateKey, monthRegisters)
 
-    return hasData;
-  };
+    return hasData
+  }
 
   const getMoodEmoji = (mood: string): string => {
     const moodEmojis: { [key: string]: string } = {
       'Muito triste': '😢',
-      'Triste': '😟',
-      'Neutro': '😐',
-      'Bem': '😊',
+      Triste: '😟',
+      Neutro: '😐',
+      Bem: '😊',
       'Muito bem': '😄',
-      'Radiante': '🤩'
-    };
-    return moodEmojis[mood] || '😐';
-  };
+      Radiante: '🤩',
+    }
+    return moodEmojis[mood] || '😐'
+  }
 
-  const days: (number | null)[] = getDaysInMonth(currentDate);
-  const screenWidth: number = Dimensions.get('window').width;
+  const days: (number | null)[] = getDaysInMonth(currentDate)
+  const screenWidth: number = Dimensions.get('window').width
 
   if (loading && monthRegisters.length === 0) {
     return (
@@ -164,7 +168,7 @@ const HistoryRegister: React.FC = () => {
         <ActivityIndicator size="large" color="#4ECDC4" />
         <Text style={styles.loadingText}>Carregando histórico...</Text>
       </View>
-    );
+    )
   }
 
   return (
@@ -183,11 +187,10 @@ const HistoryRegister: React.FC = () => {
           <View style={{ width: 24 }} />
         </View>
 
-
         {/* Calendar Header */}
         <View style={styles.calendarHeader}>
           <TouchableOpacity onPress={() => changeMonth(-1)} disabled={loading}>
-            <Ionicons name="chevron-back" size={20} color={loading ? "#ccc" : "#666"} />
+            <Ionicons name="chevron-back" size={20} color={loading ? '#ccc' : '#666'} />
           </TouchableOpacity>
 
           <Text style={styles.monthYear}>
@@ -195,14 +198,16 @@ const HistoryRegister: React.FC = () => {
           </Text>
 
           <TouchableOpacity onPress={() => changeMonth(1)} disabled={loading}>
-            <Ionicons name="chevron-forward" size={20} color={loading ? "#ccc" : "#666"} />
+            <Ionicons name="chevron-forward" size={20} color={loading ? '#ccc' : '#666'} />
           </TouchableOpacity>
         </View>
 
         {/* Week Days */}
         <View style={styles.weekDaysContainer}>
           {weekDays.map((day: string, index: number) => (
-            <Text key={index} style={styles.weekDay}>{day}</Text>
+            <Text key={index} style={styles.weekDay}>
+              {day}
+            </Text>
           ))}
         </View>
 
@@ -214,17 +219,19 @@ const HistoryRegister: React.FC = () => {
               style={[
                 styles.dayCell,
                 day === selectedDay && styles.selectedDay,
-                hasDataForDay(day) && styles.dayWithData
+                hasDataForDay(day) && styles.dayWithData,
               ]}
               onPress={() => selectDay(day)}
               disabled={!day || loading}
             >
               {day && (
-                <Text style={[
-                  styles.dayText,
-                  day === selectedDay && styles.selectedDayText,
-                  hasDataForDay(day) && styles.dayWithDataText
-                ]}>
+                <Text
+                  style={[
+                    styles.dayText,
+                    day === selectedDay && styles.selectedDayText,
+                    hasDataForDay(day) && styles.dayWithDataText,
+                  ]}
+                >
                   {day}
                 </Text>
               )}
@@ -263,7 +270,7 @@ const HistoryRegister: React.FC = () => {
                   color: (opacity: number = 1) => `rgba(100, 200, 150, ${opacity})`,
                   style: {
                     borderRadius: 16,
-                  }
+                  },
                 }}
                 style={styles.chart}
                 showValuesOnTopOfBars={true}
@@ -273,57 +280,47 @@ const HistoryRegister: React.FC = () => {
             ) : (
               <View style={styles.noDataContainer}>
                 <Ionicons name="bar-chart-outline" size={48} color="#ccc" />
-                <Text style={styles.noDataText}>
-                  Nenhum registro encontrado para este mês
-                </Text>
-                <Text style={styles.noDataSubtext}>
-                  Comece registrando suas emoções diárias!
-                </Text>
+                <Text style={styles.noDataText}>Nenhum registro encontrado para este mês</Text>
+                <Text style={styles.noDataSubtext}>Comece registrando suas emoções diárias!</Text>
               </View>
             )}
           </View>
-        ) : (
-          dayData ? (
-            <View style={styles.dayDetailsContainer}>
-              <View style={styles.moodIndicator}>
-                <View style={styles.moodIcon}>
-                  <Text style={styles.moodEmoji}>
-                    {getMoodEmoji(dayData.selectedMood)}
-                  </Text>
-                </View>
-                <View style={styles.moodInfo}>
-                  <Text style={styles.moodLabel}>{dayData.selectedMood}</Text>
-                  <Text style={styles.intensityPercentage}>{dayData.intensityValue}%</Text>
-                </View>
+        ) : dayData ? (
+          <View style={styles.dayDetailsContainer}>
+            <View style={styles.moodIndicator}>
+              <View style={styles.moodIcon}>
+                <Text style={styles.moodEmoji}>{getMoodEmoji(dayData.selectedMood)}</Text>
               </View>
-
-              <View style={styles.dayRecord}>
-                <Text style={styles.dayRecordTitle}>Registro do Dia:</Text>
-                <Text style={styles.dayRecordText}>{dayData.diaryText}</Text>
-              </View>
-
-              <View style={styles.dayRecordFooter}>
-                <Text style={styles.dayRecordDate}>
-                  {selectedDay} de {monthNames[currentDate.getMonth()]}, {currentDate.getFullYear()}
-                </Text>
+              <View style={styles.moodInfo}>
+                <Text style={styles.moodLabel}>{dayData.selectedMood}</Text>
+                <Text style={styles.intensityPercentage}>{dayData.intensityValue}%</Text>
               </View>
             </View>
-          ) : (
-            <View style={styles.emptyDayContainer}>
-              <Ionicons name="calendar-outline" size={48} color="#ccc" />
-              <Text style={styles.emptyDayText}>Nenhum registro encontrado para este dia</Text>
-              <Text style={styles.emptyDaySubtext}>
-                Que tal registrar suas emoções hoje?
+
+            <View style={styles.dayRecord}>
+              <Text style={styles.dayRecordTitle}>Registro do Dia:</Text>
+              <Text style={styles.dayRecordText}>{dayData.diaryText}</Text>
+            </View>
+
+            <View style={styles.dayRecordFooter}>
+              <Text style={styles.dayRecordDate}>
+                {selectedDay} de {monthNames[currentDate.getMonth()]}, {currentDate.getFullYear()}
               </Text>
             </View>
-          )
+          </View>
+        ) : (
+          <View style={styles.emptyDayContainer}>
+            <Ionicons name="calendar-outline" size={48} color="#ccc" />
+            <Text style={styles.emptyDayText}>Nenhum registro encontrado para este dia</Text>
+            <Text style={styles.emptyDaySubtext}>Que tal registrar suas emoções hoje?</Text>
+          </View>
         )}
       </ScrollView>
 
       <BottomNavigation />
     </SafeAreaView>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -550,6 +547,6 @@ const styles = StyleSheet.create({
     marginTop: 8,
     textAlign: 'center',
   },
-});
+})
 
-export default HistoryRegister;
+export default HistoryRegister

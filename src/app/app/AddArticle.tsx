@@ -1,4 +1,4 @@
-import BottomNavigation from '@/src/components/BottonNavigation';
+import BottomNavigation from '@components/BottonNavigation';
 import React, { useState, useRef } from 'react';
 import {
   View,

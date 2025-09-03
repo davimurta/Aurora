@@ -13,7 +13,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 
 type ButtonProps = {
   title: string;
-  onPress: (event: GestureResponderEvent) => void;
+  onPress?: (event: GestureResponderEvent) => void;
   iconName?: React.ComponentProps<typeof MaterialIcons>['name'];
   backgroundColor?: string;
   textColor?: string;

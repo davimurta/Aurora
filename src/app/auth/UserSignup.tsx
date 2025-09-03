@@ -1,4 +1,4 @@
-import Input from '@/src/components/Input';
+import Input from '@components/Input';
 import React, { useState } from 'react';
 import {
   View,
@@ -13,8 +13,8 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { router } from 'expo-router';
-import { useAuthController } from '../hooks/useAuthController';
-import { PacienteData } from '../types/auth.types';
+import { useAuthController } from '../../hooks/useAuthController';
+import { PacienteData } from '../../types/auth.types';
 
 const UserSignup: React.FC = () => {
   const [formData, setFormData] = useState<PacienteData>({
@@ -182,7 +182,7 @@ const UserSignup: React.FC = () => {
               keyboardType="numeric"
               maxLength={14}
               value={formData.cpf}
-              onChangeText={(value) => {
+              onChangeText={(value: string) => {
                 const formatted = formatCPF(value);
                 handleInputChange('cpf')(formatted);
               }}
@@ -196,7 +196,7 @@ const UserSignup: React.FC = () => {
               keyboardType="phone-pad"
               maxLength={15}
               value={formData.telefone}
-              onChangeText={(value) => {
+              onChangeText={(value: string) => {
                 const formatted = formatPhone(value);
                 handleInputChange('telefone')(formatted);
               }}
@@ -210,7 +210,7 @@ const UserSignup: React.FC = () => {
               keyboardType="numeric"
               maxLength={10}
               value={formData.dataNascimento}
-              onChangeText={(value) => {
+              onChangeText={(value: string) => {
                 const formatted = formatDate(value);
                 handleInputChange('dataNascimento')(formatted);
               }}

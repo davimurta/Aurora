@@ -1,4 +1,4 @@
-import BottomNavigation from "@/src/components/BottonNavigation";
+import BottomNavigation from "@components/BottonNavigation";
 import { router } from "expo-router";
 import React, { JSX, useState } from "react";
 import {
@@ -13,7 +13,7 @@ import {
   Pressable,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import { useAuthController } from '../hooks/useAuthController';
+import { useAuthController } from '../../hooks/useAuthController';
 
 interface ActivityItem {
   id: string;

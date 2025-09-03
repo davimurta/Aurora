@@ -1,4 +1,4 @@
-import BottomNavigation from '@/src/components/BottonNavigation';
+import BottomNavigation from '@components/BottonNavigation';
 import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
@@ -140,7 +140,7 @@ const Chat: React.FC = () => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, isTyping]);
+  }, []);
 
   const renderMessage = (message: Message) => (
     <View

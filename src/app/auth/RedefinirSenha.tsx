@@ -16,7 +16,7 @@ import Input from "@components/Input";
 import Button from "@components/Button";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { router } from "expo-router";
-import { useAuthController } from '../hooks/useAuthController';
+import { useAuthController } from '../../hooks/useAuthController';
 
 const RedefinirSenha: React.FC = () => {
   const [email, setEmail] = useState("");

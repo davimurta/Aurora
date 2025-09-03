@@ -15,8 +15,8 @@ import {
 import Input from "@components/Input";
 import Button from "@components/Button";
 import { router } from "expo-router";
-import { useAuthController } from '../hooks/useAuthController';
-import { db } from "../services/firebaseConfig";
+import { useAuthController } from '../../hooks/useAuthController';
+import { db } from "../../services/firebaseConfig";
 import { collection, addDoc } from 'firebase/firestore';
 
 const Cadastro = () => {
@@ -43,7 +43,7 @@ const Cadastro = () => {
     try {
       await register(email, password, displayName);
       Alert.alert('Sucesso', 'Conta criada com sucesso!', [
-        { text: 'OK', onPress: () => router.push('/UserTypeSelection') }
+        { text: 'OK', onPress: () => router.push('/auth/UserTypeSelection') }
       ]);
     } catch (error: any) {
       Alert.alert('Erro', error.message || 'Erro desconhecido');

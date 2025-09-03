@@ -13,7 +13,6 @@ import {
 import Input from "@components/Input";
 import Button from "@components/Button";
 import { router } from "expo-router";
-import CodeVerification from "@/src/components/codigo";
 
 const ConfirmarCodigo: React.FC = () => {
   return (
@@ -29,13 +28,10 @@ const ConfirmarCodigo: React.FC = () => {
         >
           <View style={styles.inputWrapper}>
             <View style={styles.divider} />
-            <CodeVerification
-              length={6}
-            />
             <Button
               title="Enviar"
               iconName="login"
-              onPress={() => router.push("/Home")}
+              onPress={() => router.push("/app/Home")}
               backgroundColor="#4ECDC4"
               textColor="#fff"
               loading={false}
@@ -43,7 +39,7 @@ const ConfirmarCodigo: React.FC = () => {
             />
 
             <Pressable
-              onPress={() => router.push("/RedefinirSenha")}
+              onPress={() => router.push("/auth/RedefinirSenha")}
             >
               <Text style={styles.link}>Retornar para Login</Text>
             </Pressable>

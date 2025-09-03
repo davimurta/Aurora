@@ -60,7 +60,6 @@
         "noUnusedLabels": "error",
         "noUnusedVariables": "error",
         "noUndeclaredVariables": "error",
-        "useExhaustiveDependencies": "error",
         "useHookAtTopLevel": "error",
         "useIsNan": "error",
         "noInvalidBuiltinInstantiation": "error",

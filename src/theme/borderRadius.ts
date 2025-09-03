@@ -1,4 +1,4 @@
-export const borderRadius = {
+export const borderRadii = {
   none: 0,
   xxs: 2,
   xs: 4,

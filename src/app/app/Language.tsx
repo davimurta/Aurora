@@ -89,7 +89,6 @@ const Language: React.FC = () => {
 
   const handleLanguageSelect = (languageCode: string) => {
     setSelectedLanguage(languageCode);
-    console.log("Idioma selecionado:", languageCode);
   };
 
   const renderLanguageItem = (item: LanguageItem) => (

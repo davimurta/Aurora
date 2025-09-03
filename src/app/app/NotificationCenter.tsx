@@ -10,7 +10,7 @@ import {
   Alert,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import Input from '../components/Input';
+import Input from '../../components/Input';
 
 interface Notification {
   id: string;
