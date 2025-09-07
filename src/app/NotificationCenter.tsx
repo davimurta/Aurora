@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,9 +8,22 @@ import {
   SafeAreaView,
   Switch,
   Alert,
+  Platform,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import * as Notifications from 'expo-notifications';
 import Input from '../components/Input';
+
+// Configurar como as notificações devem ser exibidas quando o app está em foreground
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+    shouldShowBanner: true, // Added missing property
+    shouldShowList: true,   // Added missing property
+  }),
+});
 
 interface Notification {
   id: string;
@@ -33,6 +46,7 @@ interface NotificationSettings {
 const NotificationCenter: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'notifications' | 'settings'>('notifications');
   const [searchText, setSearchText] = useState('');
+  const [expoPushToken, setExpoPushToken] = useState<string | null>(null);
   const [notifications, setNotifications] = useState<Notification[]>([
     {
       id: '1',
@@ -84,6 +98,126 @@ const NotificationCenter: React.FC = () => {
     soundEnabled: true,
     vibrationEnabled: true,
   });
+
+  // Configurar notificações push no carregamento do componente
+  useEffect(() => {
+    registerForPushNotificationsAsync().then(token => {
+      if (token) {
+        setExpoPushToken(token);
+        console.log('Push token:', token);
+      }
+    });
+
+    // Listener para notificações recebidas enquanto o app está aberto
+    const notificationListener = Notifications.addNotificationReceivedListener(notification => {
+      console.log('Notificação recebida:', notification);
+      
+      // Adicionar a notificação à lista local
+      const newNotification: Notification = {
+        id: Date.now().toString(),
+        title: notification.request.content.title || 'Notificação',
+        message: notification.request.content.body || '',
+        time: 'Agora',
+        read: false,
+        type: 'info',
+      };
+      
+      setNotifications(prev => [newNotification, ...prev]);
+    });
+
+    // Listener para quando o usuário toca na notificação
+    const responseListener = Notifications.addNotificationResponseReceivedListener(response => {
+      console.log('Usuário tocou na notificação:', response);
+      // Aqui você pode navegar para uma tela específica ou executar uma ação
+    });
+
+    return () => {
+      Notifications.removeNotificationSubscription(notificationListener);
+      Notifications.removeNotificationSubscription(responseListener);
+    };
+  }, []);
+
+  // Função para registrar o dispositivo para push notifications
+  async function registerForPushNotificationsAsync() {
+    let token;
+    
+    if (Platform.OS === 'android') {
+      await Notifications.setNotificationChannelAsync('default', {
+        name: 'default',
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#FF231F7C',
+      });
+    }
+
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+    
+    if (existingStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+    
+    if (finalStatus !== 'granted') {
+      Alert.alert(
+        'Permissão negada',
+        'Não foi possível obter permissão para notificações push!'
+      );
+      return;
+    }
+    
+    try {
+      token = (await Notifications.getExpoPushTokenAsync()).data;
+      console.log('Token obtido:', token);
+    } catch (error) {
+      console.error('Erro ao obter push token:', error);
+    }
+
+    return token;
+  }
+
+    // Função para enviar uma notificação de teste local
+  const sendTestNotification = async () => {
+    if (!settings.pushNotifications) {
+      Alert.alert(
+        'Notificações desabilitadas',
+        'Ative as notificações push nas configurações primeiro!'
+      );
+      return;
+    }
+
+    try {
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: "🧘 Teste de Notificação!",
+          body: 'Esta é uma notificação de teste do seu app de meditação',
+          data: { testNotification: true },
+          sound: settings.soundEnabled ? 'default' : false,
+        },
+        trigger: null, // Notificação acontece imediatamente
+
+      }); 
+
+      Alert.alert(
+        'Sucesso!',
+        'Notificação de teste enviada!',
+        [{ text: 'OK' }]
+      );
+    } catch (error) {
+      console.error('Erro ao enviar notificação:', error);
+      Alert.alert('Erro', 'Não foi possível enviar a notificação de teste');
+    }
+  };
+
+  // Função para cancelar todas as notificações agendadas
+  const cancelAllNotifications = async () => {
+    try {
+      await Notifications.cancelAllScheduledNotificationsAsync();
+      Alert.alert('Sucesso', 'Todas as notificações agendadas foram canceladas');
+    } catch (error) {
+      console.error('Erro ao cancelar notificações:', error);
+    }
+  };
 
   const getNotificationIcon = (type: Notification['type']) => {
     switch (type) {
@@ -182,6 +316,23 @@ const NotificationCenter: React.FC = () => {
           onChangeText={setSearchText}
           iconName="search"
         />
+      </View>
+
+      {/* Test Notification Button */}
+      <View style={styles.testContainer}>
+        <TouchableOpacity 
+          style={styles.testButton} 
+          onPress={sendTestNotification}
+        >
+          <MaterialIcons name="notifications-active" size={20} color="#fff" />
+          <Text style={styles.testButtonText}>Enviar Notificação de Teste</Text>
+        </TouchableOpacity>
+        
+        {expoPushToken && (
+          <Text style={styles.tokenText}>
+            Token registrado ✓
+          </Text>
+        )}
       </View>
 
       {/* Action Buttons */}
@@ -301,6 +452,15 @@ const NotificationCenter: React.FC = () => {
               disabled={!settings.pushNotifications}
             />
           </View>
+
+          {/* Botão adicional para cancelar notificações agendadas */}
+          <TouchableOpacity 
+            style={styles.cancelButton} 
+            onPress={cancelAllNotifications}
+          >
+            <MaterialIcons name="cancel" size={16} color="#F44336" />
+            <Text style={styles.cancelButtonText}>Cancelar Notificações Agendadas</Text>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.settingsSection}>
@@ -498,6 +658,36 @@ const styles = StyleSheet.create({
   searchContainer: {
     paddingVertical: 16,
   },
+  testContainer: {
+    alignItems: 'center',
+    marginBottom: 16,
+    paddingVertical: 16,
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#e9ecef',
+  },
+  testButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#4ECDC4',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+  testButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
+    marginLeft: 8,
+  },
+  tokenText: {
+    fontSize: 12,
+    color: '#4CAF50',
+    fontWeight: '500',
+  },
   actionButtons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -517,6 +707,24 @@ const styles = StyleSheet.create({
     marginLeft: 6,
     fontSize: 12,
     color: '#4ECDC4',
+    fontWeight: '500',
+  },
+  cancelButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fff',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#F44336',
+    marginTop: 16,
+  },
+  cancelButtonText: {
+    marginLeft: 6,
+    fontSize: 14,
+    color: '#F44336',
     fontWeight: '500',
   },
   notificationsList: {
