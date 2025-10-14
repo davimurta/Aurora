@@ -112,7 +112,7 @@ const lightTheme = {
 
   selectedBg: palette.black10,
 
-  iconBase: '', // iconBase is defined on const presetsByProfile below, based on type of user profile
+  iconBase: '',
   iconSecondary: palette.gray200,
   iconTertiary: palette.gray100,
   iconQuaternary: palette.gray950,
@@ -120,9 +120,9 @@ const lightTheme = {
   iconButtonPrimary: palette.gray900,
   iconButtonSecondary: palette.white,
 
-  buttonPrimary: '', // buttonPrimary is defined on const presetsByProfile below, based on type of user profile
+  buttonPrimary: '',
   buttonSecondary: palette.white,
-  buttonSecondaryColor: '', // buttonSecondaryColor is defined on const presetsByProfile below, based on type of user profile
+  buttonSecondaryColor: '',
   buttonTertiary: palette.blue30,
   buttonDisabled: palette.gray100,
 
@@ -133,7 +133,7 @@ const lightTheme = {
   textWhite: palette.white,
   textDisabled: palette.gray500,
   textPlaceholder: palette.gray500,
-  textBrandPrimary: '', // textBrandPrimary is defined on const presetsByProfile below, based on type of user profile
+  textBrandPrimary: '',
   textBrandSecondary: palette.brand700,
   textBrandTertiary: palette.brand600,
   textErrorPrimary: palette.error600,
@@ -191,7 +191,7 @@ const darkTheme: typeof lightTheme = {
 
   selectedBg: palette.white10,
 
-  iconBase: '', // iconBase is defined on const presetsByProfile below, based on type of user profile
+  iconBase: '',
   iconSecondary: palette.gray800,
   iconTertiary: palette.gray800,
   iconQuaternary: palette.gray950,
@@ -199,9 +199,9 @@ const darkTheme: typeof lightTheme = {
   iconButtonPrimary: palette.gray900,
   iconButtonSecondary: palette.white,
 
-  buttonPrimary: '', // buttonPrimary is defined on const presetsByProfile below, based on type of user profile
+  buttonPrimary: '',
   buttonSecondary: palette.darkPurple,
-  buttonSecondaryColor: '', // buttonSecondaryColor is defined on const presetsByProfile below, based on type of user profile
+  buttonSecondaryColor: '',
   buttonTertiary: palette.blue30,
   buttonDisabled: palette.midnightIndigo,
 
@@ -212,7 +212,7 @@ const darkTheme: typeof lightTheme = {
   textWhite: palette.white,
   textDisabled: palette.gray500,
   textPlaceholder: palette.gray400,
-  textBrandPrimary: '', // textBrandPrimary is defined on const presetsByProfile below, based on type of user profile
+  textBrandPrimary: '',
   textBrandSecondary: palette.gray300,
   textBrandTertiary: palette.gray400,
   textErrorPrimary: palette.error400,

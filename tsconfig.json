@@ -8,6 +8,7 @@
       "@components/*": ["src/components/*"],
       "@assets/*": ["assets/*"],
       "@theme": ["src/theme"],
+      "@screens/*": ["src/app*"],
     },
     "resolveJsonModule": true,
     "esModuleInterop": true
