@@ -1,22 +1,22 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCawFSSzDXVeIVz4iyyFJ1KOsy4jmT0Zj4",
-  authDomain: "aurora-482f9.firebaseapp.com",
-  projectId: "aurora-482f9",
-  storageBucket: "aurora-482f9.firebasestorage.app",
-  messagingSenderId: "364444154741",
-  appId: "1:364444154741:web:81d3e8d9fc4a5f61f5b13c"
+  apiKey: "AIzaSyDeABR2p5kDU7pYXW_VhzPxTki85F0vl04",
+  authDomain: "aurora-login-f8398.firebaseapp.com",
+  projectId: "aurora-login-f8398",
+  storageBucket: "aurora-login-f8398.firebasestorage.app",
+  messagingSenderId: "13804949485",
+  appId: "1:13804949485:web:a90e834dfc5282b59ae1e4",
+  measurementId: "G-4QQW10Y38H"
 };
-
 
 const app = initializeApp(firebaseConfig);
 
-const auth = getAuth(app);
+export const auth = getAuth(app);
+export const db = getFirestore(app);
+export const storage = getStorage(app);
 
-const db = getFirestore(app);
-
-export { auth, db };
 export default app;

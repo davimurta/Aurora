@@ -14,7 +14,7 @@ import { router } from 'expo-router';
 
 const UserTypeSelection: React.FC = () => {
   const handleSelectType = (type: 'client' | 'psychologist') => {
-    const route = type === 'client' ? '/UserSignup' : '/PsychologistSignup';
+    const route = type === 'client' ? '/auth/UserSignup' : '/auth/PsychologistSignup';
     router.push(route as any);
   };
 

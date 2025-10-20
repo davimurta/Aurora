@@ -90,32 +90,30 @@ const UserSignup: React.FC = () => {
   };
 
   const handleSubmit = async () => {
-    if (!validateForm()) return;
+  if (!validateForm()) return;
 
-    setIsLoading(true);
+  setIsLoading(true);
+  
+  try {
+    await registerPaciente(formData);
     
-    try {
-      await registerPaciente(formData);
-      
-      Alert.alert(
-        'Sucesso!', 
-        'Conta criada com sucesso! Você já pode fazer login.',
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              router.push('/');
-            }
-          }
-        ]
-      );
-      
-    } catch (error: any) {
-      Alert.alert('Erro', error.message || 'Erro ao criar conta. Tente novamente.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    Alert.alert(
+      "Sucesso!",
+      "Conta criada com sucesso! Você já pode fazer login.",
+      [
+        {
+          text: "OK",
+          onPress: () => router.replace("/auth/Login"),
+        },
+      ]
+    );
+    
+  } catch (error: any) {
+    Alert.alert('Erro', error.message || 'Erro ao criar conta. Tente novamente.');
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const formatCPF = (value: string) => {
     const numbers = value.replace(/\D/g, '');

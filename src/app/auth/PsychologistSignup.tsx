@@ -1,4 +1,3 @@
-import BottomNavigation from '@components/BottonNavigation';
 import Input from '@components/Input';
 import React, { useState } from 'react';
 import {
@@ -15,16 +14,9 @@ import {
   TextInput,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import * as DocumentPicker from 'expo-document-picker';
 import { useAuthController } from '../../hooks/useAuthController';
 import { router } from 'expo-router';
 import { PsicologoData } from '../../types/auth.types';
-
-interface DocumentFile {
-  uri: string;
-  name: string;
-  type: string;
-}
 
 const PsychologistSignup: React.FC = () => {
   const [formData, setFormData] = useState<PsicologoData>({
@@ -43,11 +35,6 @@ const PsychologistSignup: React.FC = () => {
     confirmarSenha: '',
   });
   
-  const [documents, setDocuments] = useState<{
-    diploma?: DocumentFile;
-    crpDocument?: DocumentFile;
-    comprovanteExperiencia?: DocumentFile;
-  }>({});
   
   const [isLoading, setIsLoading] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
@@ -79,29 +66,6 @@ const PsychologistSignup: React.FC = () => {
       ...prev,
       [field]: value,
     }));
-  };
-
-  const handleDocumentPicker = async (type: 'diploma' | 'crpDocument' | 'comprovanteExperiencia') => {
-    try {
-      const result = await DocumentPicker.getDocumentAsync({
-        type: ['application/pdf', 'image/*'],
-        copyToCacheDirectory: true,
-      });
-
-      if (!result.canceled && result.assets[0]) {
-        const file = result.assets[0];
-        setDocuments(prev => ({
-          ...prev,
-          [type]: {
-            uri: file.uri,
-            name: file.name,
-            type: file.mimeType || 'application/pdf',
-          },
-        }));
-      }
-    } catch {
-      Alert.alert('Erro', 'Erro ao selecionar documento');
-    }
   };
 
   const validateForm = (): boolean => {
@@ -143,11 +107,6 @@ const PsychologistSignup: React.FC = () => {
       return false;
     }
 
-    if (!documents.diploma || !documents.crpDocument) {
-      Alert.alert('Erro', 'Diploma e documento do CRP são obrigatórios');
-      return false;
-    }
-
     if (!acceptTerms) {
       Alert.alert('Erro', 'Você deve aceitar os termos e condições');
       return false;
@@ -162,6 +121,7 @@ const PsychologistSignup: React.FC = () => {
     setIsLoading(true);
     
     try {
+      // Passa os documentos para o registerPsicologo
       await registerPsicologo(formData);
       
       Alert.alert(
@@ -402,53 +362,6 @@ const PsychologistSignup: React.FC = () => {
               </View>
             </View>
 
-            {/* Documents Section */}
-            <Text style={styles.sectionTitle}>Documentos</Text>
-            
-            <View style={styles.documentSection}>
-              <TouchableOpacity
-                style={styles.documentButton}
-                onPress={() => handleDocumentPicker('diploma')}
-              >
-                <Icon 
-                  name={documents.diploma ? 'check-circle' : 'attach-file'} 
-                  size={20} 
-                  color={documents.diploma ? '#4ECDC4' : '#666'} 
-                />
-                <Text style={[styles.documentButtonText, documents.diploma && styles.documentButtonTextUploaded]}>
-                  {documents.diploma ? `✓ ${documents.diploma.name}` : 'Anexar Diploma'}
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.documentButton}
-                onPress={() => handleDocumentPicker('crpDocument')}
-              >
-                <Icon 
-                  name={documents.crpDocument ? 'check-circle' : 'attach-file'} 
-                  size={20} 
-                  color={documents.crpDocument ? '#4ECDC4' : '#666'} 
-                />
-                <Text style={[styles.documentButtonText, documents.crpDocument && styles.documentButtonTextUploaded]}>
-                  {documents.crpDocument ? `✓ ${documents.crpDocument.name}` : 'Anexar Documento CRP'}
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.documentButton}
-                onPress={() => handleDocumentPicker('comprovanteExperiencia')}
-              >
-                <Icon 
-                  name={documents.comprovanteExperiencia ? 'check-circle' : 'attach-file'} 
-                  size={20} 
-                  color={documents.comprovanteExperiencia ? '#4ECDC4' : '#666'} 
-                />
-                <Text style={[styles.documentButtonText, documents.comprovanteExperiencia && styles.documentButtonTextUploaded]}>
-                  {documents.comprovanteExperiencia ? `✓ ${documents.comprovanteExperiencia.name}` : 'Comprovante de Experiência (Opcional)'}
-                </Text>
-              </TouchableOpacity>
-            </View>
-
             {/* Security Section */}
             <Text style={styles.sectionTitle}>Segurança</Text>
 
@@ -623,31 +536,6 @@ const styles = StyleSheet.create({
     color: '#2C3E50',
     textAlignVertical: 'top',
     minHeight: 80,
-  },
-  documentSection: {
-    marginBottom: 20,
-  },
-  documentButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFF',
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-    borderRadius: 12,
-    paddingHorizontal: 15,
-    paddingVertical: 15,
-    marginBottom: 10,
-    minHeight: 50,
-  },
-  documentButtonText: {
-    fontSize: 16,
-    color: '#666',
-    marginLeft: 10,
-    flex: 1,
-  },
-  documentButtonTextUploaded: {
-    color: '#4ECDC4',
-    fontWeight: '500',
   },
   termsContainer: {
     flexDirection: 'row',

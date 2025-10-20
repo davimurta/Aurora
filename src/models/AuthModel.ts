@@ -110,7 +110,6 @@ export const AuthModel = {
 
   async registerPaciente(data: PacienteData): Promise<User> {
     try {
-
       validatePacienteData(data);
 
       const result = await createUserWithEmailAndPassword(
@@ -148,12 +147,8 @@ export const AuthModel = {
     }
   },
 
-  async registerPsicologo(
-    data: PsicologoData,
-    documents?: unknown
-  ): Promise<User> {
+  async registerPsicologo(data: PsicologoData): Promise<User> {
     try {
-
       validatePsicologoData(data);
 
       const result = await createUserWithEmailAndPassword(
@@ -186,7 +181,6 @@ export const AuthModel = {
         anoFormacao: data.anoFormacao,
         experiencia: data.experiencia,
         biografia: data.biografia,
-        documents: documents || {},
         isApproved: false,
         createdAt: serverTimestamp(),
       });
