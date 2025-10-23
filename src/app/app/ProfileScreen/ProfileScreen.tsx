@@ -34,6 +34,9 @@ const ProfileScreen: React.FC = () => {
   const [userImage ] = useState<string | null>(null);
   const [showPersonalData, setShowPersonalData] = useState<boolean>(false);
   const { userData } = useAuthController();
+  
+  // Dados predefinidos para teste (remover quando conectar ao banco)
+  const [userType] = useState<"patient" | "professional">("patient"); // Altere para "professional" para testar como profissional
 
   const recentActivities: ActivityItem[] = [
     {
@@ -111,6 +114,14 @@ const ProfileScreen: React.FC = () => {
     ]);
   };
 
+  const handleConnect = () => {
+    if (userType === "professional") {
+      router.push("/app/ProfessionalConnectScreen/ProfessionalConnectScreen");
+    } else {
+      router.push("/app/PatientConnectScreen/PatientConnectScreen");
+    }
+  };
+
   const getActivityIcon = (type: string) => {
     switch (type) {
       case "meditation":
@@ -186,9 +197,23 @@ const ProfileScreen: React.FC = () => {
           <Text style={styles.userName}>{userData?.displayName}</Text>
           <Text style={styles.userEmail}>{userData?.email}</Text>
 
-          <TouchableOpacity style={styles.editProfileButton}>
-            <Icon name="edit" size={18} color="#4ECDC4" />
-            <Text style={styles.editProfileText}>Editar Perfil</Text>
+          <View style={styles.profileActions}>
+            <TouchableOpacity style={styles.editProfileButton}>
+              <Icon name="edit" size={18} color="#4ECDC4" />
+              <Text style={styles.editProfileText}>Editar Perfil</Text>
+            </TouchableOpacity>
+          </View>
+
+          <TouchableOpacity 
+            style={styles.connectButton}
+            onPress={handleConnect}
+          >
+            <Icon name="people" size={18} color="#fff" />
+            <Text style={styles.connectButtonText}>
+              {userType === "professional" 
+                ? "Conecte-se com um Paciente" 
+                : "Conecte-se com um Profissional"}
+            </Text>
           </TouchableOpacity>
         </View>
 

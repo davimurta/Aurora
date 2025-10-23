@@ -57,6 +57,12 @@ export const styles = StyleSheet.create({
     color: "#666",
     marginBottom: 20,
   },
+  profileActions: {
+    flexDirection: "row",
+    justifyContent: "center",
+    paddingHorizontal: 16,
+    marginBottom: 16,
+  },
   editProfileButton: {
     flexDirection: "row",
     alignItems: "center",
@@ -72,6 +78,30 @@ export const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "600",
     color: "#4ECDC4",
+  },
+  connectButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 20,
+    backgroundColor: "#4ECDC4",
+    marginHorizontal: 16,
+    shadowColor: "#4ECDC4",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  connectButtonText: {
+    marginLeft: 8,
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#fff",
   },
   section: {
     marginBottom: 28,
