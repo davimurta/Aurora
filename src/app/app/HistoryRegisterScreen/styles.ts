@@ -85,32 +85,39 @@ export const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   dayCell: {
-    width: '14.28%',
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginVertical: 2,
-  },
-  dayText: {
-    fontSize: 16,
-    color: '#333',
-  },
-  selectedDay: {
-    backgroundColor: '#4ECDC4',
-    borderRadius: 20,
-  },
-  selectedDayText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
-  dayWithData: {
-    backgroundColor: '#E8F5F4',
-    borderRadius: 20,
-  },
-  dayWithDataText: {
-    color: '#4ECDC4',
-    fontWeight: '600',
-  },
+  width: '14.28%',
+  height: 40,
+  alignItems: 'center',
+  justifyContent: 'center',
+  marginVertical: 2,
+  backgroundColor: '#FFFFFF', // 🔹 fundo sempre branco por padrão
+  borderRadius: 20,
+},
+
+dayText: {
+  fontSize: 16,
+  color: '#333',
+},
+
+// 🔹 Dia atualmente selecionado
+selectedDay: {
+  backgroundColor: '#4ECDC4',
+  borderRadius: 20,
+},
+selectedDayText: {
+  color: '#FFF',
+  fontWeight: 'bold',
+},
+
+// 🔹 Dias que possuem registro no Firebase
+dayWithData: {
+  backgroundColor: '#4ECDC4', // 🔹 bolinha teal
+  borderRadius: 20,
+},
+dayWithDataText: {
+  color: '#FFF',
+  fontWeight: 'bold',
+},
   chartContainer: {
     backgroundColor: 'white',
     marginTop: 10,
