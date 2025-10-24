@@ -63,6 +63,7 @@ const HistoryRegisterScreen: React.FC = () => {
     try {
       const registers = await getRegistersByMonth(currentDate.getFullYear(), currentDate.getMonth());
       setMonthRegisters(registers);
+      console.log('📅 [History] mês:', currentDate.getFullYear(), currentDate.getMonth() + 1, '| registros:', registers.map(r => r.date));
       setChartData(getChartDataByMonth(registers));
     } catch (err) {
       console.error(err);
@@ -125,23 +126,15 @@ const HistoryRegisterScreen: React.FC = () => {
   /** 🔹 Verifica se há dados para o dia */
   const hasDataForDay = (day: number | null): boolean => {
   if (!day) return false;
-
   const dateKey = emotionalRegisterController.formatDateKey(
     currentDate.getFullYear(),
     currentDate.getMonth(),
     day
   );
-
-  // 🔍 Debug opcional
-  console.log(
-    '📅 Verificando dia:',
-    dateKey,
-    '| Registros:',
-    monthRegisters.map((r) => r.date)
-  );
-
-  // 🔹 Faz comparação exata de strings (sem hora)
-  return monthRegisters.some((r) => r.date === dateKey);
+  const has = monthRegisters.some(r => r.date === dateKey);
+  // debug opcional
+  // console.log('🔵 check:', dateKey, '=>', has);
+  return has;
 };
 
   /** 🔹 Emojis dos humores */

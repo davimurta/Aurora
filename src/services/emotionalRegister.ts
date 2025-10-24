@@ -33,46 +33,39 @@ export const emotionalRegisterService = {
 
   /** 🔹 Busca todos os registros do mês (corrigido com timezone e tipagem) */
   async getByMonth(userId: string, year: number, month: number): Promise<EmotionalRegister[]> {
-    const startDate = `${year}-${String(month + 1).padStart(2, '0')}-01`;
-    const lastDay = new Date(year, month + 1, 0).getDate();
-    const endDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`;
+  // Busca TUDO do usuário (sem precisar de índice composto)
+  const q = query(
+    collection(db, 'emotionalRegisters'),
+    where('userId', '==', userId)
+  );
 
-    const q = query(
-      collection(db, 'emotionalRegisters'),
-      where('userId', '==', userId),
-      where('date', '>=', startDate),
-      where('date', '<=', endDate)
-    );
+  const snapshot = await getDocs(q);
+  const all = snapshot.docs.map(d => d.data() as any);
 
-    const snapshot = await getDocs(q);
+  // Normaliza "date" para string YYYY-MM-DD, independente de Timestamp/string
+  const normalized: EmotionalRegister[] = all.map((raw: any) => {
+    let dateStr: string;
 
-    const registers = snapshot.docs.map((docSnap) => {
-      const raw: any = docSnap.data();
-      const rawDate = raw?.date;
+    if (raw?.date && typeof raw.date === 'object' && typeof raw.date.toDate === 'function') {
+      dateStr = raw.date.toDate().toISOString().split('T')[0];
+    } else if (typeof raw?.date === 'string') {
+      dateStr = raw.date.split('T')[0];
+    } else {
+      dateStr = '';
+    }
 
-      let dateStr: string;
-      if (rawDate && typeof rawDate === 'object' && typeof rawDate.toDate === 'function') {
-        // 🔹 Timestamp do Firestore
-        dateStr = rawDate.toDate().toISOString().split('T')[0];
-      } else if (typeof rawDate === 'string') {
-        // 🔹 String normal
-        dateStr = rawDate.split('T')[0];
-      } else {
-        // 🔹 Valor inesperado
-        dateStr = String(rawDate ?? '');
-      }
+    return { ...raw, date: dateStr } as EmotionalRegister;
+  });
 
-      const parsed: EmotionalRegister = {
-        ...raw,
-        date: dateStr,
-      };
+  // Filtra pelo mês corrente
+  const monthPrefix = `${year}-${String(month + 1).padStart(2, '0')}-`; // ex: "2025-10-"
+  const monthRegisters = normalized.filter(r => r.date?.startsWith(monthPrefix));
 
-      return parsed;
-    });
+  // DEBUG (pode remover depois)
+  console.log('🔥 [getByMonth] user:', userId, '| prefix:', monthPrefix, '| datas:', monthRegisters.map(r => r.date));
 
-    console.log('🔥 [getByMonth] Datas carregadas:', registers.map((r) => r.date));
-    return registers;
-  },
+  return monthRegisters;
+},
 
   /** 🔹 Busca o registro de um dia específico */
   async getByDate(userId: string, dateString: string): Promise<EmotionalRegister | null> {
