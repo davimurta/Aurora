@@ -100,7 +100,7 @@ const UserSignup: React.FC = () => {
       setIsLoading(false);
       
       // Navega com flag de sucesso
-      router.push("/auth/Login?registered=true" as any);
+      router.push("/auth/LoginScreen/LoginScreen?registered=true" as any);
       
     } catch (error: any) {
       Alert.alert('Erro', error.message || 'Erro ao criar conta. Tente novamente.');

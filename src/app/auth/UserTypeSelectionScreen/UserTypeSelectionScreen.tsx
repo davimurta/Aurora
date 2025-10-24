@@ -13,7 +13,7 @@ import { styles } from './styles';
 
 const UserTypeSelectionScreen: React.FC = () => {
   const handleSelectType = (type: 'client' | 'psychologist') => {
-    const route = type === 'client' ? '/UserSignupScreen' : '/PsychologistSignupScreen';
+    const route = type === 'client' ? '/auth/UserSignupScreen/UserSignupScreen' : '/auth/PsychologistSignupScreen/PsychologistSignupScreen';
     router.push(route as any);
   };
 
