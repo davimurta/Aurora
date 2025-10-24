@@ -1,98 +1,79 @@
+
 export const respirationActivities = [
-  { 
-    id: '1', 
-    title: 'Meditação Matinal',
-    icon: 'favorite',
-    bgColor: '#FFD4D4'
-  },
-  { 
-    id: '2', 
+  {
+    id: '1',
     title: 'Respiração Profunda',
-    icon: 'favorite',
-    bgColor: '#4ECDC4'
+    icon: 'air',
+    bgColor: '#E3F2FD',
   },
-  { 
-    id: '3', 
-    title: 'Relaxamento Guiado',
+  {
+    id: '2',
+    title: 'Respiração 4-7-8',
     icon: 'self-improvement',
-    bgColor: '#B3E5FC'
+    bgColor: '#F3E5F5',
   },
-  { 
-    id: '4', 
-    title: 'Sinergização Homem',
-    icon: 'fitness-center',
-    bgColor: '#F0F4C3'
+  {
+    id: '3',
+    title: 'Respiração Box',
+    icon: 'filter-vintage',
+    bgColor: '#FFF3E0',
   },
-  { 
-    id: '5', 
-    title: 'Relaxamento Guianda',
+  {
+    id: '4',
+    title: 'Respiração Calma',
     icon: 'spa',
-    bgColor: '#E1BEE7'
+    bgColor: '#E8F5E9',
   },
-  { 
-    id: '6', 
-    title: 'Relaxamento Guiado',
-    icon: 'self-improvement',
-    bgColor: '#C8E6C9'
+  {
+    id: '5',
+    title: 'Respiração Alternada',
+    icon: 'wind-power',
+    bgColor: '#FCE4EC',
+  },
+  {
+    id: '6',
+    title: 'Respiração Energizante',
+    icon: 'energy-savings-leaf',
+    bgColor: '#FFF9C4',
   },
 ];
 
-export const dailyResources = [
-  { 
-    id: '1', 
-    title: 'Meu Diário de Humor',
-    icon: 'calendar-today',
-    color: '#B3E5FC'
-  },
-  { 
-    id: '2', 
-    title: 'Monitoramento de Água',
-    icon: 'water-drop',
-    color: '#B2DFDB'
-  },
-  { 
-    id: '3', 
-    title: 'Alimentação Saudável',
-    icon: 'apple',
-    color: '#C8E6C9'
-  },
-];
 
 export const blogPosts = [
-  { 
+  {
     id: '1',
-    title: 'Como a Meditação Transforma Sua Vida',
-    description: 'Benefícios científicos da prática diária',
+    title: 'Como a Meditação Pode Transformar Sua Vida',
+    description: 'Descubra os benefícios científicos da meditação e como implementar essa prática transformadora em sua rotina diária.',
     author: 'Dr. Ana Silva',
-    date: '15 Jun 2024',
+    date: '15 Jun',
     readTime: '5 min',
-    category: 'Bem-estar'
+    category: 'Bem-estar',
   },
-  { 
+  {
     id: '2',
-    title: 'Técnicas de Respiração para Ansiedade',
-    description: 'Métodos simples para acalmar a mente',
-    author: 'Prof. Carlos Lima',
-    date: '12 Jun 2024',
-    readTime: '7 min',
-    category: 'Técnicas'
-  },
-  { 
-    id: '3',
-    title: 'Mindfulness no Trabalho',
-    description: 'Como manter o foco durante o dia',
-    author: 'Dra. Maria Santos',
-    date: '10 Jun 2024',
+    title: 'Técnicas de Respiração para Reduzir Ansiedade',
+    description: 'Aprenda exercícios simples de respiração que você pode usar em qualquer lugar para aliviar o estresse.',
+    author: 'Carlos Mendes',
+    date: '12 Jun',
     readTime: '4 min',
-    category: 'Produtividade'
+    category: 'Saúde Mental',
   },
-  { 
-    id: '4',
-    title: 'Os Benefícios do Yoga para Iniciantes',
-    description: 'Guia completo para começar a praticar',
-    author: 'Instrutor João Pedro',
-    date: '8 Jun 2024',
+  {
+    id: '3',
+    title: 'Mindfulness no Dia a Dia',
+    description: 'Práticas simples para incorporar a atenção plena em sua rotina e melhorar sua qualidade de vida.',
+    author: 'Maria Costa',
+    date: '10 Jun',
     readTime: '6 min',
-    category: 'Yoga'
+    category: 'Mindfulness',
+  },
+  {
+    id: '4',
+    title: 'Sono Saudável: Guia Completo',
+    description: 'Tudo o que você precisa saber para ter uma noite de sono restauradora e acordar revigorado.',
+    author: 'Dr. Pedro Santos',
+    date: '8 Jun',
+    readTime: '7 min',
+    category: 'Saúde',
   },
 ];

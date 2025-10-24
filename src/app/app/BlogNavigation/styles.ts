@@ -1,7 +1,31 @@
 import { StyleSheet, Dimensions } from 'react-native';
 
-const { width } = Dimensions.get('window');
-const cardWidth = (width - 48) / 2;
+const { width, height } = Dimensions.get('window');
+
+const getResponsiveDimensions = () => {
+  const isSmallScreen = width < 375;
+  const isMediumScreen = width >= 375 && width < 768;
+  const isLargeScreen = width >= 768;
+
+  const horizontalPadding = isSmallScreen ? 16 : isMediumScreen ? 20 : 24;
+  
+  const numColumns = isSmallScreen ? 1 : isMediumScreen ? 2 : 3;
+  const gridGap = 16;
+  const totalGaps = (numColumns - 1) * gridGap;
+  const cardWidth = (width - (horizontalPadding * 2) - totalGaps) / numColumns;
+
+  return {
+    isSmallScreen,
+    isMediumScreen,
+    isLargeScreen,
+    horizontalPadding,
+    cardWidth,
+    gridGap,
+    numColumns,
+  };
+};
+
+const responsive = getResponsiveDimensions();
 
 export const styles = StyleSheet.create({
   container: {
@@ -9,29 +33,27 @@ export const styles = StyleSheet.create({
     backgroundColor: '#F8FFFE',
   },
 
-  // Header Styles
   header: {
-    paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingHorizontal: responsive.horizontalPadding,
+    paddingVertical: responsive.isSmallScreen ? 12 : 16,
     backgroundColor: '#fff',
     borderBottomWidth: 1,
     borderBottomColor: '#f0f0f0',
   },
   headerTitle: {
-    fontSize: 28,
+    fontSize: responsive.isSmallScreen ? 24 : 28,
     fontWeight: '700',
     color: '#333',
-    marginBottom: 16,
+    marginBottom: responsive.isSmallScreen ? 12 : 16,
   },
 
-  // Search Bar Styles
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#F8FFFE',
-    borderRadius: 16,
-    paddingHorizontal: 16,
-    height: 50,
+    borderRadius: responsive.isSmallScreen ? 12 : 16,
+    paddingHorizontal: responsive.isSmallScreen ? 12 : 16,
+    height: responsive.isSmallScreen ? 44 : 50,
     borderWidth: 1,
     borderColor: '#E8F8F7',
   },
@@ -41,14 +63,13 @@ export const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     marginLeft: 12,
-    fontSize: 15,
+    fontSize: responsive.isSmallScreen ? 14 : 15,
     color: '#333',
   },
 
-  // Section Styles
   section: {
-    paddingTop: 24,
-    paddingHorizontal: 20,
+    paddingTop: responsive.isSmallScreen ? 16 : 24,
+    paddingHorizontal: responsive.horizontalPadding,
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -60,12 +81,12 @@ export const styles = StyleSheet.create({
     flex: 1,
   },
   sectionTitle: {
-    fontSize: 22,
+    fontSize: responsive.isSmallScreen ? 18 : 22,
     fontWeight: '700',
     color: '#333',
   },
   sectionSubtitle: {
-    fontSize: 14,
+    fontSize: responsive.isSmallScreen ? 13 : 14,
     color: '#666',
     marginTop: 4,
   },
@@ -73,15 +94,14 @@ export const styles = StyleSheet.create({
     paddingLeft: 16,
   },
   seeAllText: {
-    fontSize: 14,
+    fontSize: responsive.isSmallScreen ? 13 : 14,
     color: '#4ECDC4',
     fontWeight: '600',
   },
 
-  // Featured Card Styles
   featuredCard: {
     backgroundColor: '#fff',
-    borderRadius: 20,
+    borderRadius: responsive.isSmallScreen ? 16 : 20,
     marginBottom: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
@@ -91,13 +111,13 @@ export const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   featuredImage: {
-    height: 200,
+    height: responsive.isSmallScreen ? 160 : responsive.isMediumScreen ? 200 : 240,
     backgroundColor: '#4ECDC4',
     justifyContent: 'center',
     alignItems: 'center',
   },
   featuredContent: {
-    padding: 20,
+    padding: responsive.isSmallScreen ? 16 : 20,
   },
   featuredMeta: {
     flexDirection: 'row',
@@ -106,8 +126,8 @@ export const styles = StyleSheet.create({
   },
   featuredBadge: {
     backgroundColor: '#FFD93D',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingHorizontal: responsive.isSmallScreen ? 10 : 12,
+    paddingVertical: responsive.isSmallScreen ? 5 : 6,
     borderRadius: 16,
     flexDirection: 'row',
     alignItems: 'center',
@@ -115,25 +135,25 @@ export const styles = StyleSheet.create({
   },
   featuredBadgeText: {
     color: '#fff',
-    fontSize: 12,
+    fontSize: responsive.isSmallScreen ? 11 : 12,
     fontWeight: '700',
     marginLeft: 4,
   },
   featuredReadTime: {
     color: '#999',
-    fontSize: 13,
+    fontSize: responsive.isSmallScreen ? 12 : 13,
   },
   featuredTitle: {
-    fontSize: 20,
+    fontSize: responsive.isSmallScreen ? 18 : 20,
     fontWeight: '700',
     color: '#333',
     marginBottom: 8,
   },
   featuredDescription: {
-    fontSize: 15,
+    fontSize: responsive.isSmallScreen ? 14 : 15,
     color: '#666',
     marginBottom: 16,
-    lineHeight: 22,
+    lineHeight: responsive.isSmallScreen ? 20 : 22,
   },
   featuredAuthorInfo: {
     flexDirection: 'row',
@@ -141,20 +161,19 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
   featuredAuthor: {
-    fontSize: 14,
+    fontSize: responsive.isSmallScreen ? 13 : 14,
     color: '#333',
     fontWeight: '600',
   },
   featuredDate: {
-    fontSize: 13,
+    fontSize: responsive.isSmallScreen ? 12 : 13,
     color: '#999',
   },
 
-  // Horizontal Card Styles (Latest Posts)
   horizontalCard: {
-    width: 280,
+    width: responsive.isSmallScreen ? width * 0.75 : responsive.isMediumScreen ? 280 : 320,
     backgroundColor: '#fff',
-    borderRadius: 16,
+    borderRadius: responsive.isSmallScreen ? 12 : 16,
     marginRight: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -163,15 +182,15 @@ export const styles = StyleSheet.create({
     elevation: 3,
   },
   horizontalCardImage: {
-    height: 140,
+    height: responsive.isSmallScreen ? 120 : 140,
     backgroundColor: '#E8F8F7',
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
+    borderTopLeftRadius: responsive.isSmallScreen ? 12 : 16,
+    borderTopRightRadius: responsive.isSmallScreen ? 12 : 16,
     justifyContent: 'center',
     alignItems: 'center',
   },
   horizontalCardContent: {
-    padding: 16,
+    padding: responsive.isSmallScreen ? 12 : 16,
   },
   horizontalCardMeta: {
     flexDirection: 'row',
@@ -180,27 +199,27 @@ export const styles = StyleSheet.create({
   },
   categoryTag: {
     backgroundColor: '#E8F8F7',
-    paddingHorizontal: 10,
+    paddingHorizontal: responsive.isSmallScreen ? 8 : 10,
     paddingVertical: 4,
     borderRadius: 12,
   },
   categoryText: {
     color: '#4ECDC4',
-    fontSize: 11,
+    fontSize: responsive.isSmallScreen ? 10 : 11,
     fontWeight: '600',
   },
   readTime: {
     color: '#999',
-    fontSize: 12,
+    fontSize: responsive.isSmallScreen ? 11 : 12,
   },
   horizontalCardTitle: {
-    fontSize: 16,
+    fontSize: responsive.isSmallScreen ? 14 : 16,
     fontWeight: '700',
     color: '#333',
     marginBottom: 6,
   },
   horizontalCardDescription: {
-    fontSize: 13,
+    fontSize: responsive.isSmallScreen ? 12 : 13,
     color: '#666',
     marginBottom: 12,
   },
@@ -210,20 +229,21 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
   horizontalCardAuthor: {
-    fontSize: 12,
+    fontSize: responsive.isSmallScreen ? 11 : 12,
     color: '#999',
     flex: 1,
   },
   horizontalCardDate: {
-    fontSize: 11,
+    fontSize: responsive.isSmallScreen ? 10 : 11,
     color: '#999',
+    marginLeft: 8,
   },
 
-  // Grid Card Styles (For You Section)
+ 
   gridCard: {
-    width: cardWidth,
+    width: responsive.cardWidth,
     backgroundColor: '#fff',
-    borderRadius: 16,
+    borderRadius: responsive.isSmallScreen ? 12 : 16,
     marginBottom: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -232,19 +252,19 @@ export const styles = StyleSheet.create({
     elevation: 3,
   },
   gridCardImage: {
-    height: 120,
+    height: responsive.isSmallScreen ? 100 : responsive.isMediumScreen ? 120 : 140,
     backgroundColor: '#E8F8F7',
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
+    borderTopLeftRadius: responsive.isSmallScreen ? 12 : 16,
+    borderTopRightRadius: responsive.isSmallScreen ? 12 : 16,
     justifyContent: 'center',
     alignItems: 'center',
   },
   gridCardContent: {
-    padding: 12,
+    padding: responsive.isSmallScreen ? 10 : 12,
   },
   gridCategoryTag: {
     backgroundColor: '#E8F8F7',
-    paddingHorizontal: 8,
+    paddingHorizontal: responsive.isSmallScreen ? 6 : 8,
     paddingVertical: 3,
     borderRadius: 10,
     alignSelf: 'flex-start',
@@ -252,17 +272,17 @@ export const styles = StyleSheet.create({
   },
   gridCategoryText: {
     color: '#4ECDC4',
-    fontSize: 10,
+    fontSize: responsive.isSmallScreen ? 9 : 10,
     fontWeight: '600',
   },
   gridCardTitle: {
-    fontSize: 14,
+    fontSize: responsive.isSmallScreen ? 13 : 14,
     fontWeight: '700',
     color: '#333',
     marginBottom: 6,
   },
   gridCardAuthor: {
-    fontSize: 11,
+    fontSize: responsive.isSmallScreen ? 10 : 11,
     color: '#999',
     marginBottom: 8,
   },
@@ -271,47 +291,62 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   gridCardDate: {
-    fontSize: 10,
+    fontSize: responsive.isSmallScreen ? 9 : 10,
     color: '#999',
   },
   gridCardReadTime: {
-    fontSize: 10,
+    fontSize: responsive.isSmallScreen ? 9 : 10,
     color: '#999',
   },
 
-  // Grid Container
+
   gridContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
   },
 
-  // Horizontal Scroll
+  
   horizontalScrollContent: {
-    paddingHorizontal: 20,
+    paddingHorizontal: responsive.horizontalPadding,
   },
 
-  // Empty State Styles
+
   emptyState: {
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 60,
   },
+  emptyStateIcon: {
+    width: responsive.isSmallScreen ? 56 : 64,
+    height: responsive.isSmallScreen ? 56 : 64,
+  },
   emptyStateText: {
-    fontSize: 18,
+    fontSize: responsive.isSmallScreen ? 16 : 18,
     fontWeight: '600',
     color: '#999',
     marginTop: 16,
   },
   emptyStateSubtext: {
-    fontSize: 14,
+    fontSize: responsive.isSmallScreen ? 13 : 14,
     color: '#999',
     marginTop: 8,
     textAlign: 'center',
+    paddingHorizontal: responsive.horizontalPadding,
   },
 
-  // Spacing
+
   bottomSpacing: {
     height: 32,
   },
 });
+
+export const getResponsiveStyles = () => {
+  const newResponsive = getResponsiveDimensions();
+  
+  return {
+    ...styles,
+    responsive: newResponsive,
+  };
+};
+
+export { responsive };

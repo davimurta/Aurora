@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   View,
   Text,
@@ -8,65 +8,96 @@ import {
   SafeAreaView,
   Image,
 } from 'react-native';
+import { useRouter, useLocalSearchParams } from 'expo-router'; 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { styles } from './styles';
-
-interface BlogPostProps {
-  post?: {
-    id: string;
-    title: string;
-    description: string;
-    author: string;
-    date: string;
-    content: string;
-    imageUrl?: string;
-    category?: string;
-    readTime?: string;
-  };
-  onBack?: () => void;
-}
-
-const BlogPostScreen: React.FC<BlogPostProps> = ({ post, onBack }) => {
-  const defaultPost = {
-    id: '1',
-    title: 'Como a Meditação Pode Transformar Sua Vida',
-    description: 'Descubra os benefícios científicos da meditação e como implementar essa prática transformadora em sua rotina diária.',
-    author: 'Dr. Ana Silva',
-    date: '15 de Junho, 2024',
-    content: `A meditação é uma prática milenar que tem ganhado cada vez mais reconhecimento científico nos últimos anos. Estudos comprovam que apenas 10 minutos diários de meditação podem trazer benefícios significativos para nossa saúde mental e física.
+const mockBlogPosts = [
+    
+    { 
+        id: '1', 
+        title: 'Como a Meditação Pode Transformar Sua Vida', 
+        description: 'Descubra os benefícios científicos da meditação e como implementar essa prática transformadora em sua rotina diária.',
+        author: 'Dr. Ana Silva',
+        date: '15 de Junho, 2024',
+        content: `A meditação é uma prática milenar que tem ganhado cada vez mais reconhecimento científico nos últimos anos. Estudos comprovam que apenas 10 minutos diários de meditação podem trazer benefícios significativos para nossa saúde mental e física.
 
 ## Os Benefícios Comprovados
-
+    
 Pesquisas realizadas em universidades renomadas mostram que a meditação regular pode:
-
+    
 • Reduzir significativamente os níveis de stress e ansiedade
 • Melhorar a capacidade de concentração e foco
 • Fortalecer o sistema imunológico
 • Promover melhor qualidade do sono
 • Aumentar a sensação de bem-estar geral
-
+    
 ## Como Começar
-
+    
 Para iniciantes, recomendamos começar com sessões curtas de 5 a 10 minutos. Escolha um local tranquilo, sente-se confortavelmente e foque na sua respiração.
-
+    
 ### Técnica Básica de Respiração
-
+    
 1. Inspire lentamente pelo nariz contando até 4
 2. Segure a respiração por 4 segundos
 3. Expire pela boca contando até 6
 4. Repita o ciclo por 5-10 minutos
-
+    
 ## Mantendo a Consistência
-
+    
 O segredo para obter os benefícios da meditação está na consistência. É melhor meditar 5 minutos todos os dias do que 30 minutos uma vez por semana.
-
+    
 Crie um horário fixo para sua prática, preferencialmente no mesmo local. Isso ajudará a formar um hábito duradouro que transformará positivamente sua vida.`,
-    imageUrl: 'https://example.com/meditation-image.jpg',
-    category: 'Bem-estar',
-    readTime: '5 min'
+        imageUrl: 'https://example.com/meditation-image.jpg',
+        category: 'Bem-estar',
+        readTime: '5 min'
+    },
+
+];
+
+
+interface BlogPost {
+  id: string;
+  title: string;
+  description: string;
+  author: string;
+  date: string;
+  content: string;
+  imageUrl?: string;
+  category?: string;
+  readTime?: string;
+}
+
+
+const BlogPostScreen: React.FC = () => {
+  const router = useRouter(); 
+
+  const { id } = useLocalSearchParams(); 
+  const postId = id as string;
+
+  const allPosts: any[] = mockBlogPosts; 
+
+  const defaultPost: BlogPost = allPosts[0] || { 
+    id: 'fallback-0',
+    title: 'Post Padrão (Fallback)',
+    description: 'Este é o conteúdo padrão.',
+    author: 'System',
+    date: 'Hoje',
+    content: `Conteúdo de fallback.`,
+    imageUrl: '',
+    category: 'Erro',
+    readTime: '1 min'
   };
 
-  const currentPost = post || defaultPost;
+  
+  const currentPost = useMemo(() => {
+    return (allPosts.find((p) => p.id === postId) as BlogPost) || defaultPost;
+  }, [postId, allPosts]);
+
+
+  const handleBack = () => {
+    router.back(); 
+  };
+
 
   const formatContent = (content: string) => {
     return content.split('\n').map((paragraph, index) => {
@@ -116,7 +147,8 @@ Crie um horário fixo para sua prática, preferencialmente no mesmo local. Isso 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={onBack}>
+        {/* BOTÃO DE VOLTAR COM A ROTA CORRETA */}
+        <TouchableOpacity style={styles.backButton} onPress={handleBack}>
           <Icon name="arrow-back" size={24} color="#333" />
         </TouchableOpacity>
         <View style={styles.headerActions}>

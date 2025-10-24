@@ -18,15 +18,15 @@ interface BlogCardProps {
 }
 
 export const BlogCard: React.FC<BlogCardProps> = ({ item, onPress }) => (
-  <TouchableOpacity style={styles.blogCard} onPress={onPress} activeOpacity={0.7}>
-    <View style={styles.blogCardVisualArea}>
+  <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.7}>
+    <View style={styles.imageArea}>
       <Icon name="article" size={40} color="#4ECDC4" />
     </View>
-    <View style={styles.blogCardContentArea}>
-      <View style={styles.blogMeta}>
+    <View style={styles.contentArea}>
+      <View style={styles.metaRow}>
         {item.category && (
           <View style={styles.categoryBadge}>
-            <Text style={styles.categoryBadgeText}>{item.category}</Text>
+            <Text style={styles.categoryText}>{item.category}</Text>
           </View>
         )}
         {item.readTime && (
@@ -36,22 +36,22 @@ export const BlogCard: React.FC<BlogCardProps> = ({ item, onPress }) => (
           </View>
         )}
       </View>
-      <Text style={styles.blogTitle} numberOfLines={2}>
+      <Text style={styles.title} numberOfLines={2}>
         {item.title}
       </Text>
-      <Text style={styles.blogDescription} numberOfLines={2}>
+      <Text style={styles.description} numberOfLines={2}>
         {item.description}
       </Text>
-      <View style={styles.blogAuthorInfo}>
-        <Text style={styles.blogAuthor}>{item.author}</Text>
-        <Text style={styles.blogDate}> • {item.date}</Text>
+      <View style={styles.authorRow}>
+        <Text style={styles.author}>{item.author}</Text>
+        <Text style={styles.date}> • {item.date}</Text>
       </View>
     </View>
   </TouchableOpacity>
 );
 
 const styles = StyleSheet.create({
-  blogCard: {
+  card: {
     width: 280,
     marginRight: 16,
     backgroundColor: '#fff',
@@ -63,21 +63,20 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     borderWidth: 1,
     borderColor: '#E2E8F0',
+    overflow: 'hidden',
   },
-  blogCardVisualArea: {
+  imageArea: {
     height: 140,
     backgroundColor: '#F8F9FA',
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
     borderBottomWidth: 1,
     borderBottomColor: '#E2E8F0',
   },
-  blogCardContentArea: {
+  contentArea: {
     padding: 16,
   },
-  blogMeta: {
+  metaRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -89,11 +88,10 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     paddingHorizontal: 12,
   },
-  categoryBadgeText: {
+  categoryText: {
     color: '#fff',
     fontSize: 11,
     fontWeight: '700',
-    letterSpacing: 0.3,
   },
   readTimeContainer: {
     flexDirection: 'row',
@@ -104,34 +102,30 @@ const styles = StyleSheet.create({
     color: '#666',
     fontWeight: '500',
   },
-  blogTitle: {
+  title: {
     fontSize: 16,
     fontWeight: '700',
     color: '#1a1a1a',
     lineHeight: 22,
     marginBottom: 8,
-    letterSpacing: 0.2,
   },
-  blogDescription: {
+  description: {
     fontSize: 13,
     color: '#666',
-    fontWeight: '400',
     lineHeight: 18,
     marginBottom: 12,
   },
-  blogAuthorInfo: {
+  authorRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 4,
   },
-  blogAuthor: {
+  author: {
     fontSize: 12,
     fontWeight: '600',
     color: '#4ECDC4',
   },
-  blogDate: {
+  date: {
     fontSize: 12,
     color: '#999',
-    fontWeight: '400',
   },
 });

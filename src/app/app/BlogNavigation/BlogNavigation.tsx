@@ -6,8 +6,8 @@ import {
   TouchableOpacity,
   SafeAreaView,
   TextInput,
-  FlatList,
   Dimensions,
+  useWindowDimensions,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import BottomNavigation from '../../../components/BottonNavigation';
@@ -28,16 +28,26 @@ interface BlogNavigationProps {
   onNavigateToAllPosts?: () => void;
 }
 
-const { width } = Dimensions.get('window');
-const cardWidth = (width - 48) / 2;
-
 const BlogNavigation: React.FC<BlogNavigationProps> = ({ 
   onNavigateToPost, 
   onNavigateToAllPosts 
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
+  const { width } = useWindowDimensions();
 
-  // Dados de exemplo - substituir pela sua fonte de dados real
+  const isSmallScreen = width < 375;
+  const isMediumScreen = width >= 375 && width < 768;
+  const isLargeScreen = width >= 768;
+
+  const horizontalPadding = isSmallScreen ? 16 : isMediumScreen ? 20 : 24;
+  
+  const horizontalCardWidth = isSmallScreen ? width * 0.75 : isMediumScreen ? 280 : 320;
+  
+  const numColumns = isSmallScreen ? 1 : isMediumScreen ? 2 : 3;
+  const gridGap = 16;
+  const totalGaps = (numColumns - 1) * gridGap;
+  const gridCardWidth = (width - (horizontalPadding * 2) - totalGaps) / numColumns;
+
   const blogPosts: BlogPost[] = [
     {
       id: '1',
@@ -86,9 +96,9 @@ const BlogNavigation: React.FC<BlogNavigationProps> = ({
     <TouchableOpacity
       key={post.id}
       style={{
-        width: 280,
+        width: horizontalCardWidth,
         backgroundColor: '#fff',
-        borderRadius: 16,
+        borderRadius: isSmallScreen ? 12 : 16,
         marginRight: 16,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
@@ -99,33 +109,33 @@ const BlogNavigation: React.FC<BlogNavigationProps> = ({
       onPress={() => onNavigateToPost?.(post.id)}
     >
       <View style={{
-        height: 140,
+        height: isSmallScreen ? 120 : 140,
         backgroundColor: '#E8F8F7',
-        borderTopLeftRadius: 16,
-        borderTopRightRadius: 16,
+        borderTopLeftRadius: isSmallScreen ? 12 : 16,
+        borderTopRightRadius: isSmallScreen ? 12 : 16,
         justifyContent: 'center',
         alignItems: 'center',
       }}>
-        <Icon name="article" size={40} color="#4ECDC4" />
+        <Icon name="article" size={isSmallScreen ? 32 : 40} color="#4ECDC4" />
       </View>
-      <View style={{ padding: 16 }}>
+      <View style={{ padding: isSmallScreen ? 12 : 16 }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
           <View style={{
             backgroundColor: '#E8F8F7',
-            paddingHorizontal: 10,
+            paddingHorizontal: isSmallScreen ? 8 : 10,
             paddingVertical: 4,
             borderRadius: 12,
           }}>
-            <Text style={{ color: '#4ECDC4', fontSize: 11, fontWeight: '600' }}>
+            <Text style={{ color: '#4ECDC4', fontSize: isSmallScreen ? 10 : 11, fontWeight: '600' }}>
               {post.category}
             </Text>
           </View>
-          <Text style={{ color: '#999', fontSize: 12 }}>
+          <Text style={{ color: '#999', fontSize: isSmallScreen ? 11 : 12 }}>
             {post.readTime}
           </Text>
         </View>
         <Text style={{
-          fontSize: 16,
+          fontSize: isSmallScreen ? 14 : 16,
           fontWeight: '700',
           color: '#333',
           marginBottom: 6,
@@ -133,17 +143,17 @@ const BlogNavigation: React.FC<BlogNavigationProps> = ({
           {post.title}
         </Text>
         <Text style={{
-          fontSize: 13,
+          fontSize: isSmallScreen ? 12 : 13,
           color: '#666',
           marginBottom: 12,
         }} numberOfLines={2}>
           {post.description}
         </Text>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Text style={{ fontSize: 12, color: '#999' }} numberOfLines={1}>
+          <Text style={{ fontSize: isSmallScreen ? 11 : 12, color: '#999', flex: 1 }} numberOfLines={1}>
             {post.author}
           </Text>
-          <Text style={{ fontSize: 11, color: '#999' }}>
+          <Text style={{ fontSize: isSmallScreen ? 10 : 11, color: '#999', marginLeft: 8 }}>
             {post.date}
           </Text>
         </View>
@@ -151,78 +161,83 @@ const BlogNavigation: React.FC<BlogNavigationProps> = ({
     </TouchableOpacity>
   );
 
-  const renderGridCard = (post: BlogPost) => (
-    <TouchableOpacity
-      key={post.id}
-      style={{
-        width: cardWidth,
-        backgroundColor: '#fff',
-        borderRadius: 16,
-        marginBottom: 16,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        elevation: 3,
-      }}
-      onPress={() => onNavigateToPost?.(post.id)}
-    >
-      <View style={{
-        height: 120,
-        backgroundColor: '#E8F8F7',
-        borderTopLeftRadius: 16,
-        borderTopRightRadius: 16,
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}>
-        <Icon name="article" size={32} color="#4ECDC4" />
-      </View>
-      <View style={{ padding: 12 }}>
+  const renderGridCard = (post: BlogPost, index: number) => {
+    const isLastInRow = (index + 1) % numColumns === 0;
+    
+    return (
+      <TouchableOpacity
+        key={post.id}
+        style={{
+          width: gridCardWidth,
+          backgroundColor: '#fff',
+          borderRadius: isSmallScreen ? 12 : 16,
+          marginBottom: 16,
+          marginRight: isLastInRow ? 0 : gridGap,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 8,
+          elevation: 3,
+        }}
+        onPress={() => onNavigateToPost?.(post.id)}
+      >
         <View style={{
+          height: isSmallScreen ? 100 : isMediumScreen ? 120 : 140,
           backgroundColor: '#E8F8F7',
-          paddingHorizontal: 8,
-          paddingVertical: 3,
-          borderRadius: 10,
-          alignSelf: 'flex-start',
-          marginBottom: 8,
+          borderTopLeftRadius: isSmallScreen ? 12 : 16,
+          borderTopRightRadius: isSmallScreen ? 12 : 16,
+          justifyContent: 'center',
+          alignItems: 'center',
         }}>
-          <Text style={{ color: '#4ECDC4', fontSize: 10, fontWeight: '600' }}>
-            {post.category}
-          </Text>
+          <Icon name="article" size={isSmallScreen ? 28 : 32} color="#4ECDC4" />
         </View>
-        <Text style={{
-          fontSize: 14,
-          fontWeight: '700',
-          color: '#333',
-          marginBottom: 6,
-        }} numberOfLines={2}>
-          {post.title}
-        </Text>
-        <Text style={{
-          fontSize: 11,
-          color: '#999',
-          marginBottom: 8,
-        }} numberOfLines={1}>
-          {post.author}
-        </Text>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          <Text style={{ fontSize: 10, color: '#999' }}>
-            {post.date}
+        <View style={{ padding: isSmallScreen ? 10 : 12 }}>
+          <View style={{
+            backgroundColor: '#E8F8F7',
+            paddingHorizontal: isSmallScreen ? 6 : 8,
+            paddingVertical: 3,
+            borderRadius: 10,
+            alignSelf: 'flex-start',
+            marginBottom: 8,
+          }}>
+            <Text style={{ color: '#4ECDC4', fontSize: isSmallScreen ? 9 : 10, fontWeight: '600' }}>
+              {post.category}
+            </Text>
+          </View>
+          <Text style={{
+            fontSize: isSmallScreen ? 13 : 14,
+            fontWeight: '700',
+            color: '#333',
+            marginBottom: 6,
+          }} numberOfLines={2}>
+            {post.title}
           </Text>
-          <Text style={{ fontSize: 10, color: '#999' }}>
-            {post.readTime}
+          <Text style={{
+            fontSize: isSmallScreen ? 10 : 11,
+            color: '#999',
+            marginBottom: 8,
+          }} numberOfLines={1}>
+            {post.author}
           </Text>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Text style={{ fontSize: isSmallScreen ? 9 : 10, color: '#999' }}>
+              {post.date}
+            </Text>
+            <Text style={{ fontSize: isSmallScreen ? 9 : 10, color: '#999' }}>
+              {post.readTime}
+            </Text>
+          </View>
         </View>
-      </View>
-    </TouchableOpacity>
-  );
+      </TouchableOpacity>
+    );
+  };
 
   const renderFeaturedCard = (post: BlogPost) => (
     <TouchableOpacity
       key={post.id}
       style={{
         backgroundColor: '#fff',
-        borderRadius: 20,
+        borderRadius: isSmallScreen ? 16 : 20,
         marginBottom: 20,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
@@ -234,35 +249,40 @@ const BlogNavigation: React.FC<BlogNavigationProps> = ({
       onPress={() => onNavigateToPost?.(post.id)}
     >
       <View style={{
-        height: 200,
+        height: isSmallScreen ? 160 : isMediumScreen ? 200 : 240,
         backgroundColor: '#4ECDC4',
         justifyContent: 'center',
         alignItems: 'center',
       }}>
-        <Icon name="auto-awesome" size={60} color="#fff" />
+        <Icon name="auto-awesome" size={isSmallScreen ? 48 : 60} color="#fff" />
       </View>
-      <View style={{ padding: 20 }}>
+      <View style={{ padding: isSmallScreen ? 16 : 20 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
           <View style={{
             backgroundColor: '#FFD93D',
-            paddingHorizontal: 12,
-            paddingVertical: 6,
+            paddingHorizontal: isSmallScreen ? 10 : 12,
+            paddingVertical: isSmallScreen ? 5 : 6,
             borderRadius: 16,
             flexDirection: 'row',
             alignItems: 'center',
             marginRight: 12,
           }}>
-            <Icon name="star" size={14} color="#fff" />
-            <Text style={{ color: '#fff', fontSize: 12, fontWeight: '700', marginLeft: 4 }}>
+            <Icon name="star" size={isSmallScreen ? 12 : 14} color="#fff" />
+            <Text style={{ 
+              color: '#fff', 
+              fontSize: isSmallScreen ? 11 : 12, 
+              fontWeight: '700', 
+              marginLeft: 4 
+            }}>
               Destaque
             </Text>
           </View>
-          <Text style={{ color: '#999', fontSize: 13 }}>
-            <Icon name="access-time" size={13} color="#999" /> {post.readTime}
+          <Text style={{ color: '#999', fontSize: isSmallScreen ? 12 : 13 }}>
+            <Icon name="access-time" size={isSmallScreen ? 12 : 13} color="#999" /> {post.readTime}
           </Text>
         </View>
         <Text style={{
-          fontSize: 20,
+          fontSize: isSmallScreen ? 18 : 20,
           fontWeight: '700',
           color: '#333',
           marginBottom: 8,
@@ -270,18 +290,18 @@ const BlogNavigation: React.FC<BlogNavigationProps> = ({
           {post.title}
         </Text>
         <Text style={{
-          fontSize: 15,
+          fontSize: isSmallScreen ? 14 : 15,
           color: '#666',
           marginBottom: 16,
-          lineHeight: 22,
+          lineHeight: isSmallScreen ? 20 : 22,
         }}>
           {post.description}
         </Text>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Text style={{ fontSize: 14, color: '#333', fontWeight: '600' }}>
+          <Text style={{ fontSize: isSmallScreen ? 13 : 14, color: '#333', fontWeight: '600' }}>
             {post.author}
           </Text>
-          <Text style={{ fontSize: 13, color: '#999' }}>
+          <Text style={{ fontSize: isSmallScreen ? 12 : 13, color: '#999' }}>
             {post.date}
           </Text>
         </View>
@@ -299,17 +319,17 @@ const BlogNavigation: React.FC<BlogNavigationProps> = ({
     <SafeAreaView style={{ flex: 1, backgroundColor: '#F8FFFE' }}>
       {/* Header */}
       <View style={{
-        paddingHorizontal: 20,
-        paddingVertical: 16,
+        paddingHorizontal: horizontalPadding,
+        paddingVertical: isSmallScreen ? 12 : 16,
         backgroundColor: '#fff',
         borderBottomWidth: 1,
         borderBottomColor: '#f0f0f0',
       }}>
         <Text style={{
-          fontSize: 28,
+          fontSize: isSmallScreen ? 24 : 28,
           fontWeight: '700',
           color: '#333',
-          marginBottom: 16,
+          marginBottom: isSmallScreen ? 12 : 16,
         }}>
           Nosso Blog
         </Text>
@@ -319,18 +339,18 @@ const BlogNavigation: React.FC<BlogNavigationProps> = ({
           flexDirection: 'row',
           alignItems: 'center',
           backgroundColor: '#F8FFFE',
-          borderRadius: 16,
-          paddingHorizontal: 16,
-          height: 50,
+          borderRadius: isSmallScreen ? 12 : 16,
+          paddingHorizontal: isSmallScreen ? 12 : 16,
+          height: isSmallScreen ? 44 : 50,
           borderWidth: 1,
           borderColor: '#E8F8F7',
         }}>
-          <Icon name="search" size={22} color="#4ECDC4" />
+          <Icon name="search" size={isSmallScreen ? 20 : 22} color="#4ECDC4" />
           <TextInput
             style={{
               flex: 1,
               marginLeft: 12,
-              fontSize: 15,
+              fontSize: isSmallScreen ? 14 : 15,
               color: '#333',
             }}
             placeholder="Buscar artigos..."
@@ -353,7 +373,7 @@ const BlogNavigation: React.FC<BlogNavigationProps> = ({
         {searchQuery === '' ? (
           <>
             {/* Featured Section */}
-            <View style={{ paddingTop: 24, paddingHorizontal: 20 }}>
+            <View style={{ paddingTop: isSmallScreen ? 16 : 24, paddingHorizontal: horizontalPadding }}>
               <View style={{
                 flexDirection: 'row',
                 justifyContent: 'space-between',
@@ -362,14 +382,14 @@ const BlogNavigation: React.FC<BlogNavigationProps> = ({
               }}>
                 <View>
                   <Text style={{
-                    fontSize: 22,
+                    fontSize: isSmallScreen ? 18 : 22,
                     fontWeight: '700',
                     color: '#333',
                   }}>
                     Em Destaque
                   </Text>
                   <Text style={{
-                    fontSize: 14,
+                    fontSize: isSmallScreen ? 13 : 14,
                     color: '#666',
                     marginTop: 4,
                   }}>
@@ -386,19 +406,19 @@ const BlogNavigation: React.FC<BlogNavigationProps> = ({
                 flexDirection: 'row',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                paddingHorizontal: 20,
+                paddingHorizontal: horizontalPadding,
                 marginBottom: 16,
               }}>
                 <View>
                   <Text style={{
-                    fontSize: 22,
+                    fontSize: isSmallScreen ? 18 : 22,
                     fontWeight: '700',
                     color: '#333',
                   }}>
                     Últimos Blogs
                   </Text>
                   <Text style={{
-                    fontSize: 14,
+                    fontSize: isSmallScreen ? 13 : 14,
                     color: '#666',
                     marginTop: 4,
                   }}>
@@ -407,7 +427,7 @@ const BlogNavigation: React.FC<BlogNavigationProps> = ({
                 </View>
                 <TouchableOpacity onPress={onNavigateToAllPosts}>
                   <Text style={{
-                    fontSize: 14,
+                    fontSize: isSmallScreen ? 13 : 14,
                     color: '#4ECDC4',
                     fontWeight: '600',
                   }}>
@@ -418,14 +438,18 @@ const BlogNavigation: React.FC<BlogNavigationProps> = ({
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{ paddingHorizontal: 20 }}
+                contentContainerStyle={{ paddingHorizontal: horizontalPadding }}
               >
                 {latestPosts.map(renderHorizontalCard)}
               </ScrollView>
             </View>
 
             {/* For You Section */}
-            <View style={{ paddingTop: 32, paddingHorizontal: 20, paddingBottom: 24 }}>
+            <View style={{ 
+              paddingTop: isSmallScreen ? 24 : 32, 
+              paddingHorizontal: horizontalPadding, 
+              paddingBottom: 24 
+            }}>
               <View style={{
                 flexDirection: 'row',
                 justifyContent: 'space-between',
@@ -434,14 +458,14 @@ const BlogNavigation: React.FC<BlogNavigationProps> = ({
               }}>
                 <View>
                   <Text style={{
-                    fontSize: 22,
+                    fontSize: isSmallScreen ? 18 : 22,
                     fontWeight: '700',
                     color: '#333',
                   }}>
                     Para Você
                   </Text>
                   <Text style={{
-                    fontSize: 14,
+                    fontSize: isSmallScreen ? 13 : 14,
                     color: '#666',
                     marginTop: 4,
                   }}>
@@ -450,7 +474,7 @@ const BlogNavigation: React.FC<BlogNavigationProps> = ({
                 </View>
                 <TouchableOpacity onPress={onNavigateToAllPosts}>
                   <Text style={{
-                    fontSize: 14,
+                    fontSize: isSmallScreen ? 13 : 14,
                     color: '#4ECDC4',
                     fontWeight: '600',
                   }}>
@@ -461,17 +485,20 @@ const BlogNavigation: React.FC<BlogNavigationProps> = ({
               <View style={{
                 flexDirection: 'row',
                 flexWrap: 'wrap',
-                justifyContent: 'space-between',
               }}>
-                {forYouPosts.map(renderGridCard)}
+                {forYouPosts.map((post, index) => renderGridCard(post, index))}
               </View>
             </View>
           </>
         ) : (
           // Search Results
-          <View style={{ paddingTop: 24, paddingHorizontal: 20, paddingBottom: 24 }}>
+          <View style={{ 
+            paddingTop: isSmallScreen ? 16 : 24, 
+            paddingHorizontal: horizontalPadding, 
+            paddingBottom: 24 
+          }}>
             <Text style={{
-              fontSize: 22,
+              fontSize: isSmallScreen ? 18 : 22,
               fontWeight: '700',
               color: '#333',
               marginBottom: 16,
@@ -484,9 +511,9 @@ const BlogNavigation: React.FC<BlogNavigationProps> = ({
                 justifyContent: 'center',
                 paddingVertical: 60,
               }}>
-                <Icon name="search-off" size={64} color="#ccc" />
+                <Icon name="search-off" size={isSmallScreen ? 56 : 64} color="#ccc" />
                 <Text style={{
-                  fontSize: 18,
+                  fontSize: isSmallScreen ? 16 : 18,
                   fontWeight: '600',
                   color: '#999',
                   marginTop: 16,
@@ -494,7 +521,7 @@ const BlogNavigation: React.FC<BlogNavigationProps> = ({
                   Nenhum artigo encontrado
                 </Text>
                 <Text style={{
-                  fontSize: 14,
+                  fontSize: isSmallScreen ? 13 : 14,
                   color: '#999',
                   marginTop: 8,
                   textAlign: 'center',
@@ -506,15 +533,14 @@ const BlogNavigation: React.FC<BlogNavigationProps> = ({
               <View style={{
                 flexDirection: 'row',
                 flexWrap: 'wrap',
-                justifyContent: 'space-between',
               }}>
-                {filteredPosts.map(renderGridCard)}
+                {filteredPosts.map((post, index) => renderGridCard(post, index))}
               </View>
             )}
           </View>
         )}
       </ScrollView>
-    <BottomNavigation />
+      <BottomNavigation />
     </SafeAreaView>
   );
 };

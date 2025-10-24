@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, Animated, ScrollView, SafeAreaView } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import BottomNavigation from "@components/BottonNavigation";
+import { router } from 'expo-router';
 import { styles } from './styles';
 
 type BreathingPhase = 'idle' | 'inhale' | 'hold' | 'exhale';
@@ -17,7 +19,7 @@ export default function BreathingActivityScreen() {
   const INHALE_DURATION = 4000;
   const HOLD_DURATION = 4000;
   const EXHALE_DURATION = 4000;
-  const TOTAL_DURATION = 60000; // 1 minuto
+  const TOTAL_DURATION = 60000;
 
   const getPhaseText = () => {
     switch (phase) {
@@ -55,7 +57,6 @@ export default function BreathingActivityScreen() {
         setTimer((prev) => {
           const newTime = prev + 100;
 
-          // Para após 1 minuto
           if (newTime >= TOTAL_DURATION) {
             setIsActive(false);
             setPhase('idle');
@@ -124,16 +125,25 @@ export default function BreathingActivityScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity 
+          style={styles.backButton} 
+          onPress={() => router.back()}
+        >
+          <Icon name="arrow-back" size={24} color="#333" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Respiração Guiada</Text>
+        <View style={styles.headerPlaceholder} />
+      </View>
+
       <ScrollView 
+        style={styles.content}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>Respiração Guiada</Text>
-        </View>
-
         <View style={styles.timerContainer}>
           <Text style={styles.timerText}>{formatTime(timer)}</Text>
+          <Text style={styles.timerLabel}>tempo restante</Text>
         </View>
 
         <View style={styles.mainCard}>
@@ -147,11 +157,22 @@ export default function BreathingActivityScreen() {
                 },
               ]}
             />
-            <View style={styles.innerCircle} />
+            <View style={styles.innerCircle}>
+              {phase !== 'idle' && (
+                <View style={styles.phaseIndicator}>
+                  <Icon 
+                    name={phase === 'inhale' ? 'arrow-upward' : phase === 'exhale' ? 'arrow-downward' : 'pause'} 
+                    size={32} 
+                    color="#4ECDC4" 
+                  />
+                </View>
+              )}
+            </View>
           </View>
 
           {phase === 'idle' ? (
             <TouchableOpacity style={styles.actionButton} onPress={handleStart}>
+              <Icon name="play-arrow" size={24} color="#fff" style={styles.buttonIcon} />
               <Text style={styles.actionButtonText}>{getPhaseText()}</Text>
             </TouchableOpacity>
           ) : (
@@ -164,21 +185,48 @@ export default function BreathingActivityScreen() {
         {isActive && (
           <View style={styles.controls}>
             <TouchableOpacity style={styles.controlButton} onPress={handlePause}>
-              <Icon name={isPaused ? 'play-arrow' : 'pause'} size={32} color="#1a1a1a" />
+              <Icon name={isPaused ? 'play-arrow' : 'pause'} size={28} color="#4ECDC4" />
+              <Text style={styles.controlButtonLabel}>
+                {isPaused ? 'Continuar' : 'Pausar'}
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.controlButton} onPress={handleStop}>
-              <Icon name="stop" size={32} color="#1a1a1a" />
+              <Icon name="stop" size={28} color="#ff4757" />
+              <Text style={styles.controlButtonLabel}>Parar</Text>
             </TouchableOpacity>
           </View>
         )}
 
         <View style={styles.instructionsContainer}>
-          <Text style={styles.instructionsTitle}>Como funciona:</Text>
+          <View style={styles.instructionsHeader}>
+            <Icon name="info-outline" size={20} color="#4ECDC4" />
+            <Text style={styles.instructionsTitle}>Como funciona</Text>
+          </View>
           <Text style={styles.instructionsText}>
             Inspire profundamente enquanto o círculo expande, segure a respiração durante a pausa e expire lentamente enquanto o círculo diminui.
           </Text>
+          
+          <View style={styles.benefitsContainer}>
+            <Text style={styles.benefitsTitle}>Benefícios:</Text>
+            <View style={styles.benefitItem}>
+              <Icon name="check-circle" size={16} color="#4ECDC4" />
+              <Text style={styles.benefitText}>Reduz o estresse e ansiedade</Text>
+            </View>
+            <View style={styles.benefitItem}>
+              <Icon name="check-circle" size={16} color="#4ECDC4" />
+              <Text style={styles.benefitText}>Melhora a concentração</Text>
+            </View>
+            <View style={styles.benefitItem}>
+              <Icon name="check-circle" size={16} color="#4ECDC4" />
+              <Text style={styles.benefitText}>Promove relaxamento profundo</Text>
+            </View>
+          </View>
         </View>
+
+        <View style={styles.bottomSpacing} />
       </ScrollView>
+
+      <BottomNavigation />
     </SafeAreaView>
   );
 }

@@ -4,14 +4,14 @@ import { useRouter } from 'expo-router';
 import BottomNavigation from '@components/BottonNavigation';
 
 import { styles } from './styles';
-import { respirationActivities, dailyResources, blogPosts } from './mockData';
+import { respirationActivities, blogPosts } from './mockData';
 import { SearchBar } from './components/SearchBar';
 import { Banner } from './components/Banner';
 import { BlogCard } from './components/BlogCard';
 import { GridSection } from './components/GridSection';
 import { Section } from './components/Section';
 import { RespirationCard } from './components/RespirationCard';
-import { ResourceCard } from './components/ResourceCard';
+import { ResourceCard, dailyResources } from './components/ResourceCard';
 
 interface RespirationActivity {
   id: string;
@@ -24,7 +24,7 @@ interface DailyResource {
   id: string;
   title: string;
   icon: string;
-  color: string;
+  route: string;
 }
 
 interface BlogPost {
@@ -71,16 +71,15 @@ const HomeScreen: React.FC = () => {
   }, [searchQuery]);
 
   const handleNavigateToBlogPost = (postId: string) => {
-    router.push(`./app/BlogPostScreen/BlogPostScreen?id=${postId}`);
+    router.push(`/app/BlogPostScreen/BlogPostScreen?id=${postId}` as any); 
   };
   
-  // MUDANÇA AQUI: Navega para BreathingActivityScreen
   const handleNavigateToBreathingActivity = () => {
-    router.push('/app/BreathingActivityScreen/BreathingActivityScreen');
+    router.push('/app/BreathingActivityScreen/BreathingActivityScreen' as any);
   };
 
-  const handleNavigateToActivity = (activityId: string) => {
-    console.log(`Navegando para a atividade: ${activityId}`);
+  const handleNavigateToResource = (route: string) => {
+    router.push(route as any);
   };
 
   return (
@@ -92,7 +91,6 @@ const HomeScreen: React.FC = () => {
       >
         <SearchBar value={searchQuery} onChangeText={setSearchQuery} />
 
-        
         <Banner />
 
         <GridSection
@@ -112,7 +110,10 @@ const HomeScreen: React.FC = () => {
           data={filteredData.dailyResources}
           keyExtractor={(item) => item.id}
           renderItem={(item) => (
-            <ResourceCard item={item} onPress={() => handleNavigateToActivity(item.id)} />
+            <ResourceCard 
+              item={item} 
+              onPress={() => handleNavigateToResource(item.route)} 
+            />
           )}
         />
 
@@ -121,7 +122,10 @@ const HomeScreen: React.FC = () => {
           data={filteredData.blogPosts}
           keyExtractor={(item) => item.id}
           renderItem={(item) => (
-            <BlogCard item={item as BlogPost} onPress={() => handleNavigateToBlogPost(item.id)} />
+            <BlogCard 
+              item={item as BlogPost} 
+              onPress={() => handleNavigateToBlogPost(item.id)} 
+            />
           )}
         />
 
