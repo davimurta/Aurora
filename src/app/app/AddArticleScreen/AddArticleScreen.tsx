@@ -1,5 +1,5 @@
 import BottomNavigation from '@components/BottonNavigation';
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -8,78 +8,70 @@ import {
   TouchableOpacity,
   SafeAreaView,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import * as ImagePicker from 'expo-image-picker';
-import { WebView } from 'react-native-webview';
 import { styles } from './styles';
 
-interface EditorAction {
-  type: 'bold' | 'italic' | 'highlight' | 'highlightBg' | 'image';
-  icon: string;
-  label: string;
+interface ContentBlock {
+  id: string;
+  type: 'paragraph' | 'heading' | 'image';
+  content: string;
+  level?: 1 | 2 | 3;
 }
 
 const AddArticleScreen: React.FC = () => {
   const [author, setAuthor] = useState('');
+  const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [content, setContent] = useState('');
+  const [contentBlocks, setContentBlocks] = useState<ContentBlock[]>([
+    { id: '1', type: 'paragraph', content: '' }
+  ]);
   const [isLoading, setIsLoading] = useState(false);
-  const [viewMode, setViewMode] = useState<'edit' | 'preview'>('edit');
   
-  const contentInputRef = useRef<TextInput>(null);
-  const [selectionStart, setSelectionStart] = useState(0);
-  const [selectionEnd, setSelectionEnd] = useState(0);
-
   const currentDate = new Date().toLocaleDateString('pt-BR');
 
-  const editorActions: EditorAction[] = [
-    { type: 'bold', icon: 'format-bold', label: 'Negrito' },
-    { type: 'italic', icon: 'format-italic', label: 'Itálico' },
-    { type: 'highlight', icon: 'format-color-text', label: 'Destaque Texto' },
-    { type: 'highlightBg', icon: 'format-color-fill', label: 'Destaque Fundo' },
-    { type: 'image', icon: 'image', label: 'Inserir Imagem' },
-  ];
-
-  const handleEditorAction = async (action: EditorAction) => {
-    const selectedText = content.substring(selectionStart, selectionEnd);
-    
-    if (action.type === 'image') {
-      await handleImagePicker();
-      return;
-    }
-
-    if (selectedText.length === 0) {
-      Alert.alert('Aviso', 'Selecione um texto primeiro para aplicar a formatação.');
-      return;
-    }
-
-    let formattedText = '';
-    
-    switch (action.type) {
-      case 'bold':
-        formattedText = `**${selectedText}**`;
-        break;
-      case 'italic':
-        formattedText = `*${selectedText}*`;
-        break;
-      case 'highlight':
-        formattedText = `<span style="color: #4ECDC4; font-weight: 600;">${selectedText}</span>`;
-        break;
-      case 'highlightBg':
-        formattedText = `<span style="background-color: #4ECDC4; color: white; padding: 2px 6px; border-radius: 4px; font-weight: 500;">${selectedText}</span>`;
-        break;
-    }
-
-    const newContent = 
-      content.substring(0, selectionStart) + 
-      formattedText + 
-      content.substring(selectionEnd);
-    
-    setContent(newContent);
+  const addBlock = (type: 'paragraph' | 'heading' | 'image', level?: 1 | 2 | 3) => {
+    const newBlock: ContentBlock = {
+      id: Date.now().toString(),
+      type,
+      content: '',
+      level: type === 'heading' ? level : undefined
+    };
+    setContentBlocks([...contentBlocks, newBlock]);
   };
 
-  const handleImagePicker = async () => {
+  const updateBlock = (id: string, content: string) => {
+    setContentBlocks(contentBlocks.map(block => 
+      block.id === id ? { ...block, content } : block
+    ));
+  };
+
+  const removeBlock = (id: string) => {
+    if (contentBlocks.length === 1) {
+      Alert.alert('Aviso', 'Você precisa ter pelo menos um bloco de conteúdo.');
+      return;
+    }
+    setContentBlocks(contentBlocks.filter(block => block.id !== id));
+  };
+
+  const moveBlockUp = (index: number) => {
+    if (index === 0) return;
+    const newBlocks = [...contentBlocks];
+    [newBlocks[index], newBlocks[index - 1]] = [newBlocks[index - 1], newBlocks[index]];
+    setContentBlocks(newBlocks);
+  };
+
+  const moveBlockDown = (index: number) => {
+    if (index === contentBlocks.length - 1) return;
+    const newBlocks = [...contentBlocks];
+    [newBlocks[index], newBlocks[index + 1]] = [newBlocks[index + 1], newBlocks[index]];
+    setContentBlocks(newBlocks);
+  };
+
+  const handleImagePicker = async (blockId: string) => {
     try {
       const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
       
@@ -96,12 +88,7 @@ const AddArticleScreen: React.FC = () => {
       });
 
       if (!result.canceled && result.assets[0]) {
-        const imageMarkdown = `\n<img src="${result.assets[0].uri}" style="width: 100%; max-width: 400px; height: auto; border-radius: 8px; margin: 10px 0;" alt="Imagem inserida" />\n`;
-        const newContent = 
-          content.substring(0, selectionStart) + 
-          imageMarkdown + 
-          content.substring(selectionEnd);
-        setContent(newContent);
+        updateBlock(blockId, result.assets[0].uri);
       }
     } catch {
       Alert.alert('Erro', 'Erro ao selecionar imagem.');
@@ -109,8 +96,14 @@ const AddArticleScreen: React.FC = () => {
   };
 
   const handleSubmit = async () => {
-    if (!author.trim() || !description.trim() || !content.trim()) {
-      Alert.alert('Campos obrigatórios', 'Por favor, preencha todos os campos.');
+    if (!author.trim() || !title.trim() || !description.trim()) {
+      Alert.alert('Campos obrigatórios', 'Por favor, preencha todos os campos obrigatórios.');
+      return;
+    }
+
+    const hasContent = contentBlocks.some(block => block.content.trim() !== '');
+    if (!hasContent) {
+      Alert.alert('Conteúdo vazio', 'Por favor, escreva o conteúdo da matéria.');
       return;
     }
 
@@ -124,9 +117,9 @@ const AddArticleScreen: React.FC = () => {
             text: 'OK',
             onPress: () => {
               setAuthor('');
+              setTitle('');
               setDescription('');
-              setContent('');
-              setViewMode('edit');
+              setContentBlocks([{ id: Date.now().toString(), type: 'paragraph', content: '' }]);
             }
           }
         ]);
@@ -138,199 +131,270 @@ const AddArticleScreen: React.FC = () => {
     }
   };
 
-  const handleSelectionChange = (event: any) => {
-    setSelectionStart(event.nativeEvent.selection.start);
-    setSelectionEnd(event.nativeEvent.selection.end);
-  };
+  const renderBlock = (block: ContentBlock, index: number) => {
+    return (
+      <View key={block.id} style={styles.contentBlock}>
+        <View style={styles.blockHeader}>
+          <View style={styles.blockTypeIndicator}>
+            {block.type === 'paragraph' && (
+              <>
+                <Icon name="notes" size={16} color="#4ECDC4" />
+                <Text style={styles.blockTypeText}>Parágrafo</Text>
+              </>
+            )}
+            {block.type === 'heading' && (
+              <>
+                <Icon name="title" size={16} color="#4ECDC4" />
+                <Text style={styles.blockTypeText}>Título H{block.level}</Text>
+              </>
+            )}
+            {block.type === 'image' && (
+              <>
+                <Icon name="image" size={16} color="#4ECDC4" />
+                <Text style={styles.blockTypeText}>Imagem</Text>
+              </>
+            )}
+          </View>
 
-  const renderContentAsHTML = () => {
-    const htmlContent = content
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\*(.*?)\*/g, '<em>$1</em>')
-      .replace(/\n/g, '<br />');
+          <View style={styles.blockActions}>
+            <TouchableOpacity
+              style={styles.blockActionButton}
+              onPress={() => moveBlockUp(index)}
+              disabled={index === 0}
+            >
+              <Icon name="arrow-upward" size={18} color={index === 0 ? '#ccc' : '#666'} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.blockActionButton}
+              onPress={() => moveBlockDown(index)}
+              disabled={index === contentBlocks.length - 1}
+            >
+              <Icon name="arrow-downward" size={18} color={index === contentBlocks.length - 1 ? '#ccc' : '#666'} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.blockActionButton}
+              onPress={() => removeBlock(block.id)}
+            >
+              <Icon name="delete" size={18} color="#FF6B6B" />
+            </TouchableOpacity>
+          </View>
+        </View>
 
-    return `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <style>
-            body {
-              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-              font-size: 16px;
-              line-height: 1.6;
-              color: #333;
-              padding: 20px;
-              margin: 0;
-              background-color: #fff;
-            }
-            strong { font-weight: 700; color: #222; }
-            em { font-style: italic; color: #555; }
-            img {
-              max-width: 100%;
-              height: auto;
-              border-radius: 8px;
-              margin: 10px 0;
-              box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            }
-            p { margin: 12px 0; }
-          </style>
-        </head>
-        <body>
-          ${htmlContent || '<p style="color: #999; font-style: italic;">Comece a escrever para ver a prévia...</p>'}
-        </body>
-      </html>
-    `;
+        {block.type === 'paragraph' && (
+          <TextInput
+            style={styles.paragraphInput}
+            value={block.content}
+            onChangeText={(text) => updateBlock(block.id, text)}
+            placeholder="Escreva seu parágrafo aqui..."
+            placeholderTextColor="#999"
+            multiline
+            textAlignVertical="top"
+          />
+        )}
+
+        {block.type === 'heading' && (
+          <TextInput
+            style={[
+              styles.headingInput,
+              block.level === 1 && styles.heading1Input,
+              block.level === 2 && styles.heading2Input,
+              block.level === 3 && styles.heading3Input,
+            ]}
+            value={block.content}
+            onChangeText={(text) => updateBlock(block.id, text)}
+            placeholder={`Título nível ${block.level}`}
+            placeholderTextColor="#999"
+          />
+        )}
+
+        {block.type === 'image' && (
+          <View style={styles.imageBlockContainer}>
+            {block.content ? (
+              <View style={styles.imagePreviewContainer}>
+                <View style={styles.imagePlaceholder}>
+                  <Icon name="image" size={60} color="#4ECDC4" />
+                  <Text style={styles.imageUrlText} numberOfLines={2}>
+                    {block.content}
+                  </Text>
+                </View>
+                <TouchableOpacity
+                  style={styles.changeImageButton}
+                  onPress={() => handleImagePicker(block.id)}
+                >
+                  <Icon name="edit" size={16} color="#fff" />
+                  <Text style={styles.changeImageButtonText}>Trocar Imagem</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <TouchableOpacity
+                style={styles.addImageButton}
+                onPress={() => handleImagePicker(block.id)}
+              >
+                <Icon name="add-photo-alternate" size={40} color="#4ECDC4" />
+                <Text style={styles.addImageButtonText}>Selecionar Imagem</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        )}
+      </View>
+    );
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        
-        <View style={styles.headerContainer}>
-          <Text style={styles.headerTitle}>Nova Matéria</Text>
-          <Text style={styles.headerSubtitle}>Crie um novo artigo para o blog</Text>
-        </View>
-
-        <View style={styles.formContainer}>
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.keyboardView}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+      >
+        <ScrollView 
+          style={styles.content} 
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
           
-          <View style={styles.fieldContainer}>
-            <Text style={styles.fieldLabel}>Autor</Text>
-            <View style={styles.inputContainer}>
-              <Icon name="person" size={20} color="#4ECDC4" style={styles.inputIcon} />
-              <TextInput
-                style={styles.textInput}
-                value={author}
-                onChangeText={setAuthor}
-                placeholder="Nome do autor"
-                placeholderTextColor="#999"
-              />
-            </View>
+          <View style={styles.headerContainer}>
+            <Text style={styles.headerTitle}>Nova Matéria</Text>
+            <Text style={styles.headerSubtitle}>Crie um novo artigo para o blog</Text>
           </View>
 
-          <View style={styles.fieldContainer}>
-            <Text style={styles.fieldLabel}>Data</Text>
-            <View style={styles.inputContainer}>
-              <Icon name="today" size={20} color="#4ECDC4" style={styles.inputIcon} />
-              <TextInput
-                style={[styles.textInput, styles.readOnlyInput]}
-                value={currentDate}
-                editable={false}
-              />
-            </View>
-          </View>
-
-          <View style={styles.fieldContainer}>
-            <Text style={styles.fieldLabel}>Descrição</Text>
-            <View style={styles.inputContainer}>
-              <Icon name="description" size={20} color="#4ECDC4" style={styles.inputIcon} />
-              <TextInput
-                style={styles.textInput}
-                value={description}
-                onChangeText={setDescription}
-                placeholder="Breve descrição da matéria"
-                placeholderTextColor="#999"
-                multiline
-                numberOfLines={2}
-              />
-            </View>
-          </View>
-
-          <View style={styles.fieldContainer}>
-            <View style={styles.editorHeader}>
-              <Text style={styles.fieldLabel}>Conteúdo</Text>
-              
-              <View style={styles.viewModeToggle}>
-                <TouchableOpacity
-                  style={[styles.toggleButton, viewMode === 'edit' && styles.toggleButtonActive]}
-                  onPress={() => setViewMode('edit')}
-                >
-                  <Icon name="edit" size={16} color={viewMode === 'edit' ? '#fff' : '#4ECDC4'} />
-                  <Text style={[styles.toggleButtonText, viewMode === 'edit' && styles.toggleButtonTextActive]}>
-                    Editar
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.toggleButton, viewMode === 'preview' && styles.toggleButtonActive]}
-                  onPress={() => setViewMode('preview')}
-                >
-                  <Icon name="preview" size={16} color={viewMode === 'preview' ? '#fff' : '#4ECDC4'} />
-                  <Text style={[styles.toggleButtonText, viewMode === 'preview' && styles.toggleButtonTextActive]}>
-                    Prévia
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
+          <View style={styles.formContainer}>
             
-            {viewMode === 'edit' && (
-              <>
-                <View style={styles.editorToolbar}>
-                  <ScrollView 
-                    horizontal 
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={styles.toolbarScrollContainer}
-                  >
-                    {editorActions.map((action) => (
-                      <TouchableOpacity
-                        key={action.type}
-                        style={styles.toolbarButton}
-                        onPress={() => handleEditorAction(action)}
-                      >
-                        <Icon name={action.icon} size={20} color="#4ECDC4" />
-                        <Text style={styles.toolbarButtonText}>{action.label}</Text>
-                      </TouchableOpacity>
-                    ))}
-                  </ScrollView>
-                </View>
-
-                <View style={styles.editorContainer}>
-                  <TextInput
-                    ref={contentInputRef}
-                    style={styles.contentInput}
-                    value={content}
-                    onChangeText={setContent}
-                    onSelectionChange={handleSelectionChange}
-                    placeholder="Escreva o conteúdo da sua matéria aqui...&#10;&#10;Dicas:&#10;• Selecione texto para aplicar formatação&#10;• Use ** para negrito: **texto**&#10;• Use * para itálico: *texto*&#10;• Insira imagens através do botão correspondente&#10;• Mude para 'Prévia' para ver como ficará"
-                    placeholderTextColor="#999"
-                    multiline
-                    textAlignVertical="top"
-                    scrollEnabled={false}
-                  />
-                </View>
-              </>
-            )}
-
-            {viewMode === 'preview' && (
-              <View style={styles.previewContainer}>
-                <WebView
-                  style={styles.previewWebView}
-                  source={{ html: renderContentAsHTML() }}
-                  originWhitelist={['*']}
+            <View style={styles.fieldContainer}>
+              <Text style={styles.fieldLabel}>
+                Autor <Text style={styles.requiredMark}>*</Text>
+              </Text>
+              <View style={styles.inputContainer}>
+                <Icon name="person" size={20} color="#4ECDC4" style={styles.inputIcon} />
+                <TextInput
+                  style={styles.textInput}
+                  value={author}
+                  onChangeText={setAuthor}
+                  placeholder="Nome do autor"
+                  placeholderTextColor="#999"
                 />
               </View>
-            )}
+            </View>
+
+            <View style={styles.fieldContainer}>
+              <Text style={styles.fieldLabel}>Data</Text>
+              <View style={styles.inputContainer}>
+                <Icon name="today" size={20} color="#4ECDC4" style={styles.inputIcon} />
+                <TextInput
+                  style={[styles.textInput, styles.readOnlyInput]}
+                  value={currentDate}
+                  editable={false}
+                />
+              </View>
+            </View>
+
+            <View style={styles.fieldContainer}>
+              <Text style={styles.fieldLabel}>
+                Título <Text style={styles.requiredMark}>*</Text>
+              </Text>
+              <View style={styles.inputContainer}>
+                <Icon name="title" size={20} color="#4ECDC4" style={styles.inputIcon} />
+                <TextInput
+                  style={styles.textInput}
+                  value={title}
+                  onChangeText={setTitle}
+                  placeholder="Título da matéria"
+                  placeholderTextColor="#999"
+                />
+              </View>
+            </View>
+
+            <View style={styles.fieldContainer}>
+              <Text style={styles.fieldLabel}>
+                Descrição <Text style={styles.requiredMark}>*</Text>
+              </Text>
+              <View style={styles.inputContainer}>
+                <Icon name="description" size={20} color="#4ECDC4" style={styles.inputIcon} />
+                <TextInput
+                  style={styles.textInput}
+                  value={description}
+                  onChangeText={setDescription}
+                  placeholder="Breve descrição da matéria (resumo)"
+                  placeholderTextColor="#999"
+                  multiline
+                  numberOfLines={3}
+                />
+              </View>
+            </View>
+
+            <View style={styles.fieldContainer}>
+              <Text style={styles.fieldLabel}>
+                Conteúdo <Text style={styles.requiredMark}>*</Text>
+              </Text>
+              <Text style={styles.fieldHelper}>
+                Adicione blocos de conteúdo para construir sua matéria
+              </Text>
+
+              {contentBlocks.map((block, index) => renderBlock(block, index))}
+
+              <View style={styles.addBlockButtons}>
+                <TouchableOpacity
+                  style={styles.addBlockButton}
+                  onPress={() => addBlock('paragraph')}
+                >
+                  <Icon name="notes" size={20} color="#4ECDC4" />
+                  <Text style={styles.addBlockButtonText}>Parágrafo</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.addBlockButton}
+                  onPress={() => addBlock('heading', 1)}
+                >
+                  <Icon name="title" size={20} color="#4ECDC4" />
+                  <Text style={styles.addBlockButtonText}>Título H1</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.addBlockButton}
+                  onPress={() => addBlock('heading', 2)}
+                >
+                  <Icon name="title" size={18} color="#4ECDC4" />
+                  <Text style={styles.addBlockButtonText}>Título H2</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.addBlockButton}
+                  onPress={() => addBlock('heading', 3)}
+                >
+                  <Icon name="title" size={16} color="#4ECDC4" />
+                  <Text style={styles.addBlockButtonText}>Título H3</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.addBlockButton}
+                  onPress={() => addBlock('image')}
+                >
+                  <Icon name="image" size={20} color="#4ECDC4" />
+                  <Text style={styles.addBlockButtonText}>Imagem</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <TouchableOpacity 
+              style={[styles.submitButton, isLoading && styles.submitButtonDisabled]}
+              onPress={handleSubmit}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <Text style={styles.submitButtonText}>Publicando...</Text>
+              ) : (
+                <>
+                  <Icon name="publish" size={20} color="#fff" style={styles.submitIcon} />
+                  <Text style={styles.submitButtonText}>Publicar Matéria</Text>
+                </>
+              )}
+            </TouchableOpacity>
+
           </View>
 
-          <TouchableOpacity 
-            style={[styles.submitButton, isLoading && styles.submitButtonDisabled]}
-            onPress={handleSubmit}
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <Text style={styles.submitButtonText}>Criando...</Text>
-            ) : (
-              <>
-                <Icon name="publish" size={20} color="#fff" style={styles.submitIcon} />
-                <Text style={styles.submitButtonText}>Publicar Matéria</Text>
-              </>
-            )}
-          </TouchableOpacity>
-
-        </View>
-
-        <View style={styles.bottomSpacing} />
-      </ScrollView>
+          <View style={styles.bottomSpacing} />
+        </ScrollView>
+      </KeyboardAvoidingView>
 
       <BottomNavigation />
     </SafeAreaView>
