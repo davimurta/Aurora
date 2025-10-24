@@ -1,6 +1,5 @@
 import React from 'react';
-import { View, Text, ScrollView } from 'react-native';
-import { styles } from '../styles';
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
 
 interface SectionProps<T> {
   title: string;
@@ -29,3 +28,20 @@ export const Section = <T,>({ title, data, renderItem, keyExtractor }: SectionPr
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  section: {
+    marginBottom: 28,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#1a1a1a',
+    marginBottom: 16,
+    paddingHorizontal: 16,
+    letterSpacing: 0.3,
+  },
+  scrollContainer: {
+    paddingHorizontal: 16,
+  },
+});

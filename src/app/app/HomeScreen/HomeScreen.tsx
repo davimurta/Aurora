@@ -1,17 +1,41 @@
 import React, { useState, useMemo } from 'react';
-import { SafeAreaView, ScrollView } from 'react-native';
+import { SafeAreaView, ScrollView, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import BottomNavigation from '@components/BottonNavigation';
 
 import { styles } from './styles';
-import { activities, recommendations, meditationTechniques, blogPosts } from './mockData';
+import { respirationActivities, dailyResources, blogPosts } from './mockData';
 import { SearchBar } from './components/SearchBar';
-import { Section } from './components/Section';
-import { ActivityCard } from './components/ActivityCard';
+import { Banner } from './components/Banner';
 import { BlogCard } from './components/BlogCard';
+import { GridSection } from './components/GridSection';
+import { Section } from './components/Section';
+import { RespirationCard } from './components/RespirationCard';
+import { ResourceCard } from './components/ResourceCard';
 
-interface CardItem { id: string; title?: string; description?: string; }
-interface BlogPost extends CardItem { author?: string; date?: string; readTime?: string; category?: string; }
+interface RespirationActivity {
+  id: string;
+  title: string;
+  icon: string;
+  bgColor: string;
+}
+
+interface DailyResource {
+  id: string;
+  title: string;
+  icon: string;
+  color: string;
+}
+
+interface BlogPost {
+  id: string;
+  title?: string;
+  description?: string;
+  author?: string;
+  date?: string;
+  readTime?: string;
+  category?: string;
+}
 
 const HomeScreen: React.FC = () => {
   const router = useRouter();
@@ -21,34 +45,42 @@ const HomeScreen: React.FC = () => {
     const query = searchQuery.toLowerCase().trim();
     if (!query) {
       return {
-        activities,
-        recommendations,
-        meditationTechniques,
+        respirationActivities,
+        dailyResources,
         blogPosts,
       };
     }
 
-    const filter = (data: (CardItem | BlogPost)[]) =>
+    const filterRespirationActivities = (data: RespirationActivity[]) =>
+      data.filter(item => item.title?.toLowerCase().includes(query));
+
+    const filterDailyResources = (data: DailyResource[]) =>
+      data.filter(item => item.title?.toLowerCase().includes(query));
+
+    const filterBlogPosts = (data: BlogPost[]) =>
       data.filter(item =>
         item.title?.toLowerCase().includes(query) ||
         item.description?.toLowerCase().includes(query)
       );
 
     return {
-      activities: filter(activities),
-      recommendations: filter(recommendations),
-      meditationTechniques: filter(meditationTechniques),
-      blogPosts: filter(blogPosts),
+      respirationActivities: filterRespirationActivities(respirationActivities),
+      dailyResources: filterDailyResources(dailyResources),
+      blogPosts: filterBlogPosts(blogPosts),
     };
   }, [searchQuery]);
 
   const handleNavigateToBlogPost = (postId: string) => {
-    router.push(`/app/BlogPostScreen/BlogPostScreen?id=${postId}`);
+    router.push(`./app/BlogPostScreen/BlogPostScreen?id=${postId}`);
   };
   
+  // MUDANÇA AQUI: Navega para BreathingActivityScreen
+  const handleNavigateToBreathingActivity = () => {
+    router.push('/app/BreathingActivityScreen/BreathingActivityScreen');
+  };
+
   const handleNavigateToActivity = (activityId: string) => {
     console.log(`Navegando para a atividade: ${activityId}`);
-    // Ex: router.push(`/app/activity/${activityId}`);
   };
 
   return (
@@ -60,30 +92,27 @@ const HomeScreen: React.FC = () => {
       >
         <SearchBar value={searchQuery} onChangeText={setSearchQuery} />
 
-        <Section
-          title="Suas atividades"
-          data={filteredData.activities}
+        
+        <Banner />
+
+        <GridSection
+          title="Atividades de Respiração"
+          data={filteredData.respirationActivities}
           keyExtractor={(item) => item.id}
           renderItem={(item) => (
-            <ActivityCard item={item} onPress={() => handleNavigateToActivity(item.id)} />
+            <RespirationCard 
+              item={item} 
+              onPress={handleNavigateToBreathingActivity}
+            />
           )}
         />
 
         <Section
-          title="Recomendações"
-          data={filteredData.recommendations}
+          title="Recursos Diários"
+          data={filteredData.dailyResources}
           keyExtractor={(item) => item.id}
           renderItem={(item) => (
-            <ActivityCard item={item} onPress={() => handleNavigateToActivity(item.id)} />
-          )}
-        />
-
-        <Section
-          title="Técnicas de Meditação"
-          data={filteredData.meditationTechniques}
-          keyExtractor={(item) => item.id}
-          renderItem={(item) => (
-            <ActivityCard item={item} onPress={() => handleNavigateToActivity(item.id)} />
+            <ResourceCard item={item} onPress={() => handleNavigateToActivity(item.id)} />
           )}
         />
 
@@ -95,6 +124,8 @@ const HomeScreen: React.FC = () => {
             <BlogCard item={item as BlogPost} onPress={() => handleNavigateToBlogPost(item.id)} />
           )}
         />
+
+        <View style={styles.bottomSpacing} />
       </ScrollView>
 
       <BottomNavigation />
