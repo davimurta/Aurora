@@ -126,15 +126,23 @@ const HistoryRegisterScreen: React.FC = () => {
   /** 🔹 Verifica se há dados para o dia */
   const hasDataForDay = (day: number | null): boolean => {
   if (!day) return false;
+
   const dateKey = emotionalRegisterController.formatDateKey(
     currentDate.getFullYear(),
     currentDate.getMonth(),
     day
   );
-  const has = monthRegisters.some(r => r.date === dateKey);
-  // debug opcional
-  // console.log('🔵 check:', dateKey, '=>', has);
-  return has;
+
+  // 🔍 Debug opcional
+  console.log(
+    '📅 Verificando dia:',
+    dateKey,
+    '| Registros:',
+    monthRegisters.map((r) => r.date)
+  );
+
+  // 🔹 Faz comparação exata de strings (sem hora)
+  return monthRegisters.some((r) => r.date === dateKey);
 };
 
   /** 🔹 Emojis dos humores */
@@ -247,43 +255,15 @@ const HistoryRegisterScreen: React.FC = () => {
 
         {/* 🔹 Exibição geral ou diária */}
         {!selectedDay ? (
-          <View style={styles.chartContainer}>
-            <Text style={styles.chartTitle}>Métrica de emoções</Text>
-            <Text style={styles.chartSubtitle}>
-              {monthRegisters.length > 0
-                ? `${monthRegisters.length} registro${monthRegisters.length > 1 ? 's' : ''} este mês`
-                : 'Nenhum registro encontrado para este mês'}
-            </Text>
-
-            {monthRegisters.length > 0 ? (
-              <BarChart
-                data={chartData}
-                width={screenWidth - 40}
-                height={200}
-                yAxisLabel=""
-                yAxisSuffix=""
-                chartConfig={{
-                  backgroundColor: 'transparent',
-                  backgroundGradientFrom: '#FFFFFF',
-                  backgroundGradientTo: '#FFFFFF',
-                  decimalPlaces: 0,
-                  color: (opacity = 1) => `rgba(100, 200, 150, ${opacity})`,
-                  style: { borderRadius: 16 },
-                }}
-                style={styles.chart}
-                showValuesOnTopOfBars
-                withInnerLines={false}
-                fromZero
-              />
-            ) : (
-              <View style={styles.noDataContainer}>
-                <Ionicons name="bar-chart-outline" size={48} color="#ccc" />
-                <Text style={styles.noDataText}>Nenhum registro encontrado para este mês</Text>
-                <Text style={styles.noDataSubtext}>Comece registrando suas emoções diárias!</Text>
-              </View>
-            )}
-          </View>
-        ) : dayData ? (
+  <View style={styles.chartContainer}>
+    <Text style={styles.chartTitle}>Histórico Mensal</Text>
+    <Text style={styles.chartSubtitle}>
+      {monthRegisters.length > 0
+        ? `${monthRegisters.length} registro${monthRegisters.length > 1 ? 's' : ''} este mês`
+        : 'Nenhum registro encontrado para este mês'}
+    </Text>
+  </View>
+) : dayData ? (
           <View style={styles.dayDetailsContainer}>
             <View style={styles.moodIndicator}>
               <View style={styles.moodIcon}>
