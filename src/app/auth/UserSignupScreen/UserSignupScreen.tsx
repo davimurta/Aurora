@@ -15,9 +15,8 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { router } from 'expo-router';
 import { useAuthController } from '../../../hooks/useAuthController';
 import { PacienteData } from '../../../types/auth.types';
-import { styles } from './styles';
 
-const UserSignupScreen: React.FC = () => {
+const UserSignup: React.FC = () => {
   const [formData, setFormData] = useState<PacienteData>({
     nome: '',
     email: '',
@@ -92,28 +91,19 @@ const UserSignupScreen: React.FC = () => {
 
   const handleSubmit = async () => {
     if (!validateForm()) return;
-
+  
     setIsLoading(true);
     
     try {
       await registerPaciente(formData);
       
-      Alert.alert(
-        'Sucesso!', 
-        'Conta criada com sucesso! Você já pode fazer login.',
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              router.push('/');
-            }
-          }
-        ]
-      );
+      setIsLoading(false);
+      
+      // Navega com flag de sucesso
+      router.push("/auth/Login?registered=true" as any);
       
     } catch (error: any) {
       Alert.alert('Erro', error.message || 'Erro ao criar conta. Tente novamente.');
-    } finally {
       setIsLoading(false);
     }
   };
@@ -141,6 +131,7 @@ const UserSignupScreen: React.FC = () => {
       >
         <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
           
+          {/* Header */}
           <View style={styles.headerContainer}>
             <View style={styles.iconContainer}>
               <Icon name="person-add" size={40} color="#4ECDC4" />
@@ -151,6 +142,7 @@ const UserSignupScreen: React.FC = () => {
             </Text>
           </View>
 
+          {/* Form */}
           <View style={styles.formContainer}>
             
             <Input
@@ -235,6 +227,7 @@ const UserSignupScreen: React.FC = () => {
               errorMessage="As senhas devem ser iguais"
             />
 
+            {/* Terms and Conditions */}
             <TouchableOpacity 
               style={styles.termsContainer}
               onPress={() => setAcceptTerms(!acceptTerms)}
@@ -250,6 +243,7 @@ const UserSignupScreen: React.FC = () => {
               </Text>
             </TouchableOpacity>
 
+            {/* Submit Button */}
             <TouchableOpacity 
               style={[styles.submitButton, isLoading && styles.submitButtonDisabled]}
               onPress={handleSubmit}
@@ -265,6 +259,7 @@ const UserSignupScreen: React.FC = () => {
               )}
             </TouchableOpacity>
 
+            {/* Login Link */}
             <View style={styles.loginLinkContainer}>
               <Text style={styles.loginLinkText}>Já tem uma conta? </Text>
               <TouchableOpacity onPress={() => router.push('/')}>
@@ -282,4 +277,145 @@ const UserSignupScreen: React.FC = () => {
   );
 };
 
-export default UserSignupScreen;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f8f9fa',
+  },
+  keyboardAvoid: {
+    flex: 1,
+  },
+  content: {
+    flex: 1,
+    paddingHorizontal: 16,
+  },
+  headerContainer: {
+    alignItems: 'center',
+    paddingVertical: 30,
+    paddingTop: 20,
+  },
+  iconContainer: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#fff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#333',
+    marginBottom: 8,
+  },
+  headerSubtitle: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    paddingHorizontal: 20,
+    lineHeight: 22,
+  },
+  formContainer: {
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    padding: 24,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  termsContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginVertical: 20,
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderWidth: 2,
+    borderColor: '#ddd',
+    borderRadius: 4,
+    marginRight: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 2,
+  },
+  checkboxChecked: {
+    backgroundColor: '#4ECDC4',
+    borderColor: '#4ECDC4',
+  },
+  termsText: {
+    flex: 1,
+    fontSize: 14,
+    color: '#666',
+    lineHeight: 20,
+  },
+  linkText: {
+    color: '#4ECDC4',
+    fontWeight: '600',
+  },
+  submitButton: {
+    backgroundColor: '#4ECDC4',
+    borderRadius: 16,
+    paddingVertical: 18,
+    paddingHorizontal: 24,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#4ECDC4',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
+    marginTop: 8,
+  },
+  submitButtonDisabled: {
+    backgroundColor: '#999',
+    shadowOpacity: 0.1,
+  },
+  submitIcon: {
+    marginRight: 8,
+  },
+  submitButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#fff',
+  },
+  loginLinkContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 24,
+  },
+  loginLinkText: {
+    fontSize: 14,
+    color: '#666',
+  },
+  loginLink: {
+    fontSize: 14,
+    color: '#4ECDC4',
+    fontWeight: '600',
+  },
+  bottomSpacing: {
+    height: 20,
+  },
+});
+
+export default UserSignup;

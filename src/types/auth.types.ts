@@ -8,7 +8,7 @@ export interface UserData {
   displayName: string;
   userType: UserType;
   isApproved?: boolean;
-  createdAt: undefined;
+  createdAt: any;
 }
 
 export interface PacienteData {
@@ -35,7 +35,6 @@ export interface PsicologoData {
   biografia: string;
   senha: string;
   confirmarSenha: string;
-  documents?: undefined;
 }
 
 export interface AuthContextType {
@@ -45,7 +44,7 @@ export interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, displayName: string) => Promise<void>;
   registerPaciente: (data: PacienteData) => Promise<void>;
-  registerPsicologo: (data: PsicologoData, documents?: undefined) => Promise<void>;
+  registerPsicologo: (data: PsicologoData) => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   logout: () => Promise<void>;
   getUserData: () => Promise<UserData | null>;
