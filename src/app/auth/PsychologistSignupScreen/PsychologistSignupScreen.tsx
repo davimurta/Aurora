@@ -36,8 +36,8 @@ const PsychologistSignup: React.FC = () => {
     senha: '',
     confirmarSenha: '',
   });
-  
-  
+
+
   const [isLoading, setIsLoading] = useState(false);
   const params = useLocalSearchParams();
   const [emailUsed, setEmailUsed] = useState(false);
@@ -48,7 +48,7 @@ const PsychologistSignup: React.FC = () => {
 
       setTimeout(() => {
         setEmailUsed(false);
-        router.replace('/auth/PsychologistSignup'); // remove o parâmetro da URL
+        router.replace('/auth/PsychologistSignupScreen/PsychologistSignupScreen'); // remove o parâmetro da URL
       }, 5000);
     }
   }, [params.emailjausado]);
@@ -84,10 +84,10 @@ const PsychologistSignup: React.FC = () => {
   };
 
   const validateForm = (): boolean => {
-    const { 
-      nome, email, cpf, telefone, dataNascimento, crp, 
-      especialidade, instituicaoFormacao, anoFormacao, 
-      experiencia, biografia, senha, confirmarSenha 
+    const {
+      nome, email, cpf, telefone, dataNascimento, crp,
+      especialidade, instituicaoFormacao, anoFormacao,
+      experiencia, biografia, senha, confirmarSenha
     } = formData;
 
     const requiredFields = [
@@ -132,34 +132,34 @@ const PsychologistSignup: React.FC = () => {
 
   const handleSubmit = async () => {
     if (!validateForm()) return;
-  
+
     setIsLoading(true);
-  
+
     try {
       await registerPsicologo(formData);
-  
+
       setIsLoading(false);
-  
+
       // Navega com flag de sucesso (igual ao paciente)
       router.push("/auth/Login?registered=psychologist" as any);
-      
+
     } catch (error: any) {
       console.error("Erro ao registrar psicólogo:", error);
       setIsLoading(false);
-  
+
       if (error.message?.includes("email") || error.message?.includes("Email")) {
         router.push("/auth/PsychologistSignup?emailjausado=true" as any);
         return;
       }
-  
+
       Alert.alert(
         "Erro",
         error.message || "Erro ao realizar o cadastro. Tente novamente."
       );
     }
   };
-  
-  
+
+
 
   const formatCPF = (value: string) => {
     const numbers = value.replace(/\D/g, '');
@@ -217,12 +217,12 @@ const PsychologistSignup: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView 
+      <KeyboardAvoidingView
         style={styles.keyboardAvoid}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-          
+
           {/* Header */}
           <View style={styles.headerContainer}>
             <View style={styles.iconContainer}>
@@ -236,10 +236,10 @@ const PsychologistSignup: React.FC = () => {
 
           {/* Form */}
           <View style={styles.formContainer}>
-            
+
             {/* Personal Information Section */}
             <Text style={styles.sectionTitle}>Informações Pessoais</Text>
-            
+
             <Input
               label="Nome Completo"
               placeholder="Digite seu nome completo"
@@ -321,7 +321,7 @@ const PsychologistSignup: React.FC = () => {
 
             <View style={styles.inputContainer}>
               <Text style={styles.inputLabel}>Especialidade Principal</Text>
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.selectButton}
                 onPress={() => setShowSpecialtyModal(true)}
               >
@@ -401,14 +401,14 @@ const PsychologistSignup: React.FC = () => {
             />
 
             {/* Terms and Conditions */}
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.termsContainer}
               onPress={() => setAcceptTerms(!acceptTerms)}
             >
-              <Icon 
-                name={acceptTerms ? 'check-box' : 'check-box-outline-blank'} 
-                size={24} 
-                color={acceptTerms ? '#4ECDC4' : '#666'} 
+              <Icon
+                name={acceptTerms ? 'check-box' : 'check-box-outline-blank'}
+                size={24}
+                color={acceptTerms ? '#4ECDC4' : '#666'}
               />
               <Text style={styles.termsText}>
                 Aceito os{' '}
@@ -419,7 +419,7 @@ const PsychologistSignup: React.FC = () => {
             </TouchableOpacity>
 
             {/* Submit Button */}
-            <TouchableOpacity 
+            <TouchableOpacity
               style={[styles.submitButton, isLoading && styles.submitButtonDisabled]}
               onPress={handleSubmit}
               disabled={isLoading}

@@ -72,7 +72,7 @@ const Login: React.FC = () => {
     try {
       await login(email, password);
       setLoading(false);
-      router.push('/app/Home');
+      router.push('/app/HomeScreen/HomeScreen');
       
     } catch (error: any) {
       setLoading(false);
@@ -205,7 +205,7 @@ const Login: React.FC = () => {
               {/* Forgot Password Link */}
               <View style={styles.forgotPasswordContainer}>
                 <Pressable 
-                  onPress={() => router.push('/auth/RedefinirSenha')}
+                  onPress={() => router.push('/auth/LoginScreen/LoginScreen')}
                   style={styles.forgotPasswordButton}
                 >
                   <Text style={styles.forgotPasswordText}>
@@ -233,7 +233,7 @@ const Login: React.FC = () => {
             <View style={styles.footerSection}>
               <Text style={styles.signupText}>Não tem uma conta?</Text>
               <Pressable 
-                onPress={() => router.push('/auth/UserTypeSelection')}
+                onPress={() => router.push('/auth/UserTypeSelectionScreen/UserTypeSelectionScreen')}
                 style={styles.signupButton}
               >
                 <Text style={styles.signupLinkText}>
