@@ -71,35 +71,44 @@ export class AuthController {
     }
   }
 
-  // 🔹 REGISTRO PACIENTE
   public async registerPaciente(data: PacienteData): Promise<User> {
     this.loading = true;
     this.notifyListeners();
+  
     try {
       const user = await AuthModel.registerPaciente(data);
       this.user = user;
       this.userData = await AuthModel.getUserDataFromFirestore(user.uid);
-      return user; // ✅ importante para o fluxo do Alert funcionar
+      return user;
+    } catch (error: any) {
+      console.error("Erro ao registrar paciente:", error);
+      throw new Error(error.message || "Falha ao registrar paciente");
     } finally {
       this.loading = false;
       this.notifyListeners();
     }
   }
+  
 
   // 🔹 REGISTRO PSICÓLOGO
   public async registerPsicologo(data: PsicologoData): Promise<User> {
-    this.loading = true;
+  this.loading = true;
+  this.notifyListeners();
+
+  try {
+    const user = await AuthModel.registerPsicologo(data);
+    this.user = user;
+    this.userData = await AuthModel.getUserDataFromFirestore(user.uid);
+    return user;
+  } catch (error: any) {
+    console.error("Erro ao registrar psicólogo:", error);
+    throw new Error(error.message || "Falha ao registrar psicólogo");
+  } finally {
+    this.loading = false;
     this.notifyListeners();
-    try {
-      const user = await AuthModel.registerPsicologo(data);
-      this.user = user;
-      this.userData = await AuthModel.getUserDataFromFirestore(user.uid);
-      return user;
-    } finally {
-      this.loading = false;
-      this.notifyListeners();
-    }
   }
+}
+
 
   // 🔹 RESET DE SENHA
   public async resetPassword(email: string): Promise<void> {

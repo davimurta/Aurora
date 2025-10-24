@@ -1,5 +1,7 @@
 import Input from '@components/Input';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+
 import {
   View,
   Text,
@@ -37,6 +39,19 @@ const PsychologistSignup: React.FC = () => {
   
   
   const [isLoading, setIsLoading] = useState(false);
+  const params = useLocalSearchParams();
+  const [emailUsed, setEmailUsed] = useState(false);
+
+  useEffect(() => {
+    if (params.emailjausado === 'true') {
+      setEmailUsed(true);
+
+      setTimeout(() => {
+        setEmailUsed(false);
+        router.replace('/auth/PsychologistSignup'); // remove o parâmetro da URL
+      }, 5000);
+    }
+  }, [params.emailjausado]);
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [showSpecialtyModal, setShowSpecialtyModal] = useState(false);
 
@@ -117,32 +132,34 @@ const PsychologistSignup: React.FC = () => {
 
   const handleSubmit = async () => {
     if (!validateForm()) return;
-
+  
     setIsLoading(true);
-    
+  
     try {
-      // Passa os documentos para o registerPsicologo
       await registerPsicologo(formData);
-      
-      Alert.alert(
-        'Solicitação Enviada!', 
-        'Sua solicitação de cadastro foi enviada para análise. Você receberá um email em até 48 horas com o resultado da aprovação.',
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              router.push('/');
-            }
-          }
-        ]
-      );
+  
+      setIsLoading(false);
+  
+      // Navega com flag de sucesso (igual ao paciente)
+      router.push("/auth/Login?registered=psychologist" as any);
       
     } catch (error: any) {
-      Alert.alert('Erro', error.message || 'Erro ao enviar solicitação. Tente novamente.');
-    } finally {
+      console.error("Erro ao registrar psicólogo:", error);
       setIsLoading(false);
+  
+      if (error.message?.includes("email") || error.message?.includes("Email")) {
+        router.push("/auth/PsychologistSignup?emailjausado=true" as any);
+        return;
+      }
+  
+      Alert.alert(
+        "Erro",
+        error.message || "Erro ao realizar o cadastro. Tente novamente."
+      );
     }
   };
+  
+  
 
   const formatCPF = (value: string) => {
     const numbers = value.replace(/\D/g, '');

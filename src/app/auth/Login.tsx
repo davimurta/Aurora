@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   StyleSheet,
@@ -12,11 +12,14 @@ import {
   Pressable,
   Alert,
   SafeAreaView,
+  Animated,
+  TouchableOpacity,
 } from "react-native";
 import Input from "@components/Input";
 import Button from "@components/Button";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useAuthController } from '../../hooks/useAuthController';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -24,26 +27,58 @@ const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [emailFocused, setEmailFocused] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
+  const [showSuccessBanner, setShowSuccessBanner] = useState(false);
+  const fadeAnim = useState(new Animated.Value(0))[0];
+  const [errorMessage, setErrorMessage] = useState('');
+  console.log('RENDER - errorMessage atual:', errorMessage);
   
   const { login } = useAuthController();
+  const params = useLocalSearchParams();
+
+  // Detecta se veio do cadastro
+  useEffect(() => {
+    if (params.registered === 'true' || params.registered === 'psychologist') {
+      setShowSuccessBanner(true);
+  
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }).start();
+  
+      const timer = setTimeout(() => {
+        Animated.timing(fadeAnim, {
+          toValue: 0,
+          duration: 500,
+          useNativeDriver: true,
+        }).start(() => {
+          setShowSuccessBanner(false);
+        });
+      }, 5000);
+  
+      return () => clearTimeout(timer);
+    }
+  }, [params.registered]);
 
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert('Erro', 'Por favor, preencha todos os campos');
+      setErrorMessage('Por favor, preencha todos os campos');
       return;
     }
-
+  
     setLoading(true);
+    setErrorMessage(''); // Limpa erro anterior
+    
     try {
       await login(email, password);
-      setTimeout(() => {
-        router.push('/app/Home');
-      }, 100);
+      setLoading(false);
+      router.push('/app/Home');
       
     } catch (error: any) {
-      Alert.alert('Erro', error.message);
-    } finally {
       setLoading(false);
+      console.log('ENTROU NO CATCH - VAI SETAR ERRO'); // Debug
+      setErrorMessage('Email ou senha incorretos. Verifique seus dados e tente novamente.');
+      console.log('ERROR MESSAGE SETADO:', errorMessage); // Debug
     }
   };
 
@@ -64,6 +99,32 @@ const Login: React.FC = () => {
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
           >
+            {/* Banner de Sucesso */}
+            {showSuccessBanner && (
+              <Animated.View style={[styles.successBanner, { opacity: fadeAnim }]}>
+                <Icon name="check-circle" size={24} color="#fff" />
+                <View style={styles.successTextContainer}>
+                <Text style={styles.successTitle}>Conta criada com sucesso!</Text>
+                <Text style={styles.successSubtitle}>
+                  {params.registered === 'psychologist'
+                    ? 'Seus dados estão em análise. Aguarde a aprovação.'
+                    : 'Faça login para começar'}
+                </Text>
+                </View>
+              </Animated.View>
+            )}
+
+            {/* Banner de Erro */}
+            {errorMessage && (
+              <View style={styles.errorBanner}>
+                <Icon name="error" size={24} color="#fff" />
+                <Text style={styles.errorText}>{errorMessage}</Text>
+                <TouchableOpacity onPress={() => setErrorMessage('')}>
+                  <Icon name="close" size={20} color="#fff" />
+                </TouchableOpacity>
+              </View>
+            )}
+
             <View style={styles.headerSection}>
               <View style={styles.logoContainer}>
                 <View style={styles.logoPlaceholder}>
@@ -199,6 +260,40 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingHorizontal: 24,
     paddingVertical: 20,
+  },
+  
+  // Banner de Sucesso
+  successBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#4ECDC4',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 20,
+    // Remove gap: 12,
+    shadowColor: '#4ECDC4',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  successTextContainer: {
+    flex: 1,
+    marginLeft: 12, // ← Adiciona margem
+  },
+  successTitle: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '700',
+    marginBottom: 2,
+  },
+  successSubtitle: {
+    color: '#fff',
+    fontSize: 14,
+    opacity: 0.9,
   },
   
   headerSection: {
@@ -383,6 +478,30 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
+  },
+  errorBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#E74C3C',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 20,
+    // Remove o gap: 12,
+    shadowColor: '#E74C3C',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  errorText: {
+    flex: 1,
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
+    marginHorizontal: 12, // ← Adiciona margem lateral para substituir o gap
   },
 });
 

@@ -76,11 +76,16 @@ export const AuthModel = {
     try {
       const result = await signInWithEmailAndPassword(auth, email, password);
       return result.user;
-    } catch (error) {
-      if (typeof error === "object" && error !== null && "code" in error) {
-        throw new Error(getErrorMessage((error as { code: string }).code));
-      }
-      throw error;
+    } catch (error: any) {
+      console.log('Erro code:', error.code); // Debug
+      
+      // Pega o código do erro do Firebase
+      const errorCode = error.code || 'auth/unknown';
+      const errorMessage = getErrorMessage(errorCode);
+      
+      // IMPORTANTE: Lança um Error simples com a mensagem
+      const newError = new Error(errorMessage);
+      throw newError;
     }
   },
 
