@@ -56,7 +56,7 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
           : router.push('/app/HistoryRegisterScreen/HistoryRegisterScreen')
         break
       case 'chat':
-        router.push('/app/ChatScreen/ChatScreen')
+        router.push('/app/BlogNavigation/BlogNavigation')
         break
       case 'profile':
         router.push('/app/ProfileScreen/ProfileScreen')
