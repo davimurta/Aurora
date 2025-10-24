@@ -1,167 +1,165 @@
-import BottomNavigation from '@components/BottonNavigation'
-import React, { useState, useEffect } from 'react'
+import BottomNavigation from '@components/BottonNavigation';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   ScrollView,
   Dimensions,
   ActivityIndicator,
   Alert,
   SafeAreaView,
-} from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
-import { BarChart } from 'react-native-chart-kit'
-import { useEmotionalRegister } from '../../../hooks/useEmotionalRegister'
-import { EmotionalRegister, ChartData } from '../../../models/emotionalRegister'
-import { useAuthController } from '../../../hooks/useAuthController'
-import { styles } from './styles'
+} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { BarChart } from 'react-native-chart-kit';
+import { useEmotionalRegister } from '../../../hooks/useEmotionalRegister';
+import { EmotionalRegister, ChartData } from '../../../models/emotionalRegister';
+import { useAuthController } from '../../../hooks/useAuthController';
+import { emotionalRegisterController } from '../../../controllers/emotionalRegister';
+import { styles } from './styles';
 
 interface DayData {
-  selectedMood: string
-  intensityValue: number
-  diaryText: string
+  selectedMood: string;
+  intensityValue: number;
+  diaryText: string;
 }
 
 const HistoryRegisterScreen: React.FC = () => {
-  const [currentDate, setCurrentDate] = useState<Date>(new Date())
-  const [selectedDay, setSelectedDay] = useState<number | null>(null)
-  const [dayData, setDayData] = useState<DayData | null>(null)
-  const [monthRegisters, setMonthRegisters] = useState<EmotionalRegister[]>([])
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedDay, setSelectedDay] = useState<number | null>(null);
+  const [dayData, setDayData] = useState<DayData | null>(null);
+  const [monthRegisters, setMonthRegisters] = useState<EmotionalRegister[]>([]);
   const [chartData, setChartData] = useState<ChartData>({
     labels: ['😢', '😟', '😐', '😊', '😄', '🤩'],
     datasets: [{ data: [0, 0, 0, 0, 0, 0] }],
-  })
+  });
 
-  const { user, loading } = useAuthController()
+  const { user, loading } = useAuthController();
   const {
     getRegistersByMonth,
     getRegisterByDate,
     getChartDataByMonth,
-    hasRegisterForDate,
     formatDateKey,
-  } = useEmotionalRegister()
+  } = useEmotionalRegister();
 
-  const monthNames: string[] = [
-    'Janeiro',
-    'Fevereiro',
-    'Março',
-    'Abril',
-    'Maio',
-    'Junho',
-    'Julho',
-    'Agosto',
-    'Setembro',
-    'Outubro',
-    'Novembro',
-    'Dezembro',
-  ]
+  const monthNames = [
+    'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+    'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro',
+  ];
 
-  const weekDays: string[] = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
+  const weekDays = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
   useEffect(() => {
-    if (user) {
-      loadMonthData()
-    }
-  }, [user])
+    if (user) loadMonthData();
+  }, [user, currentDate]);
 
+  /** 🔹 Carrega todos os registros do mês atual */
   const loadMonthData = async () => {
     if (!user) {
-      Alert.alert('Erro', 'Você precisa estar logado para ver o histórico.')
-      return
+      Alert.alert('Erro', 'Você precisa estar logado para ver o histórico.');
+      return;
     }
 
     try {
-      const registers = await getRegistersByMonth(currentDate.getFullYear(), currentDate.getMonth())
-
-      setMonthRegisters(registers)
-
-      const newChartData = getChartDataByMonth(registers)
-      setChartData(newChartData)
-    } catch {
-      Alert.alert('Erro', 'Não foi possível carregar os dados do histórico.')
+      const registers = await getRegistersByMonth(currentDate.getFullYear(), currentDate.getMonth());
+      setMonthRegisters(registers);
+      console.log('📅 [History] mês:', currentDate.getFullYear(), currentDate.getMonth() + 1, '| registros:', registers.map(r => r.date));
+      setChartData(getChartDataByMonth(registers));
+    } catch (err) {
+      console.error(err);
+      Alert.alert('Erro', 'Não foi possível carregar os dados do histórico.');
     }
-  }
+  };
 
+  /** 🔹 Gera os dias do mês atual */
   const getDaysInMonth = (date: Date): (number | null)[] => {
-    const year: number = date.getFullYear()
-    const month: number = date.getMonth()
-    const firstDay: Date = new Date(year, month, 1)
-    const lastDay: Date = new Date(year, month + 1, 0)
-    const daysInMonth: number = lastDay.getDate()
-    const startDay: number = firstDay.getDay()
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const startDay = firstDay.getDay();
 
-    const days: (number | null)[] = []
+    const days: (number | null)[] = [];
+    for (let i = 0; i < startDay; i++) days.push(null);
+    for (let i = 1; i <= daysInMonth; i++) days.push(i);
+    return days;
+  };
 
-    for (let i = 0; i < startDay; i++) {
-      days.push(null)
+  /** 🔹 Troca o mês e recarrega os registros */
+  const changeMonth = async (direction: number): Promise<void> => {
+    const newDate = new Date(currentDate);
+    newDate.setMonth(currentDate.getMonth() + direction);
+    setCurrentDate(newDate);
+    setSelectedDay(null);
+    setDayData(null);
+
+    if (user) {
+      const registers = await getRegistersByMonth(newDate.getFullYear(), newDate.getMonth());
+      setMonthRegisters(registers);
+      setChartData(getChartDataByMonth(registers));
     }
+  };
 
-    for (let i = 1; i <= daysInMonth; i++) {
-      days.push(i)
-    }
-
-    return days
-  }
-
-  const changeMonth = (direction: number): void => {
-    const newDate: Date = new Date(currentDate)
-    newDate.setMonth(currentDate.getMonth() + direction)
-
-    setCurrentDate(newDate)
-    setSelectedDay(null)
-    setDayData(null)
-  }
-
+  /** 🔹 Seleciona um dia e mostra detalhes do registro */
   const selectDay = async (day: number | null): Promise<void> => {
-    if (!day || !user) {
-      return
-    }
+    if (!day || !user) return;
+    setSelectedDay(day);
 
-    setSelectedDay(day)
-
-    const dateKey: string = formatDateKey(currentDate.getFullYear(), currentDate.getMonth(), day)
-
+    const dateKey = formatDateKey(currentDate.getFullYear(), currentDate.getMonth(), day);
     try {
-      const register = await getRegisterByDate(dateKey)
-
+      const register = await getRegisterByDate(dateKey);
       if (register) {
         setDayData({
           selectedMood: register.selectedMood,
           intensityValue: register.intensityValue,
           diaryText: register.diaryText,
-        })
+        });
       } else {
-        setDayData(null)
+        setDayData(null);
       }
     } catch {
-      setDayData(null)
+      setDayData(null);
     }
-  }
+  };
 
+  /** 🔹 Verifica se há dados para o dia */
   const hasDataForDay = (day: number | null): boolean => {
-    if (!day) return false
-    const dateKey: string = formatDateKey(currentDate.getFullYear(), currentDate.getMonth(), day)
-    const hasData = hasRegisterForDate(dateKey, monthRegisters)
+  if (!day) return false;
 
-    return hasData
-  }
+  const dateKey = emotionalRegisterController.formatDateKey(
+    currentDate.getFullYear(),
+    currentDate.getMonth(),
+    day
+  );
 
+  // 🔍 Debug opcional
+  console.log(
+    '📅 Verificando dia:',
+    dateKey,
+    '| Registros:',
+    monthRegisters.map((r) => r.date)
+  );
+
+  // 🔹 Faz comparação exata de strings (sem hora)
+  return monthRegisters.some((r) => r.date === dateKey);
+};
+
+  /** 🔹 Emojis dos humores */
   const getMoodEmoji = (mood: string): string => {
-    const moodEmojis: { [key: string]: string } = {
+    const moodEmojis: Record<string, string> = {
       'Muito triste': '😢',
       Triste: '😟',
       Neutro: '😐',
       Bem: '😊',
       'Muito bem': '😄',
       Radiante: '🤩',
-    }
-    return moodEmojis[mood] || '😐'
-  }
+    };
+    return moodEmojis[mood] || '😐';
+  };
 
-  const days: (number | null)[] = getDaysInMonth(currentDate)
-  const screenWidth: number = Dimensions.get('window').width
+  const days = getDaysInMonth(currentDate);
+  const screenWidth = Dimensions.get('window').width;
 
   if (loading && monthRegisters.length === 0) {
     return (
@@ -169,7 +167,7 @@ const HistoryRegisterScreen: React.FC = () => {
         <ActivityIndicator size="large" color="#4ECDC4" />
         <Text style={styles.loadingText}>Carregando histórico...</Text>
       </View>
-    )
+    );
   }
 
   return (
@@ -179,6 +177,7 @@ const HistoryRegisterScreen: React.FC = () => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
+        {/* 🔹 Cabeçalho */}
         <View style={styles.header}>
           <TouchableOpacity>
             <Ionicons name="arrow-back" size={24} color="#333" />
@@ -187,6 +186,7 @@ const HistoryRegisterScreen: React.FC = () => {
           <View style={{ width: 24 }} />
         </View>
 
+        {/* 🔹 Mês atual */}
         <View style={styles.calendarHeader}>
           <TouchableOpacity onPress={() => changeMonth(-1)} disabled={loading}>
             <Ionicons name="chevron-back" size={20} color={loading ? '#ccc' : '#666'} />
@@ -201,41 +201,51 @@ const HistoryRegisterScreen: React.FC = () => {
           </TouchableOpacity>
         </View>
 
+        {/* 🔹 Dias da semana */}
         <View style={styles.weekDaysContainer}>
-          {weekDays.map((day: string, index: number) => (
+          {weekDays.map((day, index) => (
             <Text key={index} style={styles.weekDay}>
               {day}
             </Text>
           ))}
         </View>
 
+        {/* 🔹 Grade de dias */}
         <View style={styles.calendarGrid}>
-          {days.map((day: number | null, index: number) => (
-            <TouchableOpacity
-              key={index}
-              style={[
-                styles.dayCell,
-                day === selectedDay && styles.selectedDay,
-                hasDataForDay(day) && styles.dayWithData,
-              ]}
-              onPress={() => selectDay(day)}
-              disabled={!day || loading}
-            >
-              {day && (
-                <Text
-                  style={[
-                    styles.dayText,
-                    day === selectedDay && styles.selectedDayText,
-                    hasDataForDay(day) && styles.dayWithDataText,
-                  ]}
-                >
-                  {day}
-                </Text>
-              )}
-            </TouchableOpacity>
-          ))}
+          {days.map((day, index) => {
+  if (day === null) {
+    return <View key={index} style={[styles.dayCell, { backgroundColor: 'transparent' }]} />;
+  }
+
+  const isSelected = day === selectedDay;
+  const hasData = hasDataForDay(day);
+
+  return (
+    <TouchableOpacity
+      key={index}
+      style={[
+        styles.dayCell,
+        hasData && styles.dayWithData,
+        isSelected && styles.selectedDay,
+      ]}
+      onPress={() => selectDay(day)}
+      disabled={loading}
+    >
+      <Text
+        style={[
+          styles.dayText,
+          hasData && styles.dayWithDataText,
+          isSelected && styles.selectedDayText,
+        ]}
+      >
+        {day}
+      </Text>
+    </TouchableOpacity>
+  );
+})}
         </View>
 
+        {/* 🔹 Estado de carregamento do dia */}
         {loading && selectedDay && (
           <View style={styles.dayLoadingContainer}>
             <ActivityIndicator size="small" color="#4ECDC4" />
@@ -243,44 +253,17 @@ const HistoryRegisterScreen: React.FC = () => {
           </View>
         )}
 
+        {/* 🔹 Exibição geral ou diária */}
         {!selectedDay ? (
-          <View style={styles.chartContainer}>
-            <Text style={styles.chartTitle}>Métrica de emoções</Text>
-            <Text style={styles.chartSubtitle}>
-              {monthRegisters.length} registro{monthRegisters.length !== 1 ? 's' : ''} este mês
-            </Text>
-
-            {monthRegisters.length > 0 ? (
-              <BarChart
-                data={chartData}
-                width={screenWidth - 40}
-                height={200}
-                yAxisLabel=""
-                yAxisSuffix=""
-                chartConfig={{
-                  backgroundColor: 'transparent',
-                  backgroundGradientFrom: '#FFFFFF',
-                  backgroundGradientTo: '#FFFFFF',
-                  decimalPlaces: 0,
-                  color: (opacity: number = 1) => `rgba(100, 200, 150, ${opacity})`,
-                  style: {
-                    borderRadius: 16,
-                  },
-                }}
-                style={styles.chart}
-                showValuesOnTopOfBars={true}
-                withInnerLines={false}
-                fromZero={true}
-              />
-            ) : (
-              <View style={styles.noDataContainer}>
-                <Ionicons name="bar-chart-outline" size={48} color="#ccc" />
-                <Text style={styles.noDataText}>Nenhum registro encontrado para este mês</Text>
-                <Text style={styles.noDataSubtext}>Comece registrando suas emoções diárias!</Text>
-              </View>
-            )}
-          </View>
-        ) : dayData ? (
+  <View style={styles.chartContainer}>
+    <Text style={styles.chartTitle}>Histórico Mensal</Text>
+    <Text style={styles.chartSubtitle}>
+      {monthRegisters.length > 0
+        ? `${monthRegisters.length} registro${monthRegisters.length > 1 ? 's' : ''} este mês`
+        : 'Nenhum registro encontrado para este mês'}
+    </Text>
+  </View>
+) : dayData ? (
           <View style={styles.dayDetailsContainer}>
             <View style={styles.moodIndicator}>
               <View style={styles.moodIcon}>
@@ -314,7 +297,7 @@ const HistoryRegisterScreen: React.FC = () => {
 
       <BottomNavigation />
     </SafeAreaView>
-  )
-}
+  );
+};
 
-export default HistoryRegisterScreen
+export default HistoryRegisterScreen;
