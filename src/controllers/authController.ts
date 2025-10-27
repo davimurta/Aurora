@@ -1,5 +1,6 @@
 import type { User } from "firebase/auth";
-import { AuthModel } from '../models/AuthModel'
+// 🔄 ATUALIZADO: Agora usa o backend em vez de Firebase direto
+import { AuthModelApi as AuthModel } from '../models/AuthModelApi'
 import type { PacienteData, PsicologoData, UserData } from "../types/auth.types";
 
 export class AuthController {
@@ -42,14 +43,14 @@ export class AuthController {
     return this.loading;
   }
 
-  // 🔹 LOGIN
+  // 🔹 LOGIN (Agora consome o backend)
   public async login(email: string, password: string): Promise<User> {
     this.loading = true;
     this.notifyListeners();
     try {
       const user = await AuthModel.login(email, password);
       this.user = user;
-      this.userData = await AuthModel.getUserDataFromFirestore(user.uid);
+      this.userData = await AuthModel.getUserDataFromBackend(user.uid);
       return user;
     } finally {
       this.loading = false;
@@ -71,14 +72,15 @@ export class AuthController {
     }
   }
 
+  // 🔹 REGISTRO PACIENTE (Agora consome o backend)
   public async registerPaciente(data: PacienteData): Promise<User> {
     this.loading = true;
     this.notifyListeners();
-  
+
     try {
       const user = await AuthModel.registerPaciente(data);
       this.user = user;
-      this.userData = await AuthModel.getUserDataFromFirestore(user.uid);
+      this.userData = await AuthModel.getUserDataFromBackend(user.uid);
       return user;
     } catch (error: any) {
       console.error("Erro ao registrar paciente:", error);
@@ -88,9 +90,9 @@ export class AuthController {
       this.notifyListeners();
     }
   }
-  
 
-  // 🔹 REGISTRO PSICÓLOGO
+
+  // 🔹 REGISTRO PSICÓLOGO (Agora consome o backend)
   public async registerPsicologo(data: PsicologoData): Promise<User> {
   this.loading = true;
   this.notifyListeners();
@@ -98,7 +100,7 @@ export class AuthController {
   try {
     const user = await AuthModel.registerPsicologo(data);
     this.user = user;
-    this.userData = await AuthModel.getUserDataFromFirestore(user.uid);
+    this.userData = await AuthModel.getUserDataFromBackend(user.uid);
     return user;
   } catch (error: any) {
     console.error("Erro ao registrar psicólogo:", error);
@@ -110,12 +112,12 @@ export class AuthController {
 }
 
 
-  // 🔹 RESET DE SENHA
+  // 🔹 RESET DE SENHA (Agora consome o backend)
   public async resetPassword(email: string): Promise<void> {
     await AuthModel.resetPassword(email);
   }
 
-  // 🔹 LOGOUT
+  // 🔹 LOGOUT (Agora consome o backend)
   public async logout(): Promise<void> {
     await AuthModel.logout();
     this.user = null;
@@ -123,12 +125,12 @@ export class AuthController {
     this.notifyListeners();
   }
 
-  // 🔹 Ouvinte de autenticação
+  // 🔹 Ouvinte de autenticação (Agora consome o backend)
   public initializeAuthListener() {
     AuthModel.onAuthStateChanged(async user => {
       this.user = user;
       if (user) {
-        this.userData = await AuthModel.getUserDataFromFirestore(user.uid);
+        this.userData = await AuthModel.getUserDataFromBackend(user.uid);
       } else {
         this.userData = null;
       }
