@@ -18,18 +18,21 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
   const [activeTab, setActiveTab] = useState('')
 
   const getActiveTabFromPath = (path: string): string => {
-    if (path.includes('/Home')) return 'home'
-    if (path.includes('/DailyRegister')) return 'analytics'
-    if (path.includes('/Chat')) return 'chat'
-    if (path.includes('/Profile') || path.includes('/acesso')) return 'profile'
+    if (path.includes('/HomeScreen')) return 'home'
+    if (path.includes('/DailyRegister') || path.includes('/ClientsList')) return 'analytics'
+    if (path.includes('/AddArticle') || path.includes('/HistoryRegister')) return 'add'
+    if (path.includes('/BlogNavigation')) return 'chat'
+    if (path.includes('/ProfileScreen')) return 'profile'
     return 'home'
   }
 
+  // Atualiza baseado no pathname (navegação real)
   useEffect(() => {
     const currentTab = getActiveTabFromPath(pathname)
     setActiveTab(currentTab)
   }, [pathname])
 
+  // Permite controle externo via props
   useEffect(() => {
     if (initialActiveTab) {
       setActiveTab(initialActiveTab)
@@ -37,18 +40,23 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
   }, [initialActiveTab])
 
   const handleTabPress = (tab: string) => {
+    // Atualiza o estado imediatamente
     setActiveTab(tab)
 
+    // Callback externo
     if (onTabPress) {
       onTabPress(tab)
     }
 
+    // Navegação
     switch (tab) {
       case 'home':
         router.push('/app/HomeScreen/HomeScreen')
         break
       case 'analytics':
-        router.push('/app/DailyRegisterScreen/DailyRegister')
+        userData?.userType === 'psicologo' 
+          ? router.push('/app/ClientsList/ClientsList')
+          : router.push('/app/DailyRegisterScreen/DailyRegister')
         break
       case 'add':
         userData?.userType === 'psicologo'
@@ -62,6 +70,7 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
         router.push('/app/ProfileScreen/ProfileScreen')
         break
       default:
+        break
     }
   }
 
@@ -92,7 +101,11 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
           activeOpacity={0.7}
         >
           <View style={getIconContainerStyle('analytics')}>
-            <Icon name="analytics" size={26} color={getIconColor('analytics')} />
+            {userData?.userType === 'psicologo' ? (
+              <Icon name="assignment" size={28} color={getIconColor('analytics')} />
+            ) : (
+              <Icon name="analytics" size={26} color={getIconColor('analytics')} />
+            )}
           </View>
         </TouchableOpacity>
 
@@ -101,11 +114,14 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
           onPress={() => handleTabPress('add')}
           activeOpacity={0.8}
         >
-          <View style={styles.centerNavButton}>
+          <View style={[
+            styles.centerNavButton,
+            activeTab === 'add' && styles.centerNavButtonActive
+          ]}>
             {userData?.userType === 'psicologo' ? (
-              <Icon name="add" size={28} color="#4ECDC4" />
+              <Icon name="add" size={28} color={activeTab === 'add' ? '#FFFFFF' : '#4ECDC4'} />
             ) : (
-              <Icon name="article" size={28} color="#4ECDC4" />
+              <Icon name="article" size={28} color={activeTab === 'add' ? '#FFFFFF' : '#4ECDC4'} />
             )}
           </View>
         </TouchableOpacity>
@@ -184,6 +200,11 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.2,
     shadowRadius: 6,
+  },
+  centerNavButtonActive: {
+    backgroundColor: '#4ECDC4',
+    borderWidth: 3,
+    borderColor: '#FFFFFF',
   },
 })
 

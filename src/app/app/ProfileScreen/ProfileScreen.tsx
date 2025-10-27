@@ -30,13 +30,10 @@ interface PersonalDataItem {
   icon: string;
 }
 
-const ProfileScreen: React.FC = () => {
-  const [userImage ] = useState<string | null>(null);
+const ProfileScreen = () => {
+  const [userImage] = useState<string | null>(null);
   const [showPersonalData, setShowPersonalData] = useState<boolean>(false);
   const { userData } = useAuthController();
-  
-  // Dados predefinidos para teste (remover quando conectar ao banco)
-  const [userType] = useState<"patient" | "professional">("patient"); // Altere para "professional" para testar como profissional
 
   const recentActivities: ActivityItem[] = [
     {
@@ -63,10 +60,11 @@ const ProfileScreen: React.FC = () => {
   ];
 
   const personalData: PersonalDataItem[] = [
-    { 
-      label: "Nome", 
-      value: userData?.displayName ?? "", 
-      icon: "person" },
+    {
+      label: "Nome",
+      value: userData?.displayName ?? "",
+      icon: "person"
+    },
     {
       label: "Email",
       value: showPersonalData ? userData?.email ?? "" : "••••••••••••••••••••",
@@ -92,7 +90,7 @@ const ProfileScreen: React.FC = () => {
       hasSwitch: false,
       route: "/app/PrivacyScreen/PrivacyScreen",
     },
-    { 
+    {
       label: "Idioma",
       icon: "language",
       hasSwitch: false,
@@ -108,14 +106,14 @@ const ProfileScreen: React.FC = () => {
 
   const handleImagePicker = () => {
     Alert.alert("Alterar Foto", "Escolha uma opção", [
-      { text: "Câmera"},
-      { text: "Galeria"},
-      { text: "Cancelar"},
+      { text: "Câmera" },
+      { text: "Galeria" },
+      { text: "Cancelar" },
     ]);
   };
 
   const handleConnect = () => {
-    if (userType === "professional") {
+    if (userData?.userType === 'psicologo') {
       router.push("/app/ProfessionalConnectScreen/ProfessionalConnectScreen");
     } else {
       router.push("/app/PatientConnectScreen/PatientConnectScreen");
@@ -204,14 +202,14 @@ const ProfileScreen: React.FC = () => {
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.connectButton}
             onPress={handleConnect}
           >
             <Icon name="people" size={18} color="#fff" />
             <Text style={styles.connectButtonText}>
-              {userType === "professional" 
-                ? "Conecte-se com um Paciente" 
+              {userData?.userType === 'psicologo'
+                ? "Conecte-se com um Paciente"
                 : "Conecte-se com um Profissional"}
             </Text>
           </TouchableOpacity>
