@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
-import type { User } from 'firebase/auth';
-import { AuthController } from '../controllers/authController';
-import type { UserData, PacienteData, PsicologoData } from '../types/auth.types';
+import { useState, useEffect } from "react";
+import type { User } from "firebase/auth";
+import { AuthController } from "../controllers/authController";
+import type { UserData, PacienteData, PsicologoData } from "../types/auth.types";
 
 export const useAuthController = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -11,8 +11,8 @@ export const useAuthController = () => {
 
   useEffect(() => {
     const handleAuthStateChange = (
-      newUser: User | null, 
-      newUserData: UserData | null, 
+      newUser: User | null,
+      newUserData: UserData | null,
       newLoading: boolean
     ) => {
       setUser(newUser);
@@ -21,6 +21,7 @@ export const useAuthController = () => {
     };
 
     authController.addListener(handleAuthStateChange);
+    authController.initializeAuthListener();
 
     setUser(authController.getUser());
     setUserData(authController.getUserData());
@@ -35,15 +36,13 @@ export const useAuthController = () => {
     user,
     userData,
     loading,
-    
     login: (email: string, password: string) => authController.login(email, password),
-    register: (email: string, password: string, displayName: string) => 
+    register: (email: string, password: string, displayName: string) =>
       authController.register(email, password, displayName),
     registerPaciente: (data: PacienteData) => authController.registerPaciente(data),
-    registerPsicologo: (data: PsicologoData, documents?: undefined) => 
-      authController.registerPsicologo(data, documents),
+    registerPsicologo: (data: PsicologoData) => authController.registerPsicologo(data),
     resetPassword: (email: string) => authController.resetPassword(email),
     logout: () => authController.logout(),
-    getUserData: () => authController.getCurrentUserData(),
+    getUserData: () => authController.getUserData(),
   };
 };

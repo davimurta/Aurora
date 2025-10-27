@@ -6,7 +6,6 @@ import { useFonts } from "expo-font"
 import * as SplashScreen from "expo-splash-screen"
 import { useEffect } from "react"
 
-// Evita esconder a splash automaticamente
 SplashScreen.preventAutoHideAsync()
 
 export default function RootLayout() {

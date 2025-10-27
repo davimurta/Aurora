@@ -45,21 +45,21 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
 
     switch (tab) {
       case 'home':
-        router.push('/app/Home')
+        router.push('/app/HomeScreen/HomeScreen')
         break
       case 'analytics':
-        router.push('/app/DailyRegister')
+        router.push('/app/DailyRegisterScreen/DailyRegister')
         break
       case 'add':
         userData?.userType === 'psicologo'
-          ? router.push('/app/AddArticle')
-          : router.push('/app/HistoryRegister')
+          ? router.push('/app/AddArticleScreen/AddArticleScreen')
+          : router.push('/app/HistoryRegisterScreen/HistoryRegisterScreen')
         break
       case 'chat':
-        router.push('/app/Chat')
+        router.push('/app/BlogNavigation/BlogNavigation')
         break
       case 'profile':
-        router.push('/app/Profile')
+        router.push('/app/ProfileScreen/ProfileScreen')
         break
       default:
     }

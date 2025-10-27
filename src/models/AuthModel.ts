@@ -76,11 +76,16 @@ export const AuthModel = {
     try {
       const result = await signInWithEmailAndPassword(auth, email, password);
       return result.user;
-    } catch (error) {
-      if (typeof error === "object" && error !== null && "code" in error) {
-        throw new Error(getErrorMessage((error as { code: string }).code));
-      }
-      throw error;
+    } catch (error: any) {
+      console.log('Erro code:', error.code); // Debug
+      
+      // Pega o código do erro do Firebase
+      const errorCode = error.code || 'auth/unknown';
+      const errorMessage = getErrorMessage(errorCode);
+      
+      // IMPORTANTE: Lança um Error simples com a mensagem
+      const newError = new Error(errorMessage);
+      throw newError;
     }
   },
 
@@ -110,7 +115,6 @@ export const AuthModel = {
 
   async registerPaciente(data: PacienteData): Promise<User> {
     try {
-
       validatePacienteData(data);
 
       const result = await createUserWithEmailAndPassword(
@@ -148,12 +152,8 @@ export const AuthModel = {
     }
   },
 
-  async registerPsicologo(
-    data: PsicologoData,
-    documents?: unknown
-  ): Promise<User> {
+  async registerPsicologo(data: PsicologoData): Promise<User> {
     try {
-
       validatePsicologoData(data);
 
       const result = await createUserWithEmailAndPassword(
@@ -186,7 +186,6 @@ export const AuthModel = {
         anoFormacao: data.anoFormacao,
         experiencia: data.experiencia,
         biografia: data.biografia,
-        documents: documents || {},
         isApproved: false,
         createdAt: serverTimestamp(),
       });
