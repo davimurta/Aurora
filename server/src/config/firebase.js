@@ -24,44 +24,70 @@ class FirebaseConnection {
 
     // Configuração do Firebase Admin SDK
     let credential;
+    let credentialMethod = 'none';
 
-    // Opção 1: Service Account Key (RECOMENDADO para produção)
-    // Baixe o arquivo em: Firebase Console > Project Settings > Service Accounts
-    if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-      credential = admin.credential.cert(require(process.env.GOOGLE_APPLICATION_CREDENTIALS));
-      console.log('🔑 Usando Service Account Key');
+    // Opção 1: Credenciais diretas do .env (RECOMENDADO para facilidade)
+    if (process.env.FIREBASE_PRIVATE_KEY && process.env.FIREBASE_CLIENT_EMAIL) {
+      try {
+        credential = admin.credential.cert({
+          projectId: process.env.FIREBASE_PROJECT_ID,
+          clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+          privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+        });
+        credentialMethod = 'environment variables';
+        console.log('🔑 Usando credenciais do .env');
+      } catch (error) {
+        console.error('❌ Erro ao carregar credenciais do .env:', error.message);
+        credential = null;
+      }
     }
-    // Opção 2: Application Default Credentials (para Google Cloud)
+    // Opção 2: Service Account Key File
+    else if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+      try {
+        credential = admin.credential.cert(require(process.env.GOOGLE_APPLICATION_CREDENTIALS));
+        credentialMethod = 'service account file';
+        console.log('🔑 Usando Service Account Key File');
+      } catch (error) {
+        console.error('❌ Erro ao carregar Service Account Key:', error.message);
+        credential = null;
+      }
+    }
+    // Opção 3: Application Default Credentials (para Google Cloud)
     else {
       try {
         credential = admin.credential.applicationDefault();
+        credentialMethod = 'application default';
         console.log('🔑 Usando Application Default Credentials');
       } catch (error) {
-        // Opção 3: Modo de desenvolvimento (funcionalidade limitada)
-        console.warn('⚠️  ATENÇÃO: Rodando sem credenciais completas do Admin SDK');
-        console.warn('⚠️  Algumas funcionalidades podem não funcionar corretamente');
-        console.warn('⚠️  Para produção, baixe o Service Account Key do Firebase Console');
+        console.warn('⚠️  ATENÇÃO: Nenhuma credencial Firebase foi encontrada!');
+        console.warn('⚠️  Configure o .env com FIREBASE_PRIVATE_KEY e FIREBASE_CLIENT_EMAIL');
+        console.warn('⚠️  Ou baixe o Service Account Key do Firebase Console');
         credential = null;
       }
     }
 
     // Inicializa Firebase Admin SDK
     const config = {
-      projectId: process.env.FIREBASE_PROJECT_ID || 'aurora-login-f8398',
+      projectId: process.env.FIREBASE_PROJECT_ID || 'aurora-482f9',
     };
 
     if (credential) {
       config.credential = credential;
     }
 
-    this.app = admin.initializeApp(config);
+    try {
+      this.app = admin.initializeApp(config);
+      this.db = admin.firestore();
+      this.auth = admin.auth();
+      this.storage = admin.storage();
 
-    this.db = admin.firestore();
-    this.auth = admin.auth();
-    this.storage = admin.storage();
-
-    console.log('✅ Firebase conectado com sucesso (Singleton Pattern)');
-    console.log(`📋 Project ID: ${process.env.FIREBASE_PROJECT_ID || 'aurora-login-f8398'}`);
+      console.log('✅ Firebase conectado com sucesso (Singleton Pattern)');
+      console.log(`📋 Project ID: ${config.projectId}`);
+      console.log(`🔐 Credential Method: ${credentialMethod}`);
+    } catch (error) {
+      console.error('❌ Erro ao inicializar Firebase:', error.message);
+      throw error;
+    }
 
     FirebaseConnection.instance = this;
   }
