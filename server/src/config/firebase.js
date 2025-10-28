@@ -15,6 +15,7 @@
 
 require('dotenv').config();
 const admin = require('firebase-admin');
+const path = require('path');
 
 /**
  * Limpa e formata a private key para o formato correto
@@ -53,12 +54,6 @@ class FirebaseConnection {
           throw new Error('Private key vazia após formatação');
         }
 
-        // Debug: mostra primeiros e últimos caracteres da chave
-        console.log('🔍 Private Key Debug:');
-        console.log('  - Início:', privateKey.substring(0, 30) + '...');
-        console.log('  - Fim:', '...' + privateKey.substring(privateKey.length - 30));
-        console.log('  - Tamanho:', privateKey.length, 'caracteres');
-
         credential = admin.credential.cert({
           projectId: process.env.FIREBASE_PROJECT_ID,
           clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
@@ -69,18 +64,23 @@ class FirebaseConnection {
         console.log('🔑 Usando credenciais do .env');
       } catch (error) {
         console.error('❌ Erro ao carregar credenciais do .env:', error.message);
-        console.error('❌ Stack:', error.stack);
         credential = null;
       }
     }
     // Opção 2: Service Account Key File
     else if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
       try {
-        credential = admin.credential.cert(require(process.env.GOOGLE_APPLICATION_CREDENTIALS));
+        // Resolve o caminho relativo à raiz do projeto (pasta server/)
+        const keyPath = path.resolve(__dirname, '../../..', process.env.GOOGLE_APPLICATION_CREDENTIALS);
+        console.log('📁 Procurando Service Account Key em:', keyPath);
+
+        const serviceAccount = require(keyPath);
+        credential = admin.credential.cert(serviceAccount);
         credentialMethod = 'service account file';
         console.log('🔑 Usando Service Account Key File');
       } catch (error) {
         console.error('❌ Erro ao carregar Service Account Key:', error.message);
+        console.error('❌ Caminho esperado:', path.resolve(__dirname, '../../..', process.env.GOOGLE_APPLICATION_CREDENTIALS || ''));
         credential = null;
       }
     }
@@ -93,7 +93,7 @@ class FirebaseConnection {
       } catch (error) {
         console.warn('⚠️  ATENÇÃO: Nenhuma credencial Firebase foi encontrada!');
         console.warn('⚠️  Configure o .env com FIREBASE_PRIVATE_KEY e FIREBASE_CLIENT_EMAIL');
-        console.warn('⚠️  Ou baixe o Service Account Key do Firebase Console');
+        console.warn('⚠️  Ou coloque serviceAccountKey.json na pasta server/');
         credential = null;
       }
     }
