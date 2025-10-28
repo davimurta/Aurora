@@ -16,6 +16,7 @@
 require('dotenv').config();
 const admin = require('firebase-admin');
 const path = require('path');
+const fs = require('fs');
 
 /**
  * Limpa e formata a private key para o formato correto
@@ -45,7 +46,7 @@ class FirebaseConnection {
     let credential;
     let credentialMethod = 'none';
 
-    // Opção 1: Credenciais diretas do .env (RECOMENDADO para facilidade)
+    // Opção 1: Credenciais diretas do .env (RECOMENDADO)
     if (process.env.FIREBASE_PRIVATE_KEY && process.env.FIREBASE_CLIENT_EMAIL) {
       try {
         const privateKey = formatPrivateKey(process.env.FIREBASE_PRIVATE_KEY);
@@ -70,9 +71,34 @@ class FirebaseConnection {
     // Opção 2: Service Account Key File
     else if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
       try {
-        // Resolve o caminho relativo à raiz do projeto (pasta server/)
-        const keyPath = path.resolve(__dirname, '../../..', process.env.GOOGLE_APPLICATION_CREDENTIALS);
-        console.log('📁 Procurando Service Account Key em:', keyPath);
+        // Tenta múltiplos caminhos possíveis
+        const possiblePaths = [
+          // Caminho relativo à pasta server/
+          path.resolve(__dirname, '../..', process.env.GOOGLE_APPLICATION_CREDENTIALS),
+          // Caminho relativo à pasta raiz do projeto
+          path.resolve(__dirname, '../../..', process.env.GOOGLE_APPLICATION_CREDENTIALS),
+          // Caminho absoluto (se fornecido)
+          path.resolve(process.env.GOOGLE_APPLICATION_CREDENTIALS),
+        ];
+
+        let keyPath = null;
+        let foundPath = false;
+
+        // Tenta cada caminho até encontrar o arquivo
+        for (const testPath of possiblePaths) {
+          if (fs.existsSync(testPath)) {
+            keyPath = testPath;
+            foundPath = true;
+            console.log('✅ Service Account Key encontrado em:', keyPath);
+            break;
+          }
+        }
+
+        if (!foundPath) {
+          console.error('❌ Service Account Key não encontrado. Tentei:');
+          possiblePaths.forEach((p) => console.error('   -', p));
+          throw new Error('Arquivo serviceAccountKey.json não encontrado');
+        }
 
         const serviceAccount = require(keyPath);
         credential = admin.credential.cert(serviceAccount);
@@ -80,7 +106,6 @@ class FirebaseConnection {
         console.log('🔑 Usando Service Account Key File');
       } catch (error) {
         console.error('❌ Erro ao carregar Service Account Key:', error.message);
-        console.error('❌ Caminho esperado:', path.resolve(__dirname, '../../..', process.env.GOOGLE_APPLICATION_CREDENTIALS || ''));
         credential = null;
       }
     }
@@ -92,8 +117,8 @@ class FirebaseConnection {
         console.log('🔑 Usando Application Default Credentials');
       } catch (error) {
         console.warn('⚠️  ATENÇÃO: Nenhuma credencial Firebase foi encontrada!');
-        console.warn('⚠️  Configure o .env com FIREBASE_PRIVATE_KEY e FIREBASE_CLIENT_EMAIL');
-        console.warn('⚠️  Ou coloque serviceAccountKey.json na pasta server/');
+        console.warn('⚠️  Opção 1: Configure o .env com FIREBASE_PRIVATE_KEY e FIREBASE_CLIENT_EMAIL');
+        console.warn('⚠️  Opção 2: Coloque serviceAccountKey.json na pasta server/');
         credential = null;
       }
     }
