@@ -16,6 +16,24 @@
 require('dotenv').config();
 const admin = require('firebase-admin');
 
+/**
+ * Limpa e formata a private key para o formato correto
+ */
+function formatPrivateKey(key) {
+  if (!key) return null;
+
+  // Remove aspas extras se existirem
+  let formattedKey = key.replace(/^["']|["']$/g, '');
+
+  // Substitui literais \n por quebras de linha reais
+  formattedKey = formattedKey.replace(/\\n/g, '\n');
+
+  // Remove espaços em branco extras no início e fim
+  formattedKey = formattedKey.trim();
+
+  return formattedKey;
+}
+
 class FirebaseConnection {
   constructor() {
     if (FirebaseConnection.instance) {
@@ -29,15 +47,29 @@ class FirebaseConnection {
     // Opção 1: Credenciais diretas do .env (RECOMENDADO para facilidade)
     if (process.env.FIREBASE_PRIVATE_KEY && process.env.FIREBASE_CLIENT_EMAIL) {
       try {
+        const privateKey = formatPrivateKey(process.env.FIREBASE_PRIVATE_KEY);
+
+        if (!privateKey) {
+          throw new Error('Private key vazia após formatação');
+        }
+
+        // Debug: mostra primeiros e últimos caracteres da chave
+        console.log('🔍 Private Key Debug:');
+        console.log('  - Início:', privateKey.substring(0, 30) + '...');
+        console.log('  - Fim:', '...' + privateKey.substring(privateKey.length - 30));
+        console.log('  - Tamanho:', privateKey.length, 'caracteres');
+
         credential = admin.credential.cert({
           projectId: process.env.FIREBASE_PROJECT_ID,
           clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-          privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+          privateKey: privateKey,
         });
+
         credentialMethod = 'environment variables';
         console.log('🔑 Usando credenciais do .env');
       } catch (error) {
         console.error('❌ Erro ao carregar credenciais do .env:', error.message);
+        console.error('❌ Stack:', error.stack);
         credential = null;
       }
     }
@@ -86,6 +118,7 @@ class FirebaseConnection {
       console.log(`🔐 Credential Method: ${credentialMethod}`);
     } catch (error) {
       console.error('❌ Erro ao inicializar Firebase:', error.message);
+      console.error('❌ Stack completo:', error.stack);
       throw error;
     }
 
