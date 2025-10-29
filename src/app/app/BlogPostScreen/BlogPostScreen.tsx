@@ -8,7 +8,6 @@ import {
   SafeAreaView,
   Image,
   ActivityIndicator,
-  Alert,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -74,9 +73,7 @@ const BlogPostScreen: React.FC = () => {
         };
 
         setCurrentPost(formattedPost);
-
-        // Incrementa visualizações do post
-        await postsApi.incrementViews(postId);
+        // NOTA: Views são incrementadas automaticamente pelo backend ao buscar o post
       } else {
         setError('Post não encontrado');
       }
