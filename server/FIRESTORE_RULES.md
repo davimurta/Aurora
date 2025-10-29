@@ -27,12 +27,10 @@ No menu lateral, clique em **"Rules"** (Regras)
 
 ```javascript
 rules_version = '2';
-
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Permite leitura e escrita em TODOS os documentos
     match /{document=**} {
-      allow read, write: true;
+      allow read, write: if true;
     }
   }
 }
@@ -42,11 +40,10 @@ service cloud.firestore {
 
 ---
 
-**OPÇÃO 2: Regras de Produção (recomendado)**
+**OPÇÃO 2: Regras de Produção (recomendado após testes)**
 
 ```javascript
 rules_version = '2';
-
 service cloud.firestore {
   match /databases/{database}/documents {
 
@@ -57,31 +54,27 @@ service cloud.firestore {
 
       // Apenas o próprio usuário pode ler/atualizar seus dados
       allow read, update, delete: if request.auth != null && request.auth.uid == userId;
-
-      // Admins podem ler todos os usuários
-      allow read: if request.auth != null &&
-                     get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'admin';
     }
 
     // Coleção de posts
     match /posts/{postId} {
       // Qualquer um pode ler posts publicados
-      allow read: if resource.data.published == true;
+      allow read: if true;
 
-      // Apenas psicólogos autenticados podem criar posts
-      allow create: if request.auth != null &&
-                       get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == 'psicologo';
+      // Usuários autenticados podem criar posts
+      allow create: if request.auth != null;
 
       // Apenas o autor pode atualizar/deletar seus posts
-      allow update, delete: if request.auth != null &&
-                               request.auth.uid == resource.data.authorId;
+      allow update, delete: if request.auth != null && request.auth.uid == resource.data.authorId;
     }
 
     // Coleção de registros emocionais
     match /emotionalRegisters/{registerId} {
-      // Apenas o proprietário pode ler/criar/atualizar seus registros
-      allow read, create, update: if request.auth != null &&
-                                     request.auth.uid == resource.data.userId;
+      // Apenas usuários autenticados podem criar
+      allow create: if request.auth != null;
+
+      // Apenas o proprietário pode ler/atualizar seus registros
+      allow read, update: if request.auth != null && request.auth.uid == resource.data.userId;
     }
   }
 }
