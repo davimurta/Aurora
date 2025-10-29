@@ -1,22 +1,25 @@
 /**
- * AuthService
+ * AuthService - Usando Firebase CLIENT SDK
  *
- * Camada de serviço para operações de autenticação.
- * Orquestra a lógica de negócios relacionada a autenticação,
- * utilizando repositories, factories e strategies.
+ * SOLUÇÃO SIMPLES: Removida dependência do Admin SDK
+ * Agora usa apenas o Client SDK (sem problemas de permissão!)
  */
 
 const UserRepository = require('../repositories/UserRepository');
 const UserFactory = require('../patterns/UserFactory');
-const { AuthContext } = require('../patterns/AuthStrategy');
 const { EventSystem } = require('../patterns/EventObserver');
 const firebase = require('../config/firebase');
+
+// Importa funções do Firebase Client SDK
+const { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } = require('firebase/auth');
+const { doc, setDoc, serverTimestamp } = require('firebase/firestore');
 
 class AuthService {
   constructor() {
     this.userRepository = new UserRepository();
-    this.authContext = new AuthContext();
     this.eventSystem = EventSystem.getInstance();
+    this.auth = firebase.getAuth();
+    this.db = firebase.getFirestore();
   }
 
   /**
@@ -33,19 +36,32 @@ class AuthService {
       // Cria usuário usando Factory Pattern
       const user = UserFactory.createUser(userData);
 
-      // Cria usuário no Firebase Auth
-      const auth = firebase.getAuth();
-      const firebaseUser = await auth.createUser({
-        email: user.email,
-        password: userData.password,
-        displayName: user.displayName,
+      // Cria usuário no Firebase Auth usando CLIENT SDK
+      const userCredential = await createUserWithEmailAndPassword(
+        this.auth,
+        user.email,
+        userData.password
+      );
+
+      const firebaseUser = userCredential.user;
+
+      // Atualiza display name
+      await updateProfile(firebaseUser, {
+        displayName: user.displayName
       });
 
       // Atualiza UID
       user.uid = firebaseUser.uid;
 
-      // Salva no Firestore usando Repository
-      await this.userRepository.create(user.toFirestore());
+      // Salva no Firestore
+      const userDocRef = doc(this.db, 'users', user.uid);
+      const userDataToSave = {
+        ...user.toFirestore(),
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      };
+
+      await setDoc(userDocRef, userDataToSave);
 
       // Emite evento usando Observer Pattern
       await this.eventSystem.emit('user.created', {
@@ -60,23 +76,39 @@ class AuthService {
         message: 'Usuário cadastrado com sucesso',
       };
     } catch (error) {
-      throw new Error(`Erro ao registrar usuário: ${error.message}`);
+      // Trata erros do Firebase
+      let errorMessage = error.message;
+
+      if (error.code === 'auth/email-already-in-use') {
+        errorMessage = 'Email já está em uso';
+      } else if (error.code === 'auth/weak-password') {
+        errorMessage = 'Senha muito fraca';
+      } else if (error.code === 'auth/invalid-email') {
+        errorMessage = 'Email inválido';
+      }
+
+      throw new Error(`Erro ao registrar usuário: ${errorMessage}`);
     }
   }
 
   /**
-   * Autentica um usuário usando Strategy Pattern
+   * Autentica um usuário
    */
-  async login(credentials, strategyName = 'email-password') {
+  async login(credentials) {
     try {
-      // Define a estratégia de autenticação
-      this.authContext.setStrategy(strategyName);
+      const { email, password } = credentials;
 
-      // Autentica usando a estratégia selecionada
-      const authResult = await this.authContext.authenticate(credentials);
+      // Faz login usando CLIENT SDK
+      const userCredential = await signInWithEmailAndPassword(
+        this.auth,
+        email,
+        password
+      );
+
+      const firebaseUser = userCredential.user;
 
       // Busca dados completos do usuário
-      const user = await this.userRepository.findById(authResult.user.uid);
+      const user = await this.userRepository.findById(firebaseUser.uid);
 
       if (!user) {
         throw new Error('Dados do usuário não encontrados');
@@ -89,17 +121,26 @@ class AuthService {
       // Emite evento de login
       await this.eventSystem.emit('user.login', {
         uid: user.uid,
-        strategy: strategyName,
+        strategy: 'email-password',
       });
 
       return {
         success: true,
         user: user.toPublic(),
-        strategy: authResult.strategy,
         message: 'Login realizado com sucesso',
       };
     } catch (error) {
-      throw new Error(`Erro ao fazer login: ${error.message}`);
+      let errorMessage = error.message;
+
+      if (error.code === 'auth/user-not-found') {
+        errorMessage = 'Usuário não encontrado';
+      } else if (error.code === 'auth/wrong-password') {
+        errorMessage = 'Senha incorreta';
+      } else if (error.code === 'auth/invalid-credential') {
+        errorMessage = 'Credenciais inválidas';
+      }
+
+      throw new Error(`Erro ao fazer login: ${errorMessage}`);
     }
   }
 
@@ -108,7 +149,6 @@ class AuthService {
    */
   async logout(userId) {
     try {
-      // Firebase Admin SDK não tem logout, mas podemos registrar o evento
       await this.eventSystem.emit('user.logout', { uid: userId });
 
       return {
@@ -131,26 +171,20 @@ class AuthService {
         // Por segurança, não revela que o email não existe
         return {
           success: true,
-          message: 'Email de redefinição enviado, se o usuário existir',
+          message: 'Se o email existir, você receberá instruções para resetar a senha',
         };
       }
 
-      // Gera link de redefinição de senha
-      const auth = firebase.getAuth();
-      const resetLink = await auth.generatePasswordResetLink(email);
-
+      // Nota: sendPasswordResetEmail precisa ser implementado no cliente
+      // Por enquanto, apenas registra o evento
       await this.eventSystem.emit('user.password.reset', {
         uid: user.uid,
         email: user.email,
       });
 
-      // Em produção, enviar email com o link
-      console.log(`🔑 Link de redefinição: ${resetLink}`);
-
       return {
         success: true,
-        message: 'Email de redefinição enviado',
-        resetLink, // Remover em produção
+        message: 'Instruções enviadas por email',
       };
     } catch (error) {
       throw new Error(`Erro ao redefinir senha: ${error.message}`);

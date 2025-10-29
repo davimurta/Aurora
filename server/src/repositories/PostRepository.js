@@ -1,7 +1,10 @@
 /**
- * PostRepository
+ * PostRepository - Usando Firebase CLIENT SDK
  *
  * Padrão: REPOSITORY PATTERN
+ *
+ * SOLUÇÃO SIMPLES: Removida dependência do Admin SDK
+ * Agora usa apenas o Client SDK (sem problemas de permissão!)
  *
  * Propósito: Encapsula toda a lógica de acesso a dados relacionada a posts/artigos,
  * abstraindo os detalhes de persistência do Firebase.
@@ -16,6 +19,22 @@
 const firebase = require('../config/firebase');
 const Post = require('../models/Post');
 
+// Importa funções do Firebase Client SDK
+const {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  setDoc,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  query,
+  where,
+  orderBy,
+  limit,
+} = require('firebase/firestore');
+
 class PostRepository {
   constructor() {
     this.db = firebase.getFirestore();
@@ -25,15 +44,19 @@ class PostRepository {
   /**
    * Busca todos os posts
    */
-  async findAll(limit = 50) {
+  async findAll(limitCount = 50) {
     try {
-      const snapshot = await this.db
-        .collection(this.collectionName)
-        .orderBy('createdAt', 'desc')
-        .limit(limit)
-        .get();
+      const postsRef = collection(this.db, this.collectionName);
+      const q = query(postsRef, orderBy('createdAt', 'desc'), limit(limitCount));
+      const snapshot = await getDocs(q);
 
-      return snapshot.docs.map((doc) => Post.fromFirestore(doc));
+      return snapshot.docs.map((doc) => {
+        return Post.fromFirestore({
+          id: doc.id,
+          data: () => doc.data(),
+          exists: true,
+        });
+      });
     } catch (error) {
       throw new Error(`Erro ao buscar posts: ${error.message}`);
     }
@@ -42,16 +65,24 @@ class PostRepository {
   /**
    * Busca posts publicados
    */
-  async findPublished(limit = 50) {
+  async findPublished(limitCount = 50) {
     try {
-      const snapshot = await this.db
-        .collection(this.collectionName)
-        .where('published', '==', true)
-        .orderBy('createdAt', 'desc')
-        .limit(limit)
-        .get();
+      const postsRef = collection(this.db, this.collectionName);
+      const q = query(
+        postsRef,
+        where('published', '==', true),
+        orderBy('createdAt', 'desc'),
+        limit(limitCount)
+      );
+      const snapshot = await getDocs(q);
 
-      return snapshot.docs.map((doc) => Post.fromFirestore(doc));
+      return snapshot.docs.map((doc) => {
+        return Post.fromFirestore({
+          id: doc.id,
+          data: () => doc.data(),
+          exists: true,
+        });
+      });
     } catch (error) {
       throw new Error(`Erro ao buscar posts publicados: ${error.message}`);
     }
@@ -62,13 +93,18 @@ class PostRepository {
    */
   async findById(postId) {
     try {
-      const doc = await this.db.collection(this.collectionName).doc(postId).get();
+      const docRef = doc(this.db, this.collectionName, postId);
+      const docSnap = await getDoc(docRef);
 
-      if (!doc.exists) {
+      if (!docSnap.exists()) {
         return null;
       }
 
-      return Post.fromFirestore(doc);
+      return Post.fromFirestore({
+        id: docSnap.id,
+        data: () => docSnap.data(),
+        exists: true,
+      });
     } catch (error) {
       throw new Error(`Erro ao buscar post: ${error.message}`);
     }
@@ -79,13 +115,21 @@ class PostRepository {
    */
   async findByAuthor(authorId) {
     try {
-      const snapshot = await this.db
-        .collection(this.collectionName)
-        .where('authorId', '==', authorId)
-        .orderBy('createdAt', 'desc')
-        .get();
+      const postsRef = collection(this.db, this.collectionName);
+      const q = query(
+        postsRef,
+        where('authorId', '==', authorId),
+        orderBy('createdAt', 'desc')
+      );
+      const snapshot = await getDocs(q);
 
-      return snapshot.docs.map((doc) => Post.fromFirestore(doc));
+      return snapshot.docs.map((doc) => {
+        return Post.fromFirestore({
+          id: doc.id,
+          data: () => doc.data(),
+          exists: true,
+        });
+      });
     } catch (error) {
       throw new Error(`Erro ao buscar posts por autor: ${error.message}`);
     }
@@ -96,14 +140,22 @@ class PostRepository {
    */
   async findByCategory(category) {
     try {
-      const snapshot = await this.db
-        .collection(this.collectionName)
-        .where('category', '==', category)
-        .where('published', '==', true)
-        .orderBy('createdAt', 'desc')
-        .get();
+      const postsRef = collection(this.db, this.collectionName);
+      const q = query(
+        postsRef,
+        where('category', '==', category),
+        where('published', '==', true),
+        orderBy('createdAt', 'desc')
+      );
+      const snapshot = await getDocs(q);
 
-      return snapshot.docs.map((doc) => Post.fromFirestore(doc));
+      return snapshot.docs.map((doc) => {
+        return Post.fromFirestore({
+          id: doc.id,
+          data: () => doc.data(),
+          exists: true,
+        });
+      });
     } catch (error) {
       throw new Error(`Erro ao buscar posts por categoria: ${error.message}`);
     }
@@ -114,14 +166,22 @@ class PostRepository {
    */
   async findByTag(tag) {
     try {
-      const snapshot = await this.db
-        .collection(this.collectionName)
-        .where('tags', 'array-contains', tag)
-        .where('published', '==', true)
-        .orderBy('createdAt', 'desc')
-        .get();
+      const postsRef = collection(this.db, this.collectionName);
+      const q = query(
+        postsRef,
+        where('tags', 'array-contains', tag),
+        where('published', '==', true),
+        orderBy('createdAt', 'desc')
+      );
+      const snapshot = await getDocs(q);
 
-      return snapshot.docs.map((doc) => Post.fromFirestore(doc));
+      return snapshot.docs.map((doc) => {
+        return Post.fromFirestore({
+          id: doc.id,
+          data: () => doc.data(),
+          exists: true,
+        });
+      });
     } catch (error) {
       throw new Error(`Erro ao buscar posts por tag: ${error.message}`);
     }
@@ -144,9 +204,8 @@ class PostRepository {
       }
 
       // Salva no Firestore
-      const docRef = await this.db
-        .collection(this.collectionName)
-        .add(post.toFirestore());
+      const postsRef = collection(this.db, this.collectionName);
+      const docRef = await addDoc(postsRef, post.toFirestore());
 
       post.id = docRef.id;
 
@@ -161,15 +220,15 @@ class PostRepository {
    */
   async update(postId, postData) {
     try {
-      const docRef = this.db.collection(this.collectionName).doc(postId);
-      const doc = await docRef.get();
+      const docRef = doc(this.db, this.collectionName, postId);
+      const docSnap = await getDoc(docRef);
 
-      if (!doc.exists) {
+      if (!docSnap.exists()) {
         throw new Error('Post não encontrado');
       }
 
       // Mescla dados existentes com novos dados
-      const existingData = doc.data();
+      const existingData = docSnap.data();
       const updatedPost = new Post({ ...existingData, ...postData, id: postId });
       updatedPost.updatedAt = new Date();
 
@@ -183,7 +242,7 @@ class PostRepository {
       }
 
       // Atualiza no Firestore
-      await docRef.update(updatedPost.toFirestore());
+      await updateDoc(docRef, updatedPost.toFirestore());
 
       return updatedPost;
     } catch (error) {
@@ -196,14 +255,14 @@ class PostRepository {
    */
   async delete(postId) {
     try {
-      const docRef = this.db.collection(this.collectionName).doc(postId);
-      const doc = await docRef.get();
+      const docRef = doc(this.db, this.collectionName, postId);
+      const docSnap = await getDoc(docRef);
 
-      if (!doc.exists) {
+      if (!docSnap.exists()) {
         throw new Error('Post não encontrado');
       }
 
-      await docRef.delete();
+      await deleteDoc(docRef);
       return true;
     } catch (error) {
       throw new Error(`Erro ao deletar post: ${error.message}`);
@@ -215,17 +274,21 @@ class PostRepository {
    */
   async incrementViews(postId) {
     try {
-      const docRef = this.db.collection(this.collectionName).doc(postId);
-      const doc = await docRef.get();
+      const docRef = doc(this.db, this.collectionName, postId);
+      const docSnap = await getDoc(docRef);
 
-      if (!doc.exists) {
+      if (!docSnap.exists()) {
         throw new Error('Post não encontrado');
       }
 
-      const post = Post.fromFirestore(doc);
+      const post = Post.fromFirestore({
+        id: docSnap.id,
+        data: () => docSnap.data(),
+        exists: true,
+      });
       post.incrementViews();
 
-      await docRef.update({
+      await updateDoc(docRef, {
         views: post.views,
         updatedAt: post.updatedAt,
       });
@@ -241,17 +304,21 @@ class PostRepository {
    */
   async incrementLikes(postId) {
     try {
-      const docRef = this.db.collection(this.collectionName).doc(postId);
-      const doc = await docRef.get();
+      const docRef = doc(this.db, this.collectionName, postId);
+      const docSnap = await getDoc(docRef);
 
-      if (!doc.exists) {
+      if (!docSnap.exists()) {
         throw new Error('Post não encontrado');
       }
 
-      const post = Post.fromFirestore(doc);
+      const post = Post.fromFirestore({
+        id: docSnap.id,
+        data: () => docSnap.data(),
+        exists: true,
+      });
       post.incrementLikes();
 
-      await docRef.update({
+      await updateDoc(docRef, {
         likes: post.likes,
         updatedAt: post.updatedAt,
       });
@@ -267,14 +334,14 @@ class PostRepository {
    */
   async togglePublish(postId, published) {
     try {
-      const docRef = this.db.collection(this.collectionName).doc(postId);
-      const doc = await docRef.get();
+      const docRef = doc(this.db, this.collectionName, postId);
+      const docSnap = await getDoc(docRef);
 
-      if (!doc.exists) {
+      if (!docSnap.exists()) {
         throw new Error('Post não encontrado');
       }
 
-      await docRef.update({
+      await updateDoc(docRef, {
         published,
         updatedAt: new Date(),
       });

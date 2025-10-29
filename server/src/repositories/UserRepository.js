@@ -1,7 +1,10 @@
 /**
- * UserRepository
+ * UserRepository - Usando Firebase CLIENT SDK
  *
  * Padrão: REPOSITORY PATTERN
+ *
+ * SOLUÇÃO SIMPLES: Removida dependência do Admin SDK
+ * Agora usa apenas o Client SDK (sem problemas de permissão!)
  *
  * Propósito: Encapsula toda a lógica de acesso a dados relacionada a usuários,
  * abstraindo os detalhes de persistência do Firebase. Isso permite que o código
@@ -18,6 +21,21 @@
 const firebase = require('../config/firebase');
 const User = require('../models/User');
 
+// Importa funções do Firebase Client SDK
+const {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  setDoc,
+  updateDoc,
+  deleteDoc,
+  query,
+  where,
+  limit,
+  orderBy,
+} = require('firebase/firestore');
+
 class UserRepository {
   constructor() {
     this.db = firebase.getFirestore();
@@ -29,8 +47,16 @@ class UserRepository {
    */
   async findAll() {
     try {
-      const snapshot = await this.db.collection(this.collectionName).get();
-      return snapshot.docs.map((doc) => User.fromFirestore(doc));
+      const usersRef = collection(this.db, this.collectionName);
+      const snapshot = await getDocs(usersRef);
+
+      return snapshot.docs.map((doc) => {
+        return User.fromFirestore({
+          id: doc.id,
+          data: () => doc.data(),
+          exists: true,
+        });
+      });
     } catch (error) {
       throw new Error(`Erro ao buscar usuários: ${error.message}`);
     }
@@ -41,13 +67,18 @@ class UserRepository {
    */
   async findById(uid) {
     try {
-      const doc = await this.db.collection(this.collectionName).doc(uid).get();
+      const docRef = doc(this.db, this.collectionName, uid);
+      const docSnap = await getDoc(docRef);
 
-      if (!doc.exists) {
+      if (!docSnap.exists()) {
         return null;
       }
 
-      return User.fromFirestore(doc);
+      return User.fromFirestore({
+        id: docSnap.id,
+        data: () => docSnap.data(),
+        exists: true,
+      });
     } catch (error) {
       throw new Error(`Erro ao buscar usuário: ${error.message}`);
     }
@@ -58,17 +89,20 @@ class UserRepository {
    */
   async findByEmail(email) {
     try {
-      const snapshot = await this.db
-        .collection(this.collectionName)
-        .where('email', '==', email)
-        .limit(1)
-        .get();
+      const usersRef = collection(this.db, this.collectionName);
+      const q = query(usersRef, where('email', '==', email), limit(1));
+      const snapshot = await getDocs(q);
 
       if (snapshot.empty) {
         return null;
       }
 
-      return User.fromFirestore(snapshot.docs[0]);
+      const firstDoc = snapshot.docs[0];
+      return User.fromFirestore({
+        id: firstDoc.id,
+        data: () => firstDoc.data(),
+        exists: true,
+      });
     } catch (error) {
       throw new Error(`Erro ao buscar usuário por email: ${error.message}`);
     }
@@ -79,12 +113,17 @@ class UserRepository {
    */
   async findByType(userType) {
     try {
-      const snapshot = await this.db
-        .collection(this.collectionName)
-        .where('userType', '==', userType)
-        .get();
+      const usersRef = collection(this.db, this.collectionName);
+      const q = query(usersRef, where('userType', '==', userType));
+      const snapshot = await getDocs(q);
 
-      return snapshot.docs.map((doc) => User.fromFirestore(doc));
+      return snapshot.docs.map((doc) => {
+        return User.fromFirestore({
+          id: doc.id,
+          data: () => doc.data(),
+          exists: true,
+        });
+      });
     } catch (error) {
       throw new Error(`Erro ao buscar usuários por tipo: ${error.message}`);
     }
@@ -95,13 +134,21 @@ class UserRepository {
    */
   async findApprovedPsychologists() {
     try {
-      const snapshot = await this.db
-        .collection(this.collectionName)
-        .where('userType', '==', 'psicologo')
-        .where('isApproved', '==', true)
-        .get();
+      const usersRef = collection(this.db, this.collectionName);
+      const q = query(
+        usersRef,
+        where('userType', '==', 'psicologo'),
+        where('isApproved', '==', true)
+      );
+      const snapshot = await getDocs(q);
 
-      return snapshot.docs.map((doc) => User.fromFirestore(doc));
+      return snapshot.docs.map((doc) => {
+        return User.fromFirestore({
+          id: doc.id,
+          data: () => doc.data(),
+          exists: true,
+        });
+      });
     } catch (error) {
       throw new Error(`Erro ao buscar psicólogos aprovados: ${error.message}`);
     }
@@ -120,14 +167,9 @@ class UserRepository {
         throw new Error(`Dados inválidos: ${validation.errors.join(', ')}`);
       }
 
-      // Salva no Firestore
-      const docRef = await this.db
-        .collection(this.collectionName)
-        .add(user.toFirestore());
-
-      // Atualiza o UID
-      user.uid = docRef.id;
-      await docRef.update({ uid: docRef.id });
+      // Salva no Firestore usando o UID do Firebase Auth
+      const docRef = doc(this.db, this.collectionName, user.uid);
+      await setDoc(docRef, user.toFirestore());
 
       return user;
     } catch (error) {
@@ -140,15 +182,15 @@ class UserRepository {
    */
   async update(uid, userData) {
     try {
-      const docRef = this.db.collection(this.collectionName).doc(uid);
-      const doc = await docRef.get();
+      const docRef = doc(this.db, this.collectionName, uid);
+      const docSnap = await getDoc(docRef);
 
-      if (!doc.exists) {
+      if (!docSnap.exists()) {
         throw new Error('Usuário não encontrado');
       }
 
       // Mescla dados existentes com novos dados
-      const existingData = doc.data();
+      const existingData = docSnap.data();
       const updatedUser = new User({ ...existingData, ...userData, uid });
       updatedUser.updatedAt = new Date();
 
@@ -159,7 +201,7 @@ class UserRepository {
       }
 
       // Atualiza no Firestore
-      await docRef.update(updatedUser.toFirestore());
+      await updateDoc(docRef, updatedUser.toFirestore());
 
       return updatedUser;
     } catch (error) {
@@ -172,15 +214,15 @@ class UserRepository {
    */
   async delete(uid) {
     try {
-      const docRef = this.db.collection(this.collectionName).doc(uid);
-      const doc = await docRef.get();
+      const docRef = doc(this.db, this.collectionName, uid);
+      const docSnap = await getDoc(docRef);
 
-      if (!doc.exists) {
+      if (!docSnap.exists()) {
         throw new Error('Usuário não encontrado');
       }
 
       // Soft delete - marca como inativo
-      await docRef.update({
+      await updateDoc(docRef, {
         isActive: false,
         updatedAt: new Date(),
       });
@@ -196,7 +238,8 @@ class UserRepository {
    */
   async hardDelete(uid) {
     try {
-      await this.db.collection(this.collectionName).doc(uid).delete();
+      const docRef = doc(this.db, this.collectionName, uid);
+      await deleteDoc(docRef);
       return true;
     } catch (error) {
       throw new Error(`Erro ao deletar permanentemente usuário: ${error.message}`);
@@ -208,19 +251,24 @@ class UserRepository {
    */
   async approvePsychologist(uid) {
     try {
-      const docRef = this.db.collection(this.collectionName).doc(uid);
-      const doc = await docRef.get();
+      const docRef = doc(this.db, this.collectionName, uid);
+      const docSnap = await getDoc(docRef);
 
-      if (!doc.exists) {
+      if (!docSnap.exists()) {
         throw new Error('Usuário não encontrado');
       }
 
-      const user = User.fromFirestore(doc);
+      const user = User.fromFirestore({
+        id: docSnap.id,
+        data: () => docSnap.data(),
+        exists: true,
+      });
+
       if (user.userType !== 'psicologo') {
         throw new Error('Usuário não é um psicólogo');
       }
 
-      await docRef.update({
+      await updateDoc(docRef, {
         isApproved: true,
         updatedAt: new Date(),
       });
