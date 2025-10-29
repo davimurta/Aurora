@@ -217,6 +217,10 @@ const HistoryRegisterScreen: React.FC = () => {
     return <View key={index} style={[styles.dayCell, { backgroundColor: 'transparent' }]} />;
   }
 
+  const today = new Date();
+  const isToday = day === today.getDate() &&
+                  currentDate.getMonth() === today.getMonth() &&
+                  currentDate.getFullYear() === today.getFullYear();
   const isSelected = day === selectedDay;
   const hasData = hasDataForDay(day);
 
@@ -226,6 +230,7 @@ const HistoryRegisterScreen: React.FC = () => {
       style={[
         styles.dayCell,
         hasData && styles.dayWithData,
+        isToday && styles.todayCell,
         isSelected && styles.selectedDay,
       ]}
       onPress={() => selectDay(day)}
@@ -235,6 +240,7 @@ const HistoryRegisterScreen: React.FC = () => {
         style={[
           styles.dayText,
           hasData && styles.dayWithDataText,
+          isToday && styles.todayText,
           isSelected && styles.selectedDayText,
         ]}
       >

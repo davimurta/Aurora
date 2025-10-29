@@ -136,7 +136,7 @@ const DailyRegisterScreen: React.FC = () => {
 
     try {
       const selectedMoodLabel = getMoodLabel(selectedMood!);
-      
+
       await saveRegister({
         selectedMood: selectedMoodLabel,
         moodId: selectedMood!,
@@ -144,24 +144,31 @@ const DailyRegisterScreen: React.FC = () => {
         diaryText: diaryText.trim(),
       });
 
+      // Limpa os campos ANTES de mostrar o alert
+      setSelectedMood(null);
+      setIntensityValue(0.5);
+      setDiaryText('');
+      sliderPosition.value = withSpring(0.5);
+
+      // Mostra confirmação visual melhorada
       Alert.alert(
-        'Sucesso', 
-        'Seu registro emocional foi salvo com sucesso!',
+        '✅ Registro Salvo!',
+        'Seu registro emocional foi salvo com sucesso! Você pode visualizá-lo no histórico.',
         [
           {
             text: 'OK',
-            onPress: () => {
-              setSelectedMood(null);
-              setIntensityValue(0.5);
-              setDiaryText('');
-              sliderPosition.value = withSpring(0.5);
-            }
+            style: 'default'
           }
         ]
       );
 
-    } catch {
-      Alert.alert('Erro', 'Não foi possível salvar seu registro. Tente novamente.');
+    } catch (error: any) {
+      console.error('Erro ao salvar registro:', error);
+      Alert.alert(
+        'Erro ao Salvar',
+        error.message || 'Não foi possível salvar seu registro. Verifique sua conexão e tente novamente.',
+        [{ text: 'OK' }]
+      );
     }
   };
 

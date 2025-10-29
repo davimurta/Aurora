@@ -108,27 +108,44 @@ const AddArticleScreen: React.FC = () => {
 
   const handleSubmit = async () => {
     if (!user) {
-      Alert.alert('Erro', 'Você precisa estar logado para criar um artigo.');
+      Alert.alert('❌ Erro de Autenticação', 'Você precisa estar logado para criar um artigo.');
       return;
     }
 
-    if (!author.trim() || !title.trim() || !description.trim()) {
-      Alert.alert('Campos obrigatórios', 'Por favor, preencha todos os campos obrigatórios.');
+    // Validação de título
+    if (!title.trim()) {
+      Alert.alert('⚠️ Título Obrigatório', 'Por favor, preencha o título da matéria.');
       return;
     }
 
+    if (title.trim().length < 3) {
+      Alert.alert('⚠️ Título Muito Curto', 'O título deve ter pelo menos 3 caracteres.');
+      return;
+    }
+
+    // Validação de autor
+    if (!author.trim()) {
+      Alert.alert('⚠️ Autor Obrigatório', 'Por favor, preencha o nome do autor.');
+      return;
+    }
+
+    // Validação de descrição
+    if (!description.trim()) {
+      Alert.alert('⚠️ Descrição Obrigatória', 'Por favor, preencha uma breve descrição da matéria.');
+      return;
+    }
+
+    // Validação de conteúdo
     const hasContent = contentBlocks.some(block => block.content.trim() !== '');
     if (!hasContent) {
-      Alert.alert('Conteúdo vazio', 'Por favor, escreva o conteúdo da matéria.');
+      Alert.alert('⚠️ Conteúdo Vazio', 'Por favor, escreva o conteúdo da matéria adicionando pelo menos um parágrafo.');
       return;
     }
 
-    setIsLoading(true);
-
-    try {
-      // Converte os blocos de conteúdo para um único texto formatado
-      let fullContent = '';
-      contentBlocks.forEach(block => {
+    // Converte os blocos de conteúdo para um único texto formatado
+    let fullContent = '';
+    contentBlocks.forEach(block => {
+      if (block.content.trim()) {
         if (block.type === 'heading') {
           fullContent += `\n\n## ${block.content}\n\n`;
         } else if (block.type === 'paragraph') {
@@ -136,8 +153,18 @@ const AddArticleScreen: React.FC = () => {
         } else if (block.type === 'image') {
           fullContent += `\n[Imagem: ${block.content}]\n\n`;
         }
-      });
+      }
+    });
 
+    // Validação de conteúdo mínimo (10 caracteres conforme backend)
+    if (fullContent.trim().length < 10) {
+      Alert.alert('⚠️ Conteúdo Insuficiente', 'O conteúdo da matéria deve ter pelo menos 10 caracteres. Por favor, escreva mais detalhes.');
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
       // Salva o artigo no backend
       const response = await postsApi.createPost({
         title: title.trim(),
@@ -145,7 +172,7 @@ const AddArticleScreen: React.FC = () => {
         authorId: user.uid,
         authorName: author.trim(),
         category: category,
-        tags: [category], // Usa categoria como tag inicial
+        tags: [category],
       });
 
       if (response.success) {
@@ -154,26 +181,37 @@ const AddArticleScreen: React.FC = () => {
           await postsApi.publishPost(response.post.id);
         }
 
+        // Limpa o formulário ANTES de mostrar o alert
+        setTitle('');
+        setDescription('');
+        setCategory('Saúde Mental');
+        setContentBlocks([{ id: Date.now().toString(), type: 'paragraph', content: '' }]);
+
         setIsLoading(false);
-        Alert.alert('Sucesso', 'Matéria criada e publicada com sucesso!', [
-          {
-            text: 'OK',
-            onPress: () => {
-              // Limpa o formulário
-              setTitle('');
-              setDescription('');
-              setCategory('Saúde Mental');
-              setContentBlocks([{ id: Date.now().toString(), type: 'paragraph', content: '' }]);
-            }
-          }
-        ]);
+
+        // Mostra confirmação de sucesso
+        Alert.alert(
+          '✅ Matéria Publicada!',
+          'Sua matéria foi criada e publicada com sucesso! Ela já está disponível no blog para todos os usuários.',
+          [{ text: 'OK' }]
+        );
       } else {
         throw new Error('Resposta inválida do servidor');
       }
     } catch (error: any) {
       setIsLoading(false);
       console.error('Erro ao criar matéria:', error);
-      Alert.alert('Erro', `Erro ao criar matéria: ${error.message || 'Tente novamente.'}`);
+
+      // Extrai mensagem de erro do backend se disponível
+      let errorMessage = 'Não foi possível criar a matéria. Tente novamente.';
+
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      Alert.alert('❌ Erro ao Publicar', errorMessage, [{ text: 'OK' }]);
     }
   };
 

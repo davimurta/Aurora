@@ -59,12 +59,16 @@ class Post {
   validate() {
     const errors = [];
 
-    if (!this.title || this.title.length < 5) {
-      errors.push('Título deve ter pelo menos 5 caracteres');
+    if (!this.title || this.title.length < 3) {
+      errors.push('Título deve ter pelo menos 3 caracteres');
     }
 
-    if (!this.content || this.content.length < 50) {
-      errors.push('Conteúdo deve ter pelo menos 50 caracteres');
+    if (this.title && this.title.length > 200) {
+      errors.push('Título não pode ter mais de 200 caracteres');
+    }
+
+    if (!this.content || this.content.length < 10) {
+      errors.push('Conteúdo deve ter pelo menos 10 caracteres');
     }
 
     if (!this.authorId) {

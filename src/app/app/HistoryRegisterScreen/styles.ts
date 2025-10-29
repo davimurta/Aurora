@@ -99,10 +99,24 @@ dayText: {
   color: '#333',
 },
 
+// 🔹 Dia atual (hoje)
+todayCell: {
+  backgroundColor: '#FFD93D',
+  borderRadius: 20,
+  borderWidth: 2,
+  borderColor: '#FFB800',
+},
+todayText: {
+  color: '#FFF',
+  fontWeight: 'bold',
+},
+
 // 🔹 Dia atualmente selecionado
 selectedDay: {
   backgroundColor: '#4ECDC4',
   borderRadius: 20,
+  borderWidth: 2,
+  borderColor: '#3BA89F',
 },
 selectedDayText: {
   color: '#FFF',
@@ -111,12 +125,14 @@ selectedDayText: {
 
 // 🔹 Dias que possuem registro no Firebase
 dayWithData: {
-  backgroundColor: '#4ECDC4', // 🔹 bolinha teal
+  backgroundColor: '#E8F8F7',
   borderRadius: 20,
+  borderWidth: 1,
+  borderColor: '#4ECDC4',
 },
 dayWithDataText: {
-  color: '#FFF',
-  fontWeight: 'bold',
+  color: '#4ECDC4',
+  fontWeight: '600',
 },
   chartContainer: {
     backgroundColor: 'white',
