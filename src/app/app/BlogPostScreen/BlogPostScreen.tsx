@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   SafeAreaView,
-  Image,
   ActivityIndicator,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -57,9 +56,14 @@ const BlogPostScreen: React.FC = () => {
         const post = response.post;
 
         // Converte o post da API para o formato BlogPost
+        // Remove markdown do título (##, ###, etc.)
+        const cleanTitle = post.title
+          .replace(/^#+\s+/, '') // Remove ## ou ### do início
+          .trim();
+
         const formattedPost: BlogPost = {
           id: post.id,
-          title: post.title,
+          title: cleanTitle,
           description: post.excerpt || post.content.substring(0, 200) + '...',
           author: post.authorName,
           date: new Date(post.createdAt).toLocaleDateString('pt-BR', {
@@ -216,12 +220,6 @@ const BlogPostScreen: React.FC = () => {
           <View style={styles.authorInfo}>
             <Text style={styles.authorName}>{currentPost.author}</Text>
             <Text style={styles.publishDate}>{currentPost.date}</Text>
-          </View>
-        </View>
-
-        <View style={styles.imageContainer}>
-          <View style={styles.imagePlaceholder}>
-            <Icon name="image" size={40} color="#4ECDC4" />
           </View>
         </View>
 
