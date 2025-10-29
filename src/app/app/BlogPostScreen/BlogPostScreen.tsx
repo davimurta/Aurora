@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,53 +7,13 @@ import {
   StyleSheet,
   SafeAreaView,
   Image,
+  ActivityIndicator,
+  Alert,
 } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router'; 
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { styles } from './styles';
-const mockBlogPosts = [
-    
-    { 
-        id: '1', 
-        title: 'Como a Meditação Pode Transformar Sua Vida', 
-        description: 'Descubra os benefícios científicos da meditação e como implementar essa prática transformadora em sua rotina diária.',
-        author: 'Dr. Ana Silva',
-        date: '15 de Junho, 2024',
-        content: `A meditação é uma prática milenar que tem ganhado cada vez mais reconhecimento científico nos últimos anos. Estudos comprovam que apenas 10 minutos diários de meditação podem trazer benefícios significativos para nossa saúde mental e física.
-
-## Os Benefícios Comprovados
-    
-Pesquisas realizadas em universidades renomadas mostram que a meditação regular pode:
-    
-• Reduzir significativamente os níveis de stress e ansiedade
-• Melhorar a capacidade de concentração e foco
-• Fortalecer o sistema imunológico
-• Promover melhor qualidade do sono
-• Aumentar a sensação de bem-estar geral
-    
-## Como Começar
-    
-Para iniciantes, recomendamos começar com sessões curtas de 5 a 10 minutos. Escolha um local tranquilo, sente-se confortavelmente e foque na sua respiração.
-    
-### Técnica Básica de Respiração
-    
-1. Inspire lentamente pelo nariz contando até 4
-2. Segure a respiração por 4 segundos
-3. Expire pela boca contando até 6
-4. Repita o ciclo por 5-10 minutos
-    
-## Mantendo a Consistência
-    
-O segredo para obter os benefícios da meditação está na consistência. É melhor meditar 5 minutos todos os dias do que 30 minutos uma vez por semana.
-    
-Crie um horário fixo para sua prática, preferencialmente no mesmo local. Isso ajudará a formar um hábito duradouro que transformará positivamente sua vida.`,
-        imageUrl: 'https://example.com/meditation-image.jpg',
-        category: 'Bem-estar',
-        readTime: '5 min'
-    },
-
-];
-
+import { postsApi, Post } from '../../../services/postsApi';
 
 interface BlogPost {
   id: string;
@@ -67,31 +27,66 @@ interface BlogPost {
   readTime?: string;
 }
 
-
 const BlogPostScreen: React.FC = () => {
-  const router = useRouter(); 
-
-  const { id } = useLocalSearchParams(); 
+  const router = useRouter();
+  const { id } = useLocalSearchParams();
   const postId = id as string;
 
-  const allPosts: any[] = mockBlogPosts; 
+  const [loading, setLoading] = useState(true);
+  const [currentPost, setCurrentPost] = useState<BlogPost | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const defaultPost: BlogPost = allPosts[0] || { 
-    id: 'fallback-0',
-    title: 'Post Padrão (Fallback)',
-    description: 'Este é o conteúdo padrão.',
-    author: 'System',
-    date: 'Hoje',
-    content: `Conteúdo de fallback.`,
-    imageUrl: '',
-    category: 'Erro',
-    readTime: '1 min'
+  // Busca o post da API quando o componente montar
+  useEffect(() => {
+    loadPost();
+  }, [postId]);
+
+  const loadPost = async () => {
+    if (!postId) {
+      setError('ID do post não fornecido');
+      setLoading(false);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await postsApi.getPostById(postId);
+
+      if (response.success && response.post) {
+        const post = response.post;
+
+        // Converte o post da API para o formato BlogPost
+        const formattedPost: BlogPost = {
+          id: post.id,
+          title: post.title,
+          description: post.excerpt || post.content.substring(0, 200) + '...',
+          author: post.authorName,
+          date: new Date(post.createdAt).toLocaleDateString('pt-BR', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+          }),
+          content: post.content,
+          category: post.category || 'Geral',
+          readTime: `${Math.ceil(post.content.length / 1000)} min`,
+        };
+
+        setCurrentPost(formattedPost);
+
+        // Incrementa visualizações do post
+        await postsApi.incrementViews(postId);
+      } else {
+        setError('Post não encontrado');
+      }
+    } catch (error: any) {
+      console.error('Erro ao carregar post:', error);
+      setError('Erro ao carregar o artigo. Tente novamente.');
+    } finally {
+      setLoading(false);
+    }
   };
-
-  
-  const currentPost = useMemo(() => {
-    return (allPosts.find((p) => p.id === postId) as BlogPost) || defaultPost;
-  }, [postId, allPosts]);
 
 
   const handleBack = () => {
@@ -144,10 +139,48 @@ const BlogPostScreen: React.FC = () => {
     });
   };
 
+  // Estado de carregamento
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+            <Icon name="arrow-back" size={24} color="#333" />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#4ECDC4" />
+          <Text style={styles.loadingText}>Carregando artigo...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  // Estado de erro
+  if (error || !currentPost) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+            <Icon name="arrow-back" size={24} color="#333" />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.errorContainer}>
+          <Icon name="error-outline" size={64} color="#FF6B6B" />
+          <Text style={styles.errorTitle}>Ops! Algo deu errado</Text>
+          <Text style={styles.errorText}>{error || 'Não foi possível carregar o artigo'}</Text>
+          <TouchableOpacity style={styles.retryButton} onPress={loadPost}>
+            <Icon name="refresh" size={20} color="#fff" />
+            <Text style={styles.retryButtonText}>Tentar Novamente</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        {/* BOTÃO DE VOLTAR COM A ROTA CORRETA */}
         <TouchableOpacity style={styles.backButton} onPress={handleBack}>
           <Icon name="arrow-back" size={24} color="#333" />
         </TouchableOpacity>

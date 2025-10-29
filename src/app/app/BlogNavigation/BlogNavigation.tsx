@@ -10,6 +10,7 @@ import {
   useWindowDimensions,
   ActivityIndicator,
 } from 'react-native';
+import { useRouter } from 'expo-router';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import BottomNavigation from '../../../components/BottonNavigation';
 import { postsApi, Post } from '../../../services/postsApi';
@@ -34,10 +35,27 @@ const BlogNavigation: React.FC<BlogNavigationProps> = ({
   onNavigateToPost,
   onNavigateToAllPosts
 }) => {
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const { width } = useWindowDimensions();
+
+  // Função de navegação que usa a prop ou o router
+  const handleNavigateToPost = (postId: string) => {
+    if (onNavigateToPost) {
+      onNavigateToPost(postId);
+    } else {
+      router.push(`/app/BlogPostScreen/BlogPostScreen?id=${postId}` as any);
+    }
+  };
+
+  const handleNavigateToAllPosts = () => {
+    if (onNavigateToAllPosts) {
+      onNavigateToAllPosts();
+    }
+    // Se não houver prop, não faz nada pois já está na tela de todos os posts
+  };
 
   // Busca posts do backend ao montar o componente
   useEffect(() => {
@@ -104,7 +122,7 @@ const BlogNavigation: React.FC<BlogNavigationProps> = ({
         shadowRadius: 8,
         elevation: 3,
       }}
-      onPress={() => onNavigateToPost?.(post.id)}
+      onPress={() => handleNavigateToPost(post.id)}
     >
       <View style={{
         height: isSmallScreen ? 120 : 140,
@@ -177,7 +195,7 @@ const BlogNavigation: React.FC<BlogNavigationProps> = ({
           shadowRadius: 8,
           elevation: 3,
         }}
-        onPress={() => onNavigateToPost?.(post.id)}
+        onPress={() => handleNavigateToPost(post.id)}
       >
         <View style={{
           height: isSmallScreen ? 100 : isMediumScreen ? 120 : 140,
@@ -244,7 +262,7 @@ const BlogNavigation: React.FC<BlogNavigationProps> = ({
         elevation: 5,
         overflow: 'hidden',
       }}
-      onPress={() => onNavigateToPost?.(post.id)}
+      onPress={() => handleNavigateToPost(post.id)}
     >
       <View style={{
         height: isSmallScreen ? 160 : isMediumScreen ? 200 : 240,
@@ -464,7 +482,7 @@ const BlogNavigation: React.FC<BlogNavigationProps> = ({
                     Publicações recentes
                   </Text>
                 </View>
-                <TouchableOpacity onPress={onNavigateToAllPosts}>
+                <TouchableOpacity onPress={handleNavigateToAllPosts}>
                   <Text style={{
                     fontSize: isSmallScreen ? 13 : 14,
                     color: '#4ECDC4',
@@ -511,7 +529,7 @@ const BlogNavigation: React.FC<BlogNavigationProps> = ({
                     Recomendados especialmente
                   </Text>
                 </View>
-                <TouchableOpacity onPress={onNavigateToAllPosts}>
+                <TouchableOpacity onPress={handleNavigateToAllPosts}>
                   <Text style={{
                     fontSize: isSmallScreen ? 13 : 14,
                     color: '#4ECDC4',

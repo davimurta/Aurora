@@ -1,10 +1,10 @@
-import React, { useState, useMemo } from 'react';
-import { SafeAreaView, ScrollView, View } from 'react-native';
+import React, { useState, useMemo, useEffect } from 'react';
+import { SafeAreaView, ScrollView, View, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import BottomNavigation from '@components/BottonNavigation';
 
 import { styles } from './styles';
-import { respirationActivities, blogPosts } from './mockData';
+import { respirationActivities } from './mockData';
 import { SearchBar } from './components/SearchBar';
 import { Banner } from './components/Banner';
 import { BlogCard } from './components/BlogCard';
@@ -12,6 +12,7 @@ import { GridSection } from './components/GridSection';
 import { Section } from './components/Section';
 import { RespirationCard } from './components/RespirationCard';
 import { ResourceCard, dailyResources } from './components/ResourceCard';
+import { postsApi, Post } from '../../../services/postsApi';
 
 interface RespirationActivity {
   id: string;
@@ -40,6 +41,44 @@ interface BlogPost {
 const HomeScreen: React.FC = () => {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+  const [loadingPosts, setLoadingPosts] = useState(true);
+
+  // Busca posts do backend ao montar o componente
+  useEffect(() => {
+    loadBlogPosts();
+  }, []);
+
+  const loadBlogPosts = async () => {
+    try {
+      setLoadingPosts(true);
+      const response = await postsApi.getPosts(10); // Busca até 10 posts para a home
+
+      if (response.success && response.posts) {
+        // Converte posts do backend para formato BlogPost da HomeScreen
+        const formattedPosts: BlogPost[] = response.posts.map((post: Post) => ({
+          id: post.id,
+          title: post.title,
+          description: post.excerpt || post.content.substring(0, 100) + '...',
+          author: post.authorName,
+          date: new Date(post.createdAt).toLocaleDateString('pt-BR', {
+            day: 'numeric',
+            month: 'short',
+          }),
+          readTime: `${Math.ceil(post.content.length / 1000)} min`,
+          category: post.category || 'Geral',
+        }));
+
+        setBlogPosts(formattedPosts);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar posts na home:', error);
+      // Se houver erro, mantém array vazio
+      setBlogPosts([]);
+    } finally {
+      setLoadingPosts(false);
+    }
+  };
 
   const filteredData = useMemo(() => {
     const query = searchQuery.toLowerCase().trim();
@@ -68,7 +107,7 @@ const HomeScreen: React.FC = () => {
       dailyResources: filterDailyResources(dailyResources),
       blogPosts: filterBlogPosts(blogPosts),
     };
-  }, [searchQuery]);
+  }, [searchQuery, blogPosts]);
 
   const handleNavigateToBlogPost = (postId: string) => {
     router.push(`/app/BlogPostScreen/BlogPostScreen?id=${postId}` as any); 
