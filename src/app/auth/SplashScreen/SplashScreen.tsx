@@ -5,76 +5,52 @@ import {
   Animated,
   SafeAreaView,
   StatusBar,
+  ActivityIndicator,
 } from 'react-native';
 import { Redirect } from 'expo-router';
+import { useAuthController } from '../../../hooks/useAuthController';
 import { styles } from './styles';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const SplashScreen: React.FC = () => {
   const [isReady, setIsReady] = useState(false);
   const [fadeAnim] = useState(new Animated.Value(0));
-  const [scaleAnim] = useState(new Animated.Value(0.8));
-  const [pulseAnim] = useState(new Animated.Value(1));
-  
-  const isLoggedIn = false;
-  const isLoading = false;
+  const [scaleAnim] = useState(new Animated.Value(0.9));
+
+  const { user, loading: authLoading } = useAuthController();
 
   useEffect(() => {
+    // Animação de entrada
     Animated.parallel([
       Animated.timing(fadeAnim, {
         toValue: 1,
-        duration: 1000,
+        duration: 800,
         useNativeDriver: true,
       }),
-      Animated.timing(scaleAnim, {
+      Animated.spring(scaleAnim, {
         toValue: 1,
-        duration: 1000,
+        tension: 50,
+        friction: 7,
         useNativeDriver: true,
       }),
     ]).start();
 
-    const createPulseAnimation = () => {
-      return Animated.sequence([
-        Animated.timing(pulseAnim, {
-          toValue: 1.1,
-          duration: 1500,
-          useNativeDriver: true,
-        }),
-        Animated.timing(pulseAnim, {
-          toValue: 1,
-          duration: 1500,
-          useNativeDriver: true,
-        }),
-      ]);
-    };
-
-    const startPulseAnimation = () => {
-      Animated.loop(createPulseAnimation()).start();
-    };
-
-    const pulseTimeout = setTimeout(startPulseAnimation, 1000);
-
-    const timer = setTimeout(() => {
+    // Aguarda autenticação carregar e mínimo de 2s para melhor UX
+    const checkAuth = async () => {
+      // Aguarda pelo menos 2 segundos para mostrar a splash
+      await new Promise(resolve => setTimeout(resolve, 2000));
       setIsReady(true);
-    }, 2500);
-
-    return () => {
-      clearTimeout(timer);
-      clearTimeout(pulseTimeout);
     };
-  }, [fadeAnim, scaleAnim, pulseAnim]);
 
-  if (!isReady || isLoading) {
+    checkAuth();
+  }, []);
+
+  if (!isReady || authLoading) {
     return (
       <SafeAreaView style={styles.container}>
         <StatusBar barStyle="light-content" backgroundColor="#4ECDC4" />
-        
-        <View style={styles.backgroundGradient} />
-        
-        <View style={styles.decorativeCircle1} />
-        <View style={styles.decorativeCircle2} />
-        <View style={styles.decorativeCircle3} />
-        
-        <Animated.View 
+
+        <Animated.View
           style={[
             styles.content,
             {
@@ -83,47 +59,35 @@ const SplashScreen: React.FC = () => {
             }
           ]}
         >
-          <Animated.View 
-            style={[
-              styles.logoContainer,
-              {
-                transform: [{ scale: pulseAnim }]
-              }
-            ]}
-          >
-            <View style={styles.logoPlaceholder}>
-              <Text style={styles.logoText}>Logo</Text>
-            </View>
-          </Animated.View>
-
-          <Text style={styles.appName}>Meu App</Text>
-          
-          <Text style={styles.tagline}>
-            Sua jornada começa aqui
-          </Text>
-
-          <View style={styles.loadingContainer}>
-            <View style={styles.loadingDots}>
-              <Animated.View style={[styles.dot, styles.dot1]} />
-              <Animated.View style={[styles.dot, styles.dot2]} />
-              <Animated.View style={[styles.dot, styles.dot3]} />
+          {/* Logo Icon */}
+          <View style={styles.logoContainer}>
+            <View style={styles.logoCircle}>
+              <Icon name="psychology" size={64} color="#fff" />
             </View>
           </View>
-        </Animated.View>
 
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>
-            Desenvolvido com ❤️
+          {/* App Name */}
+          <Text style={styles.appName}>Aurora</Text>
+
+          {/* Tagline */}
+          <Text style={styles.tagline}>
+            Cuidando da sua saúde mental
           </Text>
-        </View>
+
+          {/* Loading Indicator */}
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#fff" />
+          </View>
+        </Animated.View>
       </SafeAreaView>
     );
   }
 
-  if (isLoggedIn) {
+  // Redireciona baseado no estado de autenticação
+  if (user) {
     return <Redirect href="/app/HomeScreen/HomeScreen" />;
   }
-  
+
   return <Redirect href="/auth/LoginScreen/LoginScreen" />;
 };
 

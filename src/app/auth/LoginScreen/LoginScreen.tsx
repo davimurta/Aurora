@@ -30,10 +30,10 @@ const Login: React.FC = () => {
   const [showSuccessBanner, setShowSuccessBanner] = useState(false);
   const fadeAnim = useState(new Animated.Value(0))[0];
   const [errorMessage, setErrorMessage] = useState('');
-  console.log('RENDER - errorMessage atual:', errorMessage);
-  
+
   const { login } = useAuthController();
   const params = useLocalSearchParams();
+  const isWeb = Platform.OS === 'web';
 
   // Detecta se veio do cadastro
   useEffect(() => {
@@ -86,19 +86,12 @@ const Login: React.FC = () => {
     Alert.alert('Em breve', 'Login com Google será implementado em breve');
   };
 
-  return (
-    <SafeAreaView style={styles.safeArea}>
-      <KeyboardAvoidingView
-        style={styles.container}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
-      >
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <ScrollView
-            contentContainerStyle={styles.scrollContainer}
-            keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator={false}
-          >
+  const ScrollContent = () => (
+    <ScrollView
+      contentContainerStyle={styles.scrollContainer}
+      keyboardShouldPersistTaps="handled"
+      showsVerticalScrollIndicator={false}
+    >
             {/* Banner de Sucesso */}
             {showSuccessBanner && (
               <Animated.View style={[styles.successBanner, { opacity: fadeAnim }]}>
@@ -128,10 +121,11 @@ const Login: React.FC = () => {
             <View style={styles.headerSection}>
               <View style={styles.logoContainer}>
                 <View style={styles.logoPlaceholder}>
-                  <Text style={styles.logoText}>Logo</Text>
+                  <Icon name="psychology" size={40} color="#fff" />
                 </View>
+                <Text style={styles.appName}>Aurora</Text>
               </View>
-              
+
               <View style={styles.welcomeContainer}>
                 <Text style={styles.welcomeTitle}>Bem-vindo de volta!</Text>
                 <Text style={styles.welcomeSubtitle}>
@@ -241,8 +235,25 @@ const Login: React.FC = () => {
                 </Text>
               </Pressable>
             </View>
-          </ScrollView>
-        </TouchableWithoutFeedback>
+    </ScrollView>
+  );
+
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === "ios" ? "padding" : isWeb ? undefined : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
+      >
+        {isWeb ? (
+          <ScrollContent />
+        ) : (
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View style={{ flex: 1 }}>
+              <ScrollContent />
+            </View>
+          </TouchableWithoutFeedback>
+        )}
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -324,6 +335,13 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  appName: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#4ECDC4',
+    marginTop: 12,
+    letterSpacing: 0.5,
   },
   welcomeContainer: {
     alignItems: 'center',
