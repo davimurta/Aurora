@@ -14,6 +14,8 @@ import {
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import * as ImagePicker from 'expo-image-picker';
 import { styles } from './styles';
+import { postsApi } from '../../../services/postsApi';
+import { useAuthController } from '../../../hooks/useAuthController';
 
 interface ContentBlock {
   id: string;
@@ -23,15 +25,24 @@ interface ContentBlock {
 }
 
 const AddArticleScreen: React.FC = () => {
+  const { user } = useAuthController();
   const [author, setAuthor] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [category, setCategory] = useState('Saúde Mental');
   const [contentBlocks, setContentBlocks] = useState<ContentBlock[]>([
     { id: '1', type: 'paragraph', content: '' }
   ]);
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const currentDate = new Date().toLocaleDateString('pt-BR');
+
+  // Preenche o nome do autor com o displayName do usuário logado
+  React.useEffect(() => {
+    if (user && user.displayName && !author) {
+      setAuthor(user.displayName);
+    }
+  }, [user]);
 
   const addBlock = (type: 'paragraph' | 'heading' | 'image', level?: 1 | 2 | 3) => {
     const newBlock: ContentBlock = {
@@ -96,6 +107,11 @@ const AddArticleScreen: React.FC = () => {
   };
 
   const handleSubmit = async () => {
+    if (!user) {
+      Alert.alert('Erro', 'Você precisa estar logado para criar um artigo.');
+      return;
+    }
+
     if (!author.trim() || !title.trim() || !description.trim()) {
       Alert.alert('Campos obrigatórios', 'Por favor, preencha todos os campos obrigatórios.');
       return;
@@ -108,26 +124,56 @@ const AddArticleScreen: React.FC = () => {
     }
 
     setIsLoading(true);
-    
+
     try {
-      setTimeout(() => {
+      // Converte os blocos de conteúdo para um único texto formatado
+      let fullContent = '';
+      contentBlocks.forEach(block => {
+        if (block.type === 'heading') {
+          fullContent += `\n\n## ${block.content}\n\n`;
+        } else if (block.type === 'paragraph') {
+          fullContent += `${block.content}\n\n`;
+        } else if (block.type === 'image') {
+          fullContent += `\n[Imagem: ${block.content}]\n\n`;
+        }
+      });
+
+      // Salva o artigo no backend
+      const response = await postsApi.createPost({
+        title: title.trim(),
+        content: fullContent.trim(),
+        authorId: user.uid,
+        authorName: author.trim(),
+        category: category,
+        tags: [category], // Usa categoria como tag inicial
+      });
+
+      if (response.success) {
+        // Publica o artigo automaticamente
+        if (response.post?.id) {
+          await postsApi.publishPost(response.post.id);
+        }
+
         setIsLoading(false);
-        Alert.alert('Sucesso', 'Matéria criada com sucesso!', [
+        Alert.alert('Sucesso', 'Matéria criada e publicada com sucesso!', [
           {
             text: 'OK',
             onPress: () => {
-              setAuthor('');
+              // Limpa o formulário
               setTitle('');
               setDescription('');
+              setCategory('Saúde Mental');
               setContentBlocks([{ id: Date.now().toString(), type: 'paragraph', content: '' }]);
             }
           }
         ]);
-      }, 1500);
-      
-    } catch {
+      } else {
+        throw new Error('Resposta inválida do servidor');
+      }
+    } catch (error: any) {
       setIsLoading(false);
-      Alert.alert('Erro', 'Erro ao criar matéria. Tente novamente.');
+      console.error('Erro ao criar matéria:', error);
+      Alert.alert('Erro', `Erro ao criar matéria: ${error.message || 'Tente novamente.'}`);
     }
   };
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,9 +8,11 @@ import {
   TextInput,
   Dimensions,
   useWindowDimensions,
+  ActivityIndicator,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import BottomNavigation from '../../../components/BottonNavigation';
+import { postsApi, Post } from '../../../services/postsApi';
 
 interface BlogPost {
   id: string;
@@ -28,12 +30,48 @@ interface BlogNavigationProps {
   onNavigateToAllPosts?: () => void;
 }
 
-const BlogNavigation: React.FC<BlogNavigationProps> = ({ 
-  onNavigateToPost, 
-  onNavigateToAllPosts 
+const BlogNavigation: React.FC<BlogNavigationProps> = ({
+  onNavigateToPost,
+  onNavigateToAllPosts
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
   const { width } = useWindowDimensions();
+
+  // Busca posts do backend ao montar o componente
+  useEffect(() => {
+    loadPosts();
+  }, []);
+
+  const loadPosts = async () => {
+    try {
+      setLoading(true);
+      const response = await postsApi.getPosts(50); // Busca até 50 posts
+
+      if (response.success && response.posts) {
+        // Converte posts do backend para formato BlogPost
+        const formattedPosts: BlogPost[] = response.posts.map((post: Post, index: number) => ({
+          id: post.id,
+          title: post.title,
+          description: post.excerpt || post.content.substring(0, 100) + '...',
+          author: post.authorName,
+          date: new Date(post.createdAt).toLocaleDateString('pt-BR'),
+          readTime: `${Math.ceil(post.content.length / 1000)} min`,
+          category: post.category || 'Geral',
+          featured: index === 0, // Primeiro post como destaque
+        }));
+
+        setBlogPosts(formattedPosts);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar posts:', error);
+      // Se houver erro, mantém array vazio
+      setBlogPosts([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const isSmallScreen = width < 375;
   const isMediumScreen = width >= 375 && width < 768;
@@ -47,46 +85,6 @@ const BlogNavigation: React.FC<BlogNavigationProps> = ({
   const gridGap = 16;
   const totalGaps = (numColumns - 1) * gridGap;
   const gridCardWidth = (width - (horizontalPadding * 2) - totalGaps) / numColumns;
-
-  const blogPosts: BlogPost[] = [
-    {
-      id: '1',
-      title: 'Como a Meditação Pode Transformar Sua Vida',
-      description: 'Descubra os benefícios científicos da meditação',
-      author: 'Dr. Ana Silva',
-      date: '15 Jun 2024',
-      readTime: '5 min',
-      category: 'Bem-estar',
-      featured: true,
-    },
-    {
-      id: '2',
-      title: 'Técnicas de Respiração para Ansiedade',
-      description: 'Métodos simples e eficazes para acalmar a mente',
-      author: 'Prof. Carlos Lima',
-      date: '12 Jun 2024',
-      readTime: '7 min',
-      category: 'Técnicas',
-    },
-    {
-      id: '3',
-      title: 'Mindfulness no Trabalho',
-      description: 'Como manter o foco e a produtividade',
-      author: 'Dra. Maria Santos',
-      date: '10 Jun 2024',
-      readTime: '4 min',
-      category: 'Produtividade',
-    },
-    {
-      id: '4',
-      title: 'Os Benefícios do Yoga para Iniciantes',
-      description: 'Guia completo para começar a praticar yoga',
-      author: 'Instrutor João Pedro',
-      date: '8 Jun 2024',
-      readTime: '6 min',
-      category: 'Yoga',
-    },
-  ];
 
   const allPosts = blogPosts;
   const latestPosts = blogPosts.slice(0, 3);
@@ -366,11 +364,52 @@ const BlogNavigation: React.FC<BlogNavigationProps> = ({
         </View>
       </View>
 
-      <ScrollView 
+      <ScrollView
         style={{ flex: 1 }}
         showsVerticalScrollIndicator={false}
       >
-        {searchQuery === '' ? (
+        {loading ? (
+          <View style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            paddingVertical: 60,
+          }}>
+            <ActivityIndicator size="large" color="#4ECDC4" />
+            <Text style={{
+              fontSize: 16,
+              color: '#666',
+              marginTop: 16,
+            }}>
+              Carregando artigos...
+            </Text>
+          </View>
+        ) : blogPosts.length === 0 ? (
+          <View style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            paddingVertical: 60,
+          }}>
+            <Icon name="article" size={64} color="#ccc" />
+            <Text style={{
+              fontSize: 18,
+              fontWeight: '600',
+              color: '#999',
+              marginTop: 16,
+            }}>
+              Nenhum artigo encontrado
+            </Text>
+            <Text style={{
+              fontSize: 14,
+              color: '#999',
+              marginTop: 8,
+              textAlign: 'center',
+            }}>
+              Psicólogos podem criar artigos na tela de adicionar matéria
+            </Text>
+          </View>
+        ) : searchQuery === '' ? (
           <>
             {/* Featured Section */}
             <View style={{ paddingTop: isSmallScreen ? 16 : 24, paddingHorizontal: horizontalPadding }}>

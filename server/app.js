@@ -21,6 +21,7 @@ const morgan = require('morgan');
 // Importa rotas
 const userRoutes = require('./src/routes/userRoutes');
 const postRoutes = require('./src/routes/postRoutes');
+const emotionalRegisterRoutes = require('./src/routes/emotionalRegisterRoutes');
 
 // Importa sistema de eventos (Observer Pattern)
 const { EventSystem } = require('./src/patterns/EventObserver');
@@ -93,6 +94,9 @@ app.use('/api', userRoutes);
 // Importa rotas de posts
 app.use('/api', postRoutes);
 
+// Importa rotas de registros emocionais
+app.use('/api', emotionalRegisterRoutes);
+
 // ==========================================
 // TRATAMENTO DE ERROS
 // ==========================================
@@ -151,7 +155,12 @@ app.listen(PORT, () => {
   console.log('  PUT    /api/posts/:id');
   console.log('  DELETE /api/posts/:id');
   console.log('  POST   /api/posts/:id/publish');
-  console.log('  POST   /api/posts/:id/like\n');
+  console.log('  POST   /api/posts/:id/like');
+  console.log('  GET    /api/registers/:userId');
+  console.log('  GET    /api/registers/:userId/month/:year/:month');
+  console.log('  GET    /api/registers/:userId/date/:date');
+  console.log('  POST   /api/registers');
+  console.log('  DELETE /api/registers/:userId/date/:date\n');
 });
 
 // Tratamento de erros não capturados

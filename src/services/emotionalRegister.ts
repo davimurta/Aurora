@@ -1,101 +1,99 @@
-import {
-  collection,
-  doc,
-  getDocs,
-  query,
-  setDoc,
-  where,
-} from 'firebase/firestore';
-import { db } from './firebaseConfig';
+/**
+ * Emotional Register Service
+ *
+ * Usa o BACKEND para salvar/buscar registros emocionais
+ * (em vez de salvar direto no Firebase)
+ */
+
+import { registersApi } from './registersApi';
 import { EmotionalRegister, CreateRegisterData } from '../models/emotionalRegister';
 
 export const emotionalRegisterService = {
-  /** 🔹 Salva (ou atualiza) o registro diário no Firebase */
+  /** 🔹 Salva (ou atualiza) o registro diário no BACKEND */
   async save(userId: string, data: CreateRegisterData): Promise<void> {
-    // 🔹 Garante que a data salva no Firebase é local (sem UTC)
+    // 🔹 Garante que a data salva é local (sem UTC)
     const now = new Date();
     const localDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const dateString = localDate.toISOString().split('T')[0]; // Ex: "2025-10-24"
-    const registerId = `${userId}_${dateString}`;
 
-    const registerData: EmotionalRegister = {
-      id: registerId,
-      userId,
-      ...data,
-      date: dateString, // sempre "YYYY-MM-DD"
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-    };
+    try {
+      await registersApi.saveRegister({
+        userId,
+        selectedMood: data.selectedMood,
+        moodId: data.moodId,
+        intensityValue: data.intensityValue,
+        diaryText: data.diaryText,
+        date: dateString,
+      });
 
-    await setDoc(doc(db, 'emotionalRegisters', registerId), registerData, { merge: true });
-    console.log('✅ [save] Registro salvo com data:', dateString);
+      console.log('✅ [save] Registro salvo no backend com data:', dateString);
+    } catch (error) {
+      console.error('❌ [save] Erro ao salvar registro:', error);
+      throw error;
+    }
   },
 
-  /** 🔹 Busca todos os registros do mês (corrigido com timezone e tipagem) */
+  /** 🔹 Busca todos os registros do mês (do BACKEND) */
   async getByMonth(userId: string, year: number, month: number): Promise<EmotionalRegister[]> {
-  // Busca TUDO do usuário (sem precisar de índice composto)
-  const q = query(
-    collection(db, 'emotionalRegisters'),
-    where('userId', '==', userId)
-  );
+    try {
+      const response = await registersApi.getRegistersByMonth(userId, year, month + 1);
 
-  const snapshot = await getDocs(q);
-  const all = snapshot.docs.map(d => d.data() as any);
+      // Converte para o formato esperado pelo frontend
+      const registers: EmotionalRegister[] = response.registers.map((r: any) => ({
+        id: r.id,
+        userId: r.userId,
+        selectedMood: r.selectedMood,
+        moodId: r.moodId,
+        intensityValue: r.intensityValue,
+        diaryText: r.diaryText,
+        date: r.date, // Já vem no formato YYYY-MM-DD
+        createdAt: r.createdAt,
+        updatedAt: r.updatedAt,
+      }));
 
-  // Normaliza "date" para string YYYY-MM-DD, independente de Timestamp/string
-  const normalized: EmotionalRegister[] = all.map((raw: any) => {
-    let dateStr: string;
+      console.log('🔥 [getByMonth] user:', userId, '| ano:', year, 'mês:', month + 1, '| registros:', registers.length);
 
-    if (raw?.date && typeof raw.date === 'object' && typeof raw.date.toDate === 'function') {
-      dateStr = raw.date.toDate().toISOString().split('T')[0];
-    } else if (typeof raw?.date === 'string') {
-      dateStr = raw.date.split('T')[0];
-    } else {
-      dateStr = '';
+      return registers;
+    } catch (error) {
+      console.error('❌ [getByMonth] Erro:', error);
+      return [];
     }
+  },
 
-    return { ...raw, date: dateStr } as EmotionalRegister;
-  });
-
-  // Filtra pelo mês corrente
-  const monthPrefix = `${year}-${String(month + 1).padStart(2, '0')}-`; // ex: "2025-10-"
-  const monthRegisters = normalized.filter(r => r.date?.startsWith(monthPrefix));
-
-  // DEBUG (pode remover depois)
-  console.log('🔥 [getByMonth] user:', userId, '| prefix:', monthPrefix, '| datas:', monthRegisters.map(r => r.date));
-
-  return monthRegisters;
-},
-
-  /** 🔹 Busca o registro de um dia específico */
+  /** 🔹 Busca o registro de um dia específico (do BACKEND) */
   async getByDate(userId: string, dateString: string): Promise<EmotionalRegister | null> {
-    const q = query(
-      collection(db, 'emotionalRegisters'),
-      where('userId', '==', userId),
-      where('date', '==', dateString)
-    );
+    try {
+      const response = await registersApi.getRegisterByDate(userId, dateString);
 
-    const snapshot = await getDocs(q);
-    if (snapshot.empty) {
-      console.log('❌ [getByDate] Nenhum registro encontrado para', dateString);
-      return null;
+      if (!response.success || !response.register) {
+        console.log('❌ [getByDate] Nenhum registro encontrado para', dateString);
+        return null;
+      }
+
+      const r = response.register;
+      const register: EmotionalRegister = {
+        id: r.id,
+        userId: r.userId,
+        selectedMood: r.selectedMood,
+        moodId: r.moodId,
+        intensityValue: r.intensityValue,
+        diaryText: r.diaryText,
+        date: r.date,
+        createdAt: r.createdAt,
+        updatedAt: r.updatedAt,
+      };
+
+      console.log('✅ [getByDate] Registro encontrado:', register.date, 'esperado:', dateString);
+      return register;
+    } catch (error: any) {
+      // Se for 404, retorna null (não encontrado)
+      if (error.response?.status === 404) {
+        console.log('❌ [getByDate] Nenhum registro encontrado para', dateString);
+        return null;
+      }
+
+      console.error('❌ [getByDate] Erro:', error);
+      throw error;
     }
-
-    const raw: any = snapshot.docs[0].data();
-    const rawDate = raw?.date;
-
-    let dateStr: string;
-    if (rawDate && typeof rawDate === 'object' && typeof rawDate.toDate === 'function') {
-      dateStr = rawDate.toDate().toISOString().split('T')[0];
-    } else if (typeof rawDate === 'string') {
-      dateStr = rawDate.split('T')[0];
-    } else {
-      dateStr = String(rawDate ?? '');
-    }
-
-    const parsed: EmotionalRegister = { ...raw, date: dateStr };
-
-    console.log('✅ [getByDate] Registro encontrado:', parsed.date, 'esperado:', dateString);
-    return parsed;
   },
 };
