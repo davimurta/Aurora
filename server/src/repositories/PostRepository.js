@@ -64,25 +64,28 @@ class PostRepository {
 
   /**
    * Busca posts publicados
+   * NOTA: Filtra em memória para evitar necessidade de índice composto no Firestore
    */
   async findPublished(limitCount = 50) {
     try {
       const postsRef = collection(this.db, this.collectionName);
-      const q = query(
-        postsRef,
-        where('published', '==', true),
-        orderBy('createdAt', 'desc'),
-        limit(limitCount)
-      );
+      // Busca mais documentos para compensar a filtragem em memória
+      const q = query(postsRef, orderBy('createdAt', 'desc'), limit(limitCount * 2));
       const snapshot = await getDocs(q);
 
-      return snapshot.docs.map((doc) => {
-        return Post.fromFirestore({
-          id: doc.id,
-          data: () => doc.data(),
-          exists: true,
+      // Filtra posts publicados em memória e aplica o limite
+      const publishedPosts = snapshot.docs
+        .filter((doc) => doc.data().published === true)
+        .slice(0, limitCount)
+        .map((doc) => {
+          return Post.fromFirestore({
+            id: doc.id,
+            data: () => doc.data(),
+            exists: true,
+          });
         });
-      });
+
+      return publishedPosts;
     } catch (error) {
       throw new Error(`Erro ao buscar posts publicados: ${error.message}`);
     }
@@ -137,25 +140,28 @@ class PostRepository {
 
   /**
    * Busca posts por categoria
+   * NOTA: Filtra em memória para evitar necessidade de índice composto no Firestore
    */
   async findByCategory(category) {
     try {
       const postsRef = collection(this.db, this.collectionName);
-      const q = query(
-        postsRef,
-        where('category', '==', category),
-        where('published', '==', true),
-        orderBy('createdAt', 'desc')
-      );
+      // Busca todos os posts ordenados por data
+      const q = query(postsRef, orderBy('createdAt', 'desc'));
       const snapshot = await getDocs(q);
 
-      return snapshot.docs.map((doc) => {
-        return Post.fromFirestore({
-          id: doc.id,
-          data: () => doc.data(),
-          exists: true,
+      // Filtra por categoria e publicados em memória
+      return snapshot.docs
+        .filter((doc) => {
+          const data = doc.data();
+          return data.category === category && data.published === true;
+        })
+        .map((doc) => {
+          return Post.fromFirestore({
+            id: doc.id,
+            data: () => doc.data(),
+            exists: true,
+          });
         });
-      });
     } catch (error) {
       throw new Error(`Erro ao buscar posts por categoria: ${error.message}`);
     }
@@ -163,25 +169,28 @@ class PostRepository {
 
   /**
    * Busca posts por tag
+   * NOTA: Filtra em memória para evitar necessidade de índice composto no Firestore
    */
   async findByTag(tag) {
     try {
       const postsRef = collection(this.db, this.collectionName);
-      const q = query(
-        postsRef,
-        where('tags', 'array-contains', tag),
-        where('published', '==', true),
-        orderBy('createdAt', 'desc')
-      );
+      // Busca todos os posts ordenados por data
+      const q = query(postsRef, orderBy('createdAt', 'desc'));
       const snapshot = await getDocs(q);
 
-      return snapshot.docs.map((doc) => {
-        return Post.fromFirestore({
-          id: doc.id,
-          data: () => doc.data(),
-          exists: true,
+      // Filtra por tag e publicados em memória
+      return snapshot.docs
+        .filter((doc) => {
+          const data = doc.data();
+          return data.tags && data.tags.includes(tag) && data.published === true;
+        })
+        .map((doc) => {
+          return Post.fromFirestore({
+            id: doc.id,
+            data: () => doc.data(),
+            exists: true,
+          });
         });
-      });
     } catch (error) {
       throw new Error(`Erro ao buscar posts por tag: ${error.message}`);
     }

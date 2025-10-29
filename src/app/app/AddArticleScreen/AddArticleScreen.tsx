@@ -123,6 +123,11 @@ const AddArticleScreen: React.FC = () => {
       return;
     }
 
+    if (title.trim().length > 200) {
+      Alert.alert('⚠️ Título Muito Longo', 'O título não pode ter mais de 200 caracteres. Atualmente: ' + title.trim().length + ' caracteres.');
+      return;
+    }
+
     // Validação de autor
     if (!author.trim()) {
       Alert.alert('⚠️ Autor Obrigatório', 'Por favor, preencha o nome do autor.');
@@ -384,8 +389,12 @@ const AddArticleScreen: React.FC = () => {
                   onChangeText={setTitle}
                   placeholder="Título da matéria"
                   placeholderTextColor="#999"
+                  maxLength={200}
                 />
               </View>
+              <Text style={styles.characterCounter}>
+                {title.length}/200 caracteres
+              </Text>
             </View>
 
             <View style={styles.fieldContainer}>

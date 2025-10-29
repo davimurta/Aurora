@@ -45,6 +45,12 @@ export const styles = StyleSheet.create({
     marginBottom: 12,
     fontStyle: 'italic',
   },
+  characterCounter: {
+    fontSize: 12,
+    color: '#999',
+    marginTop: 4,
+    textAlign: 'right',
+  },
   requiredMark: {
     color: '#FF6B6B',
     fontSize: 16,
