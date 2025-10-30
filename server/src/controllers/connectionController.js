@@ -172,16 +172,26 @@ class ConnectionController {
    */
   async getPatientRegisters(req, res) {
     try {
+      console.log('🔵 [BACKEND] getPatientRegisters chamado');
       const { patientId } = req.params;
       const { year, month } = req.query;
 
+      console.log('🔵 [BACKEND] Parâmetros:');
+      console.log('  - patientId:', patientId);
+      console.log('  - year:', year);
+      console.log('  - month:', month);
+
       if (year && month) {
         // Busca por mês específico
+        console.log('🔵 [BACKEND] Buscando registros por mês...');
         const registers = await this.registerRepository.findByMonth(
           patientId,
           parseInt(year),
           parseInt(month)
         );
+
+        console.log('✅ [BACKEND] Registros encontrados:', registers.length);
+        console.log('✅ [BACKEND] Registros:', JSON.stringify(registers, null, 2));
 
         return res.status(200).json({
           success: true,
@@ -190,7 +200,10 @@ class ConnectionController {
         });
       } else {
         // Busca todos os registros
+        console.log('🔵 [BACKEND] Buscando todos os registros...');
         const registers = await this.registerRepository.findByUserId(patientId);
+
+        console.log('✅ [BACKEND] Registros encontrados:', registers.length);
 
         return res.status(200).json({
           success: true,
