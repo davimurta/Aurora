@@ -174,4 +174,63 @@ export const styles = StyleSheet.create({
   bottomSpacing: {
     height: 40,
   },
+  connectionStatusCard: {
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: "#f0f0f0",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
+    elevation: 3,
+    alignItems: "center",
+  },
+  connectionStatusText: {
+    fontSize: 14,
+    color: "#666",
+    marginTop: 8,
+  },
+  connectedCard: {
+    borderColor: "#4CAF50",
+    borderWidth: 2,
+    alignItems: "stretch",
+  },
+  connectedHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 16,
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: "#f0f0f0",
+  },
+  connectedTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#4CAF50",
+    marginLeft: 8,
+  },
+  connectedInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  connectedText: {
+    fontSize: 14,
+    color: "#666",
+    marginLeft: 8,
+  },
+  connectedName: {
+    fontWeight: "700",
+    color: "#333",
+  },
+  connectedDate: {
+    fontWeight: "600",
+    color: "#4ECDC4",
+  },
 });

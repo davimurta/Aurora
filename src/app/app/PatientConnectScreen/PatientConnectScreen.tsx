@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   SafeAreaView,
   ScrollView,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { router } from "expo-router";
@@ -14,10 +15,46 @@ import { useAuthController } from '../../../hooks/useAuthController';
 import { connectionApi } from '../../../services/connectionApi';
 import { styles } from "./styles";
 
+interface ConnectedPsychologist {
+  id: string;
+  name: string;
+  connectedAt: string;
+}
+
 const PatientConnectScreen: React.FC = () => {
   const [codigo, setCodigo] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingConnection, setLoadingConnection] = useState(true);
+  const [connectedPsychologist, setConnectedPsychologist] = useState<ConnectedPsychologist | null>(null);
   const { user, userData } = useAuthController();
+
+  // Carrega informações do psicólogo conectado ao abrir a tela
+  useEffect(() => {
+    loadConnectedPsychologist();
+  }, [user]);
+
+  const loadConnectedPsychologist = async () => {
+    if (!user) {
+      setLoadingConnection(false);
+      return;
+    }
+
+    try {
+      setLoadingConnection(true);
+      const response = await connectionApi.getPsychologist(user.uid);
+
+      if (response.success && response.psychologist) {
+        setConnectedPsychologist(response.psychologist);
+      } else {
+        setConnectedPsychologist(null);
+      }
+    } catch (error) {
+      // Se não encontrar psicólogo conectado (404), não é erro
+      setConnectedPsychologist(null);
+    } finally {
+      setLoadingConnection(false);
+    }
+  };
 
   const handleConectar = async () => {
     console.log('🔵 handleConectar chamado');
@@ -86,6 +123,10 @@ const PatientConnectScreen: React.FC = () => {
       );
 
       setIsLoading(false);
+      setCodigo(""); // Limpa o código
+
+      // Recarrega as informações do psicólogo conectado
+      await loadConnectedPsychologist();
 
       Alert.alert(
         "Conexão Estabelecida!",
@@ -93,7 +134,6 @@ const PatientConnectScreen: React.FC = () => {
         [
           {
             text: "OK",
-            onPress: () => router.back(),
           },
         ]
       );
@@ -132,6 +172,35 @@ const PatientConnectScreen: React.FC = () => {
             Sincronize sua jornada com o apoio de quem cuida de você
           </Text>
         </View>
+
+        {/* Status de Conexão */}
+        {loadingConnection ? (
+          <View style={styles.connectionStatusCard}>
+            <ActivityIndicator size="small" color="#4ECDC4" />
+            <Text style={styles.connectionStatusText}>Verificando conexão...</Text>
+          </View>
+        ) : connectedPsychologist ? (
+          <View style={[styles.connectionStatusCard, styles.connectedCard]}>
+            <View style={styles.connectedHeader}>
+              <Icon name="check-circle" size={24} color="#4CAF50" />
+              <Text style={styles.connectedTitle}>Você está conectado!</Text>
+            </View>
+            <View style={styles.connectedInfo}>
+              <Icon name="person" size={20} color="#666" />
+              <Text style={styles.connectedText}>
+                Profissional: <Text style={styles.connectedName}>{connectedPsychologist.name}</Text>
+              </Text>
+            </View>
+            <View style={styles.connectedInfo}>
+              <Icon name="event" size={20} color="#666" />
+              <Text style={styles.connectedText}>
+                Conectado em: <Text style={styles.connectedDate}>
+                  {new Date(connectedPsychologist.connectedAt).toLocaleDateString('pt-BR')}
+                </Text>
+              </Text>
+            </View>
+          </View>
+        ) : null}
 
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Como se Conectar:</Text>

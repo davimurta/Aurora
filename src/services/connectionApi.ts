@@ -47,6 +47,17 @@ export interface PatientsResponse {
   count: number;
 }
 
+export interface Psychologist {
+  id: string;
+  name: string;
+  connectedAt: Date;
+}
+
+export interface PsychologistResponse {
+  success: boolean;
+  psychologist: Psychologist;
+}
+
 export const connectionApi = {
   /**
    * Psicólogo gera código de conexão
@@ -83,6 +94,16 @@ export const connectionApi = {
   async listPatients(psychologistId: string): Promise<PatientsResponse> {
     const response = await api.get<PatientsResponse>(
       `/connections/psychologist/${psychologistId}/patients`
+    );
+    return response.data;
+  },
+
+  /**
+   * Busca psicólogo conectado ao paciente
+   */
+  async getPsychologist(patientId: string): Promise<PsychologistResponse> {
+    const response = await api.get<PsychologistResponse>(
+      `/connections/patient/${patientId}/psychologist`
     );
     return response.data;
   },
