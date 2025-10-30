@@ -105,6 +105,7 @@ class User {
   toPublic() {
     const publicData = {
       uid: this.uid,
+      email: this.email, // Email necessário para operações como conexão paciente-psicólogo
       displayName: this.displayName,
       userType: this.userType,
     };
