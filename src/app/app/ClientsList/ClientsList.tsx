@@ -69,7 +69,14 @@ const ClientsList: React.FC = () => {
       console.log('✅ [ClientsList] Resposta recebida:', response)
       console.log('✅ [ClientsList] Número de pacientes:', response.patients?.length || 0)
 
-      const formattedClients: Client[] = response.patients.map((patient, index) => ({
+      // Remove duplicatas baseado no ID do paciente
+      const uniquePatients = response.patients.filter((patient, index, self) =>
+        index === self.findIndex((p) => p.id === patient.id)
+      )
+
+      console.log('✅ [ClientsList] Pacientes únicos:', uniquePatients.length)
+
+      const formattedClients: Client[] = uniquePatients.map((patient, index) => ({
         id: patient.id,
         name: patient.name,
         email: patient.email,
