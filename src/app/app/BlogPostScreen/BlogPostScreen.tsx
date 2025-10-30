@@ -185,14 +185,6 @@ const BlogPostScreen: React.FC = () => {
         <TouchableOpacity style={styles.backButton} onPress={handleBack}>
           <Icon name="arrow-back" size={24} color="#333" />
         </TouchableOpacity>
-        <View style={styles.headerActions}>
-          <TouchableOpacity style={styles.actionButton}>
-            <Icon name="bookmark-border" size={24} color="#333" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.actionButton}>
-            <Icon name="share" size={24} color="#333" />
-          </TouchableOpacity>
-        </View>
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
@@ -209,10 +201,6 @@ const BlogPostScreen: React.FC = () => {
           )}
         </View>
 
-        <Text style={styles.title}>{currentPost.title}</Text>
-
-        <Text style={styles.description}>{currentPost.description}</Text>
-
         <View style={styles.authorContainer}>
           <View style={styles.authorAvatar}>
             <Icon name="person" size={20} color="#4ECDC4" />
@@ -225,17 +213,6 @@ const BlogPostScreen: React.FC = () => {
 
         <View style={styles.contentContainer}>
           {formatContent(currentPost.content)}
-        </View>
-
-        <View style={styles.actionsContainer}>
-          <TouchableOpacity style={styles.likeButton}>
-            <Icon name="favorite-border" size={20} color="#666" />
-            <Text style={styles.actionText}>Curtir</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.commentButton}>
-            <Icon name="comment" size={20} color="#666" />
-            <Text style={styles.actionText}>Comentar</Text>
-          </TouchableOpacity>
         </View>
 
         <View style={styles.bottomSpacing} />

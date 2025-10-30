@@ -48,7 +48,9 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
         router.push('/app/HomeScreen/HomeScreen')
         break
       case 'analytics':
-        router.push('/app/DailyRegisterScreen/DailyRegister')
+        userData?.userType === 'psicologo'
+          ? router.push('/app/ClientsList/ClientsList')
+          : router.push('/app/DailyRegisterScreen/DailyRegister')
         break
       case 'add':
         userData?.userType === 'psicologo'
@@ -92,7 +94,12 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
           activeOpacity={0.7}
         >
           <View style={getIconContainerStyle('analytics')}>
-            <Icon name="analytics" size={26} color={getIconColor('analytics')} />
+          {userData?.userType === 'psicologo' ? (
+              <Icon name="assignment" size={28} color={getIconColor('analytics')} />
+            ) : (
+              <Icon name="analytics" size={26} color={getIconColor('analytics')} />
+            )}
+            
           </View>
         </TouchableOpacity>
 
