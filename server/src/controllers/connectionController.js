@@ -5,12 +5,12 @@
  */
 
 const ConnectionRepository = require('../repositories/ConnectionRepository');
-const RegisterRepository = require('../repositories/RegisterRepository');
+const EmotionalRegisterRepository = require('../repositories/EmotionalRegisterRepository');
 
 class ConnectionController {
   constructor() {
     this.connectionRepository = new ConnectionRepository();
-    this.registerRepository = new RegisterRepository();
+    this.registerRepository = new EmotionalRegisterRepository();
   }
 
   /**

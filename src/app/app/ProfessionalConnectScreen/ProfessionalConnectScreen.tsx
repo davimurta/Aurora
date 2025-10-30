@@ -21,18 +21,27 @@ const ProfessionalConnectScreen: React.FC = () => {
   const { user, userData } = useAuthController();
 
   const handleGerarCodigo = async () => {
+    console.log('🔵 handleGerarCodigo chamado');
+    console.log('🔵 user:', user);
+    console.log('🔵 userData:', userData);
+
     if (!user) {
+      console.log('❌ Erro: usuário não encontrado');
       Alert.alert('Erro', 'Você precisa estar logado');
       return;
     }
 
     setIsLoading(true);
+    console.log('🔵 Iniciando requisição para gerar código...');
 
     try {
       const response = await connectionApi.generateCode(
         user.uid,
         userData?.displayName || 'Profissional'
       );
+
+      console.log('✅ Resposta recebida:', response);
+      console.log('✅ Código gerado:', response.code);
 
       setCodigo(response.code);
       setIsLoading(false);
@@ -44,10 +53,13 @@ const ProfessionalConnectScreen: React.FC = () => {
       );
     } catch (error: any) {
       setIsLoading(false);
-      console.error('Erro ao gerar código:', error);
+      console.error('❌ Erro ao gerar código:', error);
+      console.error('❌ Detalhes do erro:', error.response?.data);
+      console.error('❌ Status:', error.response?.status);
+
       Alert.alert(
         'Erro',
-        'Não foi possível gerar o código. Tente novamente.'
+        error.response?.data?.message || 'Não foi possível gerar o código. Tente novamente.'
       );
     }
   };
