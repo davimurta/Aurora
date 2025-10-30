@@ -14,9 +14,9 @@ import {
   SafeAreaView,
   Animated,
   TouchableOpacity,
+  TextInput,
+  ActivityIndicator,
 } from "react-native";
-import Input from "@components/Input";
-import Button from "@components/Button";
 import { router, useLocalSearchParams } from "expo-router";
 import { useAuthController } from '../../../hooks/useAuthController';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -156,44 +156,48 @@ const Login: React.FC = () => {
 
               {/* Email Input */}
               <View style={styles.inputContainer}>
-                <Input
-                  style={[
-                    styles.input,
-                    emailFocused && styles.inputFocused
-                  ]}
-                  label="Email"
-                  type="email"
-                  placeholder="Digite seu email"
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  value={email}
-                  onChangeText={setEmail}
-                  onFocus={() => setEmailFocused(true)}
-                  onBlur={() => setEmailFocused(false)}
-                  iconName="email"
-                  editable={!loading}
-                />
+                <Text style={styles.inputLabel}>Email</Text>
+                <View style={[
+                  styles.inputWrapper,
+                  emailFocused && styles.inputWrapperFocused
+                ]}>
+                  <Icon name="email" size={20} color={emailFocused ? "#4ECDC4" : "#999"} style={styles.inputIcon} />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Digite seu email"
+                    placeholderTextColor="#999"
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    value={email}
+                    onChangeText={setEmail}
+                    onFocus={() => setEmailFocused(true)}
+                    onBlur={() => setEmailFocused(false)}
+                    editable={!loading}
+                  />
+                </View>
               </View>
 
               {/* Password Input */}
               <View style={styles.inputContainer}>
-                <Input
-                  style={[
-                    styles.input,
-                    passwordFocused && styles.inputFocused
-                  ]}
-                  label="Senha"
-                  type="senha"
-                  placeholder="Digite sua senha"
-                  secureTextEntry
-                  value={password}
-                  onChangeText={setPassword}
-                  onFocus={() => setPasswordFocused(true)}
-                  onBlur={() => setPasswordFocused(false)}
-                  iconName="lock"
-                  editable={!loading}
-                />
+                <Text style={styles.inputLabel}>Senha</Text>
+                <View style={[
+                  styles.inputWrapper,
+                  passwordFocused && styles.inputWrapperFocused
+                ]}>
+                  <Icon name="lock" size={20} color={passwordFocused ? "#4ECDC4" : "#999"} style={styles.inputIcon} />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Digite sua senha"
+                    placeholderTextColor="#999"
+                    secureTextEntry
+                    value={password}
+                    onChangeText={setPassword}
+                    onFocus={() => setPasswordFocused(true)}
+                    onBlur={() => setPasswordFocused(false)}
+                    editable={!loading}
+                  />
+                </View>
               </View>
 
               {/* Forgot Password Link */}
@@ -210,16 +214,24 @@ const Login: React.FC = () => {
 
               {/* Login Button */}
               <View style={styles.loginButtonContainer}>
-                <Button
-                  title="Entrar"
-                  iconName="login"
+                <TouchableOpacity
+                  style={[
+                    styles.loginButton,
+                    (loading || !email || !password) && styles.loginButtonDisabled
+                  ]}
                   onPress={handleLogin}
-                  backgroundColor="#4ECDC4"
-                  textColor="#fff"
-                  loading={loading}
-                  style={[styles.loginButton, styles.shadowButton]}
                   disabled={loading || !email || !password}
-                />
+                  activeOpacity={0.8}
+                >
+                  {loading ? (
+                    <ActivityIndicator size="small" color="#fff" />
+                  ) : (
+                    <>
+                      <Icon name="login" size={20} color="#fff" style={styles.buttonIcon} />
+                      <Text style={styles.loginButtonText}>Entrar</Text>
+                    </>
+                  )}
+                </TouchableOpacity>
               </View>
             </View>
 
@@ -407,17 +419,22 @@ const styles = StyleSheet.create({
   inputContainer: {
     marginBottom: 20,
   },
-  input: {
-    width: "100%",
+  inputLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#2C3E50',
+    marginBottom: 8,
+  },
+  inputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
     borderRadius: 12,
     borderWidth: 1.5,
     borderColor: '#E1E8ED',
     backgroundColor: '#fff',
     paddingHorizontal: 16,
-    paddingVertical: 16,
-    fontSize: 16,
   },
-  inputFocused: {
+  inputWrapperFocused: {
     borderColor: '#4ECDC4',
     shadowColor: '#4ECDC4',
     shadowOffset: {
@@ -427,6 +444,15 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 3,
+  },
+  inputIcon: {
+    marginRight: 12,
+  },
+  input: {
+    flex: 1,
+    paddingVertical: 16,
+    fontSize: 16,
+    color: '#2C3E50',
   },
 
   forgotPasswordContainer: {
@@ -451,9 +477,13 @@ const styles = StyleSheet.create({
     display: 'flex',
   },
   loginButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     width: '100%',
     maxWidth: 280,
     height: 56,
+    backgroundColor: '#4ECDC4',
     borderRadius: 12,
     shadowColor: '#4ECDC4',
     shadowOffset: {
@@ -463,6 +493,17 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 6,
+  },
+  loginButtonDisabled: {
+    opacity: 0.6,
+  },
+  buttonIcon: {
+    marginRight: 8,
+  },
+  loginButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '700',
   },
 
   footerSection: {

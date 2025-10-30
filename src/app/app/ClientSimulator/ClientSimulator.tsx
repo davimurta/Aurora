@@ -49,8 +49,17 @@ const ClientSimulator: React.FC = () => {
   const weekDays: string[] = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
 
   useEffect(() => {
-    loadClientData()
-  }, [clientId, currentDate])
+    if (clientId) {
+      loadClientData()
+    }
+  }, [clientId]) // Removido currentDate para evitar loop infinito
+
+  // Recarrega quando muda de mês
+  useEffect(() => {
+    if (clientId) {
+      loadClientData()
+    }
+  }, [currentDate.getMonth(), currentDate.getFullYear()])
 
   const loadClientData = async () => {
     console.log('🔵 [ClientSimulator] loadClientData chamado')
