@@ -20,7 +20,12 @@ const PatientConnectScreen: React.FC = () => {
   const { user, userData } = useAuthController();
 
   const handleConectar = async () => {
+    console.log('🔵 handleConectar chamado');
+    console.log('🔵 user:', user);
+    console.log('🔵 userData:', userData);
+
     if (!user || !userData) {
+      console.log('❌ Erro: usuário não encontrado');
       Alert.alert('Erro', 'Você precisa estar logado');
       return;
     }
@@ -33,14 +38,51 @@ const PatientConnectScreen: React.FC = () => {
       return;
     }
 
+    // Pega email e nome, com validação
+    const patientEmail = user.email || userData.email;
+    const patientName = userData.displayName || user.displayName;
+
+    console.log('🔵 Dados extraídos:');
+    console.log('  - user.email:', user.email);
+    console.log('  - userData.email:', userData.email);
+    console.log('  - user.displayName:', user.displayName);
+    console.log('  - userData.displayName:', userData.displayName);
+    console.log('  - patientEmail final:', patientEmail);
+    console.log('  - patientName final:', patientName);
+
+    // Valida se email e nome existem
+    if (!patientEmail || patientEmail.trim() === '') {
+      console.log('❌ Email não encontrado');
+      Alert.alert(
+        'Erro',
+        'Seu email não foi encontrado. Por favor, faça login novamente.'
+      );
+      return;
+    }
+
+    if (!patientName || patientName.trim() === '') {
+      console.log('❌ Nome não encontrado');
+      Alert.alert(
+        'Erro',
+        'Seu nome não foi encontrado. Por favor, faça login novamente.'
+      );
+      return;
+    }
+
     setIsLoading(true);
+
+    console.log('🔵 Dados que serão enviados para API:');
+    console.log('  - código:', codigo);
+    console.log('  - patientId:', user.uid);
+    console.log('  - patientName:', patientName);
+    console.log('  - patientEmail:', patientEmail);
 
     try {
       const response = await connectionApi.connect(
         codigo,
         user.uid,
-        userData.displayName || 'Paciente',
-        userData.email || ''
+        patientName,
+        patientEmail
       );
 
       setIsLoading(false);

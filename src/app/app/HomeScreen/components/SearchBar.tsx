@@ -7,7 +7,7 @@ interface SearchBarProps {
   onChangeText: (text: string) => void;
 }
 
-export const SearchBar: React.FC<SearchBarProps> = ({ value, onChangeText }) => (
+const SearchBarComponent: React.FC<SearchBarProps> = ({ value, onChangeText }) => (
   <View style={styles.searchContainer}>
     <View style={styles.searchBar}>
       <Icon name="search" size={22} color="#999" style={styles.searchIcon} />
@@ -17,10 +17,15 @@ export const SearchBar: React.FC<SearchBarProps> = ({ value, onChangeText }) => 
         placeholderTextColor="#999"
         value={value}
         onChangeText={onChangeText}
+        autoCorrect={false}
+        autoCapitalize="none"
       />
     </View>
   </View>
 );
+
+// Wrap in React.memo to prevent unnecessary re-renders that cause focus loss
+export const SearchBar = React.memo(SearchBarComponent);
 
 const styles = StyleSheet.create({
   searchContainer: {
