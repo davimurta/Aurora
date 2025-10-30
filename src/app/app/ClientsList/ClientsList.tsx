@@ -31,11 +31,18 @@ const ClientsList: React.FC = () => {
   const [clients, setClients] = useState<Client[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [filteredClients, setFilteredClients] = useState<Client[]>([])
-  const { user } = useAuthController()
+  const { user, loading: authLoading } = useAuthController()
 
   useEffect(() => {
-    loadClients()
-  }, [])
+    // Só carrega clientes quando o auth terminar de carregar E o user existir
+    if (!authLoading && user) {
+      loadClients()
+    } else if (!authLoading && !user) {
+      // Auth terminou mas não tem usuário - redireciona para login
+      console.log('❌ [ClientsList] Auth carregado mas sem usuário')
+      setLoading(false)
+    }
+  }, [user, authLoading])
 
   useEffect(() => {
     filterClients()
@@ -44,10 +51,11 @@ const ClientsList: React.FC = () => {
   const loadClients = async () => {
     console.log('🔵 [ClientsList] loadClients chamado')
     console.log('🔵 [ClientsList] user:', user)
+    console.log('🔵 [ClientsList] authLoading:', authLoading)
 
+    // Esta verificação é redundante, mas mantém por segurança
     if (!user) {
-      console.log('❌ [ClientsList] Usuário não logado')
-      Alert.alert('Erro', 'Você precisa estar logado')
+      console.log('❌ [ClientsList] Usuário não encontrado')
       setLoading(false)
       return
     }
