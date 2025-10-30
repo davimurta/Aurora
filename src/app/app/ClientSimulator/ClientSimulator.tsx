@@ -10,6 +10,7 @@ import {
 } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import { router, useLocalSearchParams } from 'expo-router'
+import { connectionApi } from '../../../services/connectionApi'
 import { styles } from './styles'
 
 interface EmotionalRegister {
@@ -26,51 +27,13 @@ interface ClientData {
   emotionalRegisters: EmotionalRegister[]
 }
 
-const MOCK_CLIENT_DATA: { [key: string]: ClientData } = {
-  '1': {
-    id: '1',
-    name: 'Paciente 1',
-    avatar: '#E91E63',
-    emotionalRegisters: [
-      {
-        date: '2025-10-09',
-        selectedMood: 'Muito bem',
-        intensityValue: 85,
-        diaryText: 'Hoje foi um dia produtivo e me senti muito bem com as conquistas.',
-      },
-      {
-        date: '2025-10-15',
-        selectedMood: 'Bem',
-        intensityValue: 70,
-        diaryText: 'Dia tranquilo, consegui fazer minhas atividades.',
-      },
-    ],
-  },
-  '2': {
-    id: '2',
-    name: 'Paciente 2',
-    avatar: '#FFEB3B',
-    emotionalRegisters: [],
-  },
-  '3': {
-    id: '3',
-    name: 'Paciente 3',
-    avatar: '#4ECDC4',
-    emotionalRegisters: [
-      {
-        date: '2025-10-09',
-        selectedMood: 'Neutro',
-        intensityValue: 50,
-        diaryText: 'Dia normal, sem grandes emoções.',
-      },
-    ],
-  },
-}
+const AVATAR_COLORS = ['#E91E63', '#FFEB3B', '#4ECDC4', '#9C27B0', '#FF5722', '#3F51B5']
 
 const ClientSimulator: React.FC = () => {
   // Usando useLocalSearchParams do Expo Router
   const params = useLocalSearchParams()
   const clientId = params.clientId as string
+  const clientName = params.clientName as string
 
   const [currentDate, setCurrentDate] = useState<Date>(new Date())
   const [selectedDay, setSelectedDay] = useState<number | null>(null)
@@ -87,17 +50,53 @@ const ClientSimulator: React.FC = () => {
 
   useEffect(() => {
     loadClientData()
-  }, [clientId])
+  }, [clientId, currentDate])
 
   const loadClientData = async () => {
+    console.log('🔵 [ClientSimulator] loadClientData chamado')
+    console.log('🔵 [ClientSimulator] clientId:', clientId)
+    console.log('🔵 [ClientSimulator] clientName:', clientName)
+    console.log('🔵 [ClientSimulator] Mês atual:', currentDate.getMonth() + 1, 'Ano:', currentDate.getFullYear())
+
+    if (!clientId) {
+      console.log('❌ [ClientSimulator] clientId não fornecido')
+      Alert.alert('Erro', 'ID do paciente não fornecido.')
+      setLoading(false)
+      return
+    }
+
     try {
       setLoading(true)
-      await new Promise(resolve => setTimeout(resolve, 500))
-      const data = MOCK_CLIENT_DATA[clientId]
-      if (data) {
-        setClientData(data)
+
+      // Busca registros do mês atual
+      const year = currentDate.getFullYear()
+      const month = currentDate.getMonth() + 1
+
+      console.log('🔵 [ClientSimulator] Buscando registros do paciente...')
+      const response = await connectionApi.getPatientRegisters(clientId, year, month)
+
+      console.log('✅ [ClientSimulator] Resposta recebida:', response)
+      console.log('✅ [ClientSimulator] Número de registros:', response.registers?.length || 0)
+
+      const registers: EmotionalRegister[] = response.registers.map((reg: any) => ({
+        date: reg.date,
+        selectedMood: reg.selectedMood,
+        intensityValue: reg.intensityValue,
+        diaryText: reg.diaryText || 'Sem anotações para este dia',
+      }))
+
+      const data: ClientData = {
+        id: clientId,
+        name: clientName || 'Paciente',
+        avatar: AVATAR_COLORS[Math.floor(Math.random() * AVATAR_COLORS.length)],
+        emotionalRegisters: registers,
       }
-    } catch (error) {
+
+      console.log('✅ [ClientSimulator] Dados do cliente formatados:', data)
+      setClientData(data)
+    } catch (error: any) {
+      console.error('❌ [ClientSimulator] Erro ao carregar dados:', error)
+      console.error('❌ [ClientSimulator] Erro detalhado:', error.response?.data)
       Alert.alert('Erro', 'Não foi possível carregar os dados do paciente.')
     } finally {
       setLoading(false)

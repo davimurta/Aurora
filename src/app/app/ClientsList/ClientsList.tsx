@@ -42,7 +42,11 @@ const ClientsList: React.FC = () => {
   }, [searchText, clients])
 
   const loadClients = async () => {
+    console.log('🔵 [ClientsList] loadClients chamado')
+    console.log('🔵 [ClientsList] user:', user)
+
     if (!user) {
+      console.log('❌ [ClientsList] Usuário não logado')
       Alert.alert('Erro', 'Você precisa estar logado')
       setLoading(false)
       return
@@ -50,7 +54,12 @@ const ClientsList: React.FC = () => {
 
     try {
       setLoading(true)
+      console.log('🔵 [ClientsList] Buscando pacientes para psicólogo:', user.uid)
+
       const response = await connectionApi.listPatients(user.uid)
+
+      console.log('✅ [ClientsList] Resposta recebida:', response)
+      console.log('✅ [ClientsList] Número de pacientes:', response.patients?.length || 0)
 
       const formattedClients: Client[] = response.patients.map((patient, index) => ({
         id: patient.id,
@@ -60,9 +69,11 @@ const ClientsList: React.FC = () => {
         lastSession: patient.connectedAt ? new Date(patient.connectedAt).toISOString().split('T')[0] : undefined,
       }))
 
+      console.log('✅ [ClientsList] Pacientes formatados:', formattedClients)
       setClients(formattedClients)
-    } catch (error) {
-      console.error('Erro ao carregar pacientes:', error)
+    } catch (error: any) {
+      console.error('❌ [ClientsList] Erro ao carregar pacientes:', error)
+      console.error('❌ [ClientsList] Erro detalhado:', error.response?.data)
       Alert.alert('Erro', 'Não foi possível carregar a lista de pacientes')
     } finally {
       setLoading(false)
