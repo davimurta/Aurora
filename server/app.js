@@ -99,7 +99,18 @@ app.use('/api', postRoutes);
 app.use('/api', emotionalRegisterRoutes);
 
 // Importa rotas de conexões
-app.use('/api/connections', connectionRoutes);
+console.log('🔍 Carregando rotas de conexão...');
+try {
+  app.use('/api/connections', connectionRoutes);
+  console.log('✅ Rotas de conexão carregadas com sucesso!');
+  console.log('   POST /api/connections/generate');
+  console.log('   POST /api/connections/connect');
+  console.log('   GET  /api/connections/psychologist/:id/patients');
+  console.log('   GET  /api/connections/patient/:id/psychologist');
+  console.log('   GET  /api/connections/patient/:id/registers');
+} catch (error) {
+  console.error('❌ Erro ao carregar rotas de conexão:', error.message);
+}
 
 // ==========================================
 // TRATAMENTO DE ERROS
