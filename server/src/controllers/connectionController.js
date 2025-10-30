@@ -54,14 +54,32 @@ class ConnectionController {
    */
   async connect(req, res) {
     try {
+      console.log('🔵 [BACKEND] connect chamado');
+      console.log('🔵 [BACKEND] req.body completo:', JSON.stringify(req.body, null, 2));
+
       const { code, patientId, patientName, patientEmail } = req.body;
 
+      console.log('🔵 [BACKEND] Dados extraídos:');
+      console.log('  - code:', code, '(tipo:', typeof code, ', length:', code?.length, ')');
+      console.log('  - patientId:', patientId, '(tipo:', typeof patientId, ')');
+      console.log('  - patientName:', patientName, '(tipo:', typeof patientName, ')');
+      console.log('  - patientEmail:', patientEmail, '(tipo:', typeof patientEmail, ')');
+
+      console.log('🔵 [BACKEND] Validações individuais:');
+      console.log('  - !code:', !code);
+      console.log('  - !patientId:', !patientId);
+      console.log('  - !patientName:', !patientName);
+      console.log('  - !patientEmail:', !patientEmail);
+
       if (!code || !patientId || !patientName || !patientEmail) {
+        console.log('❌ [BACKEND] Validação falhou!');
         return res.status(400).json({
           success: false,
           message: 'Código, ID, nome e email do paciente são obrigatórios',
         });
       }
+
+      console.log('✅ [BACKEND] Validação passou, chamando activateConnection...');
 
       const connection = await this.connectionRepository.activateConnection(
         code,
