@@ -10,16 +10,9 @@ import {
   Dimensions,
   StatusBar,
   Alert,
+  Platform,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { PanGestureHandler, GestureHandlerRootView, PanGestureHandlerGestureEvent } from 'react-native-gesture-handler';
-import Animated, {
-  useAnimatedGestureHandler,
-  useAnimatedStyle,
-  useSharedValue,
-  runOnJS,
-  withSpring,
-} from 'react-native-reanimated';
 import BottomNavigation from '../../../components/BottonNavigation';
 import { useEmotionalRegister } from '../../../hooks/useEmotionalRegister';
 import { useAuthController } from '../../../hooks/useAuthController';
@@ -34,21 +27,13 @@ interface MoodOption {
   color: string;
 }
 
-interface GestureContext {
-  startX: number;
-  [key: string]: unknown;
-}
-
 const DailyRegisterScreen: React.FC = () => {
   const [selectedMood, setSelectedMood] = useState<number | null>(null);
-  const [intensityValue, setIntensityValue] = useState<number>(0.5);
+  const [intensityValue, setIntensityValue] = useState<number>(3); // Agora vai de 1 a 5
   const [diaryText, setDiaryText] = useState<string>('');
-  
+
   const { user, loading } = useAuthController();
   const { saveRegister, getMoodLabel } = useEmotionalRegister();
-  
-  const sliderPosition = useSharedValue(0.5);
-  const buttonScale = useSharedValue(1);
   
   const moodOptions: MoodOption[] = [
     { id: 1, icon: 'sentiment-very-dissatisfied', label: 'Muito triste', color: '#FF6B6B' },
@@ -59,43 +44,35 @@ const DailyRegisterScreen: React.FC = () => {
     { id: 6, icon: 'mood', label: 'Radiante', color: '#45B7D1' },
   ];
 
-  const getIntensityColor = (intensity: number): string => {
-    if (intensity < 0.2) return '#FF6B6B';
-    if (intensity < 0.4) return '#FF8E53';
-    if (intensity < 0.6) return '#FFD93D';
-    if (intensity < 0.8) return '#6BCF7F';
-    return '#4ECDC4';
+  // Cores baseadas no valor 1-5
+  const getIntensityColor = (value: number): string => {
+    const colors = {
+      1: '#FF6B6B',
+      2: '#FF8E53',
+      3: '#FFD93D',
+      4: '#6BCF7F',
+      5: '#4ECDC4',
+    };
+    return colors[value as keyof typeof colors] || '#FFD93D';
   };
 
-  const gestureHandler = useAnimatedGestureHandler<PanGestureHandlerGestureEvent, GestureContext>({
-    onStart: (_, context) => {
-      context.startX = sliderPosition.value;
-    },
-    onActive: (event, context) => {
-      const sliderWidth = width - 120; 
-      const newPosition = Math.max(0, Math.min(1, 
-        (context.startX * sliderWidth + event.translationX) / sliderWidth
-      ));
-      sliderPosition.value = newPosition;
-      runOnJS(setIntensityValue)(newPosition);
-    },
-    onEnd: () => {
-      sliderPosition.value = withSpring(sliderPosition.value);
-    },
-  });
+  // Funções de incremento/decremento
+  const handleIncrement = () => {
+    if (intensityValue < 5) {
+      setIntensityValue(intensityValue + 1);
+    }
+  };
 
-  const animatedSliderStyle = useAnimatedStyle(() => {
-    const sliderWidth = width - 120;
-    return {
-      transform: [{ translateX: sliderPosition.value * sliderWidth - 14 }],
-    };
-  });
+  const handleDecrement = () => {
+    if (intensityValue > 1) {
+      setIntensityValue(intensityValue - 1);
+    }
+  };
 
-  const animatedButtonStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: buttonScale.value }],
-    };
-  });
+  // Função para clicar diretamente no valor
+  const handleDirectValue = (value: number) => {
+    setIntensityValue(value);
+  };
 
   const handleMoodSelect = (moodId: number) => {
     setSelectedMood(moodId);
@@ -130,25 +107,23 @@ const DailyRegisterScreen: React.FC = () => {
       return;
     }
 
-    buttonScale.value = withSpring(0.95, {}, () => {
-      buttonScale.value = withSpring(1);
-    });
-
     try {
       const selectedMoodLabel = getMoodLabel(selectedMood!);
+
+      // Converte intensityValue (1-5) para porcentagem (20-100)
+      const intensityPercentage = intensityValue * 20;
 
       await saveRegister({
         selectedMood: selectedMoodLabel,
         moodId: selectedMood!,
-        intensityValue: Math.round(intensityValue * 100),
+        intensityValue: intensityPercentage,
         diaryText: diaryText.trim(),
       });
 
       // Limpa os campos ANTES de mostrar o alert
       setSelectedMood(null);
-      setIntensityValue(0.5);
+      setIntensityValue(3); // Valor médio
       setDiaryText('');
-      sliderPosition.value = withSpring(0.5);
 
       // Mostra confirmação visual melhorada
       Alert.alert(
@@ -182,7 +157,7 @@ const DailyRegisterScreen: React.FC = () => {
   };
 
   return (
-    <GestureHandlerRootView style={styles.container}>
+    <View style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#4ECDC4" />
       <SafeAreaView style={styles.container}>
         <ScrollView 
@@ -232,44 +207,100 @@ const DailyRegisterScreen: React.FC = () => {
           <View style={styles.card}>
             <View style={styles.cardHeader}>
               <Icon name="tune" size={24} color="#4ECDC4" />
-              <Text style={styles.cardTitle}>Intensidade do sentimento</Text>
+              <Text style={styles.cardTitle}>Intensidade do sentimento (1-5)</Text>
             </View>
 
             <View style={styles.sliderSection}>
-              <View style={styles.sliderContainer}>
-                <View style={styles.sliderTrack}>
-                  <View style={[styles.sliderProgress, { 
-                    width: `${intensityValue * 100}%`,
-                    backgroundColor: getIntensityColor(intensityValue)
-                  }]} />
-                  
-                  <PanGestureHandler onGestureEvent={gestureHandler}>
-                    <Animated.View style={[
-                      styles.sliderThumb, 
-                      animatedSliderStyle,
-                      { backgroundColor: getIntensityColor(intensityValue) }
-                    ]}>
-                      <View style={styles.sliderThumbInner} />
-                    </Animated.View>
-                  </PanGestureHandler>
-                </View>
-                
-                <View style={styles.sliderLabels}>
-                  <View style={styles.sliderLabelContainer}>
-                    <Icon name="remove" size={20} color="#999" />
-                    <Text style={styles.sliderLabelText}>Baixa</Text>
-                  </View>
-                  <View style={styles.sliderLabelContainer}>
-                    <Icon name="add" size={20} color="#999" />
-                    <Text style={styles.sliderLabelText}>Alta</Text>
-                  </View>
-                </View>
+              {/* Indicador visual da intensidade */}
+              <View style={styles.intensityDisplay}>
+                <Text style={[styles.intensityText, { color: getIntensityColor(intensityValue) }]}>
+                  Nível: {intensityValue} de 5
+                </Text>
               </View>
 
-              <View style={styles.intensityDisplay}>
-                <Text style={styles.intensityText}>
-                  Intensidade: {Math.round(intensityValue * 100)}%
-                </Text>
+              {/* Botões de seleção direta */}
+              <View style={styles.valueButtonsContainer}>
+                {[1, 2, 3, 4, 5].map((value) => (
+                  <TouchableOpacity
+                    key={value}
+                    style={[
+                      styles.valueButton,
+                      intensityValue === value && {
+                        backgroundColor: getIntensityColor(value),
+                        borderColor: getIntensityColor(value),
+                      }
+                    ]}
+                    onPress={() => handleDirectValue(value)}
+                    activeOpacity={0.7}
+                  >
+                    <Text style={[
+                      styles.valueButtonText,
+                      intensityValue === value && styles.valueButtonTextActive
+                    ]}>
+                      {value}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              {/* Botões de incremento/decremento */}
+              <View style={styles.controlButtonsContainer}>
+                <TouchableOpacity
+                  style={[
+                    styles.controlButton,
+                    intensityValue === 1 && styles.controlButtonDisabled
+                  ]}
+                  onPress={handleDecrement}
+                  disabled={intensityValue === 1}
+                  activeOpacity={0.7}
+                >
+                  <Icon name="remove" size={24} color={intensityValue === 1 ? '#ccc' : '#4ECDC4'} />
+                  <Text style={[
+                    styles.controlButtonText,
+                    intensityValue === 1 && styles.controlButtonTextDisabled
+                  ]}>
+                    Diminuir
+                  </Text>
+                </TouchableOpacity>
+
+                <View style={styles.currentValueDisplay}>
+                  <View style={[
+                    styles.currentValueCircle,
+                    { backgroundColor: getIntensityColor(intensityValue) }
+                  ]}>
+                    <Text style={styles.currentValueText}>{intensityValue}</Text>
+                  </View>
+                </View>
+
+                <TouchableOpacity
+                  style={[
+                    styles.controlButton,
+                    intensityValue === 5 && styles.controlButtonDisabled
+                  ]}
+                  onPress={handleIncrement}
+                  disabled={intensityValue === 5}
+                  activeOpacity={0.7}
+                >
+                  <Icon name="add" size={24} color={intensityValue === 5 ? '#ccc' : '#4ECDC4'} />
+                  <Text style={[
+                    styles.controlButtonText,
+                    intensityValue === 5 && styles.controlButtonTextDisabled
+                  ]}>
+                    Aumentar
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* Labels descritivos */}
+              <View style={styles.sliderLabels}>
+                <View style={styles.sliderLabelContainer}>
+                  <Icon name="sentiment-dissatisfied" size={20} color="#FF6B6B" />
+                  <Text style={styles.sliderLabelText}>Baixa</Text>
+                </View>
+                <View style={styles.sliderLabelContainer}>
+                  <Icon name="sentiment-satisfied" size={20} color="#4ECDC4" />
+                  <Text style={styles.sliderLabelText}>Alta</Text>
+                </View>
               </View>
             </View>
           </View>
@@ -302,32 +333,30 @@ const DailyRegisterScreen: React.FC = () => {
             </View>
           </View>
 
-          <Animated.View style={animatedButtonStyle}>
-            <TouchableOpacity 
-              style={[
-                styles.submitButton,
-                loading && styles.submitButtonDisabled
-              ]} 
-              onPress={handleSubmit}
-              activeOpacity={0.8}
-              disabled={loading}
-            >
-              <Icon 
-                name={loading ? "hourglass-empty" : "check"} 
-                size={24} 
-                color="#FFFFFF" 
-                style={styles.submitButtonIcon} 
-              />
-              <Text style={styles.submitButtonText}>
-                {loading ? 'Salvando...' : 'Salvar Registro'}
-              </Text>
-            </TouchableOpacity>
-          </Animated.View>
+          <TouchableOpacity
+            style={[
+              styles.submitButton,
+              loading && styles.submitButtonDisabled
+            ]}
+            onPress={handleSubmit}
+            activeOpacity={0.8}
+            disabled={loading}
+          >
+            <Icon
+              name={loading ? "hourglass-empty" : "check"}
+              size={24}
+              color="#FFFFFF"
+              style={styles.submitButtonIcon}
+            />
+            <Text style={styles.submitButtonText}>
+              {loading ? 'Salvando...' : 'Salvar Registro'}
+            </Text>
+          </TouchableOpacity>
         </ScrollView>
 
         <BottomNavigation />
       </SafeAreaView>
-    </GestureHandlerRootView>
+    </View>
   );
 };
 
