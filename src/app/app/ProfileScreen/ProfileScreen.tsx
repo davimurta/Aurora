@@ -33,8 +33,8 @@ interface PersonalDataItem {
 const ProfileScreen: React.FC = () => {
   const [userImage ] = useState<string | null>(null);
   const [showPersonalData, setShowPersonalData] = useState<boolean>(false);
-  const { userData } = useAuthController();
-  
+  const { userData, logout } = useAuthController();
+
   // Dados predefinidos para teste (remover quando conectar ao banco)
   const [userType] = useState<"patient" | "professional">("patient"); // Altere para "professional" para testar como profissional
 
@@ -120,6 +120,32 @@ const ProfileScreen: React.FC = () => {
     } else {
       router.push("/app/PatientConnectScreen/PatientConnectScreen");
     }
+  };
+
+  const handleLogout = async () => {
+    Alert.alert(
+      "Sair da Conta",
+      "Tem certeza que deseja sair?",
+      [
+        {
+          text: "Cancelar",
+          style: "cancel"
+        },
+        {
+          text: "Sair",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await logout();
+              router.replace('/auth/LoginScreen/LoginScreen');
+            } catch (error) {
+              console.error('Erro ao fazer logout:', error);
+              Alert.alert('Erro', 'Não foi possível sair. Tente novamente.');
+            }
+          }
+        }
+      ]
+    );
   };
 
   const getActivityIcon = (type: string) => {
@@ -257,7 +283,7 @@ const ProfileScreen: React.FC = () => {
         <View style={styles.section}>
           <TouchableOpacity
             style={styles.logoutButton}
-            onPress={() => router.push("/")}
+            onPress={handleLogout}
           >
             <Icon name="logout" size={20} color="#ff4757" />
             <Text style={styles.logoutText}>Sair da Conta</Text>
