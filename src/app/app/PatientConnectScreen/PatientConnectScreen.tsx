@@ -10,13 +10,21 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { router } from "expo-router";
+import { useAuthController } from '../../../hooks/useAuthController';
+import { connectionApi } from '../../../services/connectionApi';
 import { styles } from "./styles";
 
 const PatientConnectScreen: React.FC = () => {
   const [codigo, setCodigo] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const { user, userData } = useAuthController();
 
   const handleConectar = async () => {
+    if (!user || !userData) {
+      Alert.alert('Erro', 'Você precisa estar logado');
+      return;
+    }
+
     if (codigo.length !== 6) {
       Alert.alert(
         "Código Inválido",
@@ -27,29 +35,38 @@ const PatientConnectScreen: React.FC = () => {
 
     setIsLoading(true);
 
-    // Simulação de conexão - aqui você integraria com sua API/Firebase
-    setTimeout(() => {
-      const sucesso = Math.random() > 0.3;
+    try {
+      const response = await connectionApi.connect(
+        codigo,
+        user.uid,
+        userData.displayName || 'Paciente',
+        userData.email || ''
+      );
+
       setIsLoading(false);
 
-      if (sucesso) {
-        Alert.alert(
-          "Conexão Estabelecida!",
-          `Sua conta foi conectada ao profissional com sucesso.`,
-          [
-            {
-              text: "OK",
-              onPress: () => router.back(),
-            },
-          ]
-        );
-      } else {
-        Alert.alert(
-          "Erro na Conexão",
-          `O código '${codigo}' não foi encontrado ou está expirado. Verifique novamente com seu profissional.`
-        );
-      }
-    }, 1500);
+      Alert.alert(
+        "Conexão Estabelecida!",
+        `Sua conta foi conectada ao profissional ${response.connection.psychologistName} com sucesso.`,
+        [
+          {
+            text: "OK",
+            onPress: () => router.back(),
+          },
+        ]
+      );
+    } catch (error: any) {
+      setIsLoading(false);
+      console.error('Erro ao conectar:', error);
+
+      const errorMessage = error.response?.data?.message || error.message ||
+        'Código não encontrado ou expirado';
+
+      Alert.alert(
+        "Erro na Conexão",
+        errorMessage
+      );
+    }
   };
 
   return (

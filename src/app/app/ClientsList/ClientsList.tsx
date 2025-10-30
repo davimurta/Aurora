@@ -7,10 +7,13 @@ import {
   FlatList,
   SafeAreaView,
   ActivityIndicator,
+  Alert,
 } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import BottomNavigation from '@components/BottonNavigation'
 import { router } from 'expo-router'
+import { useAuthController } from '../../../hooks/useAuthController'
+import { connectionApi } from '../../../services/connectionApi'
 import { styles } from './style'
 
 interface Client {
@@ -18,19 +21,17 @@ interface Client {
   name: string
   avatar: string
   lastSession?: string
+  email?: string
 }
 
-const MOCK_CLIENTS: Client[] = [
-  { id: '1', name: 'Paciente 1', avatar: '#E91E63', lastSession: '2025-10-20' },
-  { id: '2', name: 'Paciente 2', avatar: '#FFEB3B', lastSession: '2025-10-18' },
-  { id: '3', name: 'Paciente 3', avatar: '#4ECDC4', lastSession: '2025-10-15' },
-]
+const AVATAR_COLORS = ['#E91E63', '#FFEB3B', '#4ECDC4', '#9C27B0', '#FF5722', '#3F51B5']
 
 const ClientsList: React.FC = () => {
   const [searchText, setSearchText] = useState<string>('')
   const [clients, setClients] = useState<Client[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [filteredClients, setFilteredClients] = useState<Client[]>([])
+  const { user } = useAuthController()
 
   useEffect(() => {
     loadClients()
@@ -41,12 +42,28 @@ const ClientsList: React.FC = () => {
   }, [searchText, clients])
 
   const loadClients = async () => {
+    if (!user) {
+      Alert.alert('Erro', 'Você precisa estar logado')
+      setLoading(false)
+      return
+    }
+
     try {
       setLoading(true)
-      await new Promise(resolve => setTimeout(resolve, 500))
-      setClients(MOCK_CLIENTS)
+      const response = await connectionApi.listPatients(user.uid)
+
+      const formattedClients: Client[] = response.patients.map((patient, index) => ({
+        id: patient.id,
+        name: patient.name,
+        email: patient.email,
+        avatar: AVATAR_COLORS[index % AVATAR_COLORS.length],
+        lastSession: patient.connectedAt ? new Date(patient.connectedAt).toISOString().split('T')[0] : undefined,
+      }))
+
+      setClients(formattedClients)
     } catch (error) {
       console.error('Erro ao carregar pacientes:', error)
+      Alert.alert('Erro', 'Não foi possível carregar a lista de pacientes')
     } finally {
       setLoading(false)
     }

@@ -123,13 +123,12 @@ const HomeScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <SearchBar value={searchQuery} onChangeText={setSearchQuery} />
+
       <ScrollView
-        stickyHeaderIndices={[0]}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.contentContainer}
       >
-        <SearchBar value={searchQuery} onChangeText={setSearchQuery} />
-
         <Banner />
 
         <GridSection

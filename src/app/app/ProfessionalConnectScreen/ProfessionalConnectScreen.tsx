@@ -10,41 +10,46 @@ import {
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { router } from "expo-router";
 import Clipboard from "@react-native-clipboard/clipboard";
+import { useAuthController } from '../../../hooks/useAuthController';
+import { connectionApi } from '../../../services/connectionApi';
 import { styles } from "./styles";
 
 const ProfessionalConnectScreen: React.FC = () => {
   const [codigo, setCodigo] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [copiado, setCopiado] = useState(false);
-
-  const gerarCodigoAleatorio = () => {
-    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    let result = "";
-    const length = 6;
-    for (let i = 0; i < length; i++) {
-      result += characters.charAt(Math.floor(Math.random() * characters.length));
-    }
-    return result;
-  };
+  const { user, userData } = useAuthController();
 
   const handleGerarCodigo = async () => {
+    if (!user) {
+      Alert.alert('Erro', 'Você precisa estar logado');
+      return;
+    }
+
     setIsLoading(true);
 
-    // Simulação de geração e salvamento no backend
-    setTimeout(() => {
-      const novoCodigo = gerarCodigoAleatorio();
-      setCodigo(novoCodigo);
-      setIsLoading(false);
+    try {
+      const response = await connectionApi.generateCode(
+        user.uid,
+        userData?.displayName || 'Profissional'
+      );
 
-      // Aqui você integraria com Firebase/API para salvar o código
-      console.log(`Código gerado: ${novoCodigo}. Salvar no Firestore.`);
+      setCodigo(response.code);
+      setIsLoading(false);
 
       Alert.alert(
         "Código Gerado!",
-        `Compartilhe este código com seu paciente: ${novoCodigo}`,
+        `Compartilhe este código com seu paciente: ${response.code}`,
         [{ text: "OK" }]
       );
-    }, 1000);
+    } catch (error: any) {
+      setIsLoading(false);
+      console.error('Erro ao gerar código:', error);
+      Alert.alert(
+        'Erro',
+        'Não foi possível gerar o código. Tente novamente.'
+      );
+    }
   };
 
   const handleCopiarCodigo = () => {

@@ -22,6 +22,7 @@ const morgan = require('morgan');
 const userRoutes = require('./src/routes/userRoutes');
 const postRoutes = require('./src/routes/postRoutes');
 const emotionalRegisterRoutes = require('./src/routes/emotionalRegisterRoutes');
+const connectionRoutes = require('./src/routes/connectionRoutes');
 
 // Importa sistema de eventos (Observer Pattern)
 const { EventSystem } = require('./src/patterns/EventObserver');
@@ -96,6 +97,9 @@ app.use('/api', postRoutes);
 
 // Importa rotas de registros emocionais
 app.use('/api', emotionalRegisterRoutes);
+
+// Importa rotas de conexões
+app.use('/api/connections', connectionRoutes);
 
 // ==========================================
 // TRATAMENTO DE ERROS
