@@ -123,29 +123,17 @@ const ProfileScreen: React.FC = () => {
   };
 
   const handleLogout = async () => {
-    Alert.alert(
-      "Sair da Conta",
-      "Tem certeza que deseja sair?",
-      [
-        {
-          text: "Cancelar",
-          style: "cancel"
-        },
-        {
-          text: "Sair",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await logout();
-              router.replace('/auth/LoginScreen/LoginScreen');
-            } catch (error) {
-              console.error('Erro ao fazer logout:', error);
-              Alert.alert('Erro', 'Não foi possível sair. Tente novamente.');
-            }
-          }
-        }
-      ]
-    );
+    console.log('handleLogout chamado!');
+
+    try {
+      console.log('Chamando logout...');
+      await logout();
+      console.log('Logout concluído, redirecionando...');
+      router.replace('/auth/LoginScreen/LoginScreen');
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error);
+      Alert.alert('Erro', 'Não foi possível sair. Tente novamente.');
+    }
   };
 
   const getActivityIcon = (type: string) => {
@@ -281,15 +269,20 @@ const ProfileScreen: React.FC = () => {
         </View>
 
         <View style={styles.section}>
-          <TouchableOpacity
-            style={styles.logoutButton}
+          <Pressable
+            style={({ pressed }) => [
+              styles.logoutButton,
+              pressed && { opacity: 0.7, backgroundColor: '#fff0f0' }
+            ]}
             onPress={handleLogout}
+            android_ripple={{ color: '#ffdddd' }}
           >
             <Icon name="logout" size={20} color="#ff4757" />
             <Text style={styles.logoutText}>Sair da Conta</Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
 
+        <View style={styles.bottomSpacing} />
         <View style={styles.bottomSpacing} />
       </ScrollView>
 
