@@ -30,15 +30,7 @@ class ConnectionRepository {
    */
   async create(connectionData) {
     try {
-      const connection = new Connection(connectionData);
-
-      // Validação
-      const validation = connection.validate();
-      if (!validation.isValid) {
-        throw new Error(`Dados inválidos: ${validation.errors.join(', ')}`);
-      }
-
-      // Gera código único
+      // Gera código único ANTES de criar a conexão
       let code = this.generateUniqueCode();
       let exists = await this.findByCode(code);
 
@@ -48,7 +40,17 @@ class ConnectionRepository {
         exists = await this.findByCode(code);
       }
 
-      connection.code = code;
+      // Adiciona o código aos dados
+      connectionData.code = code;
+
+      // Cria a conexão COM o código
+      const connection = new Connection(connectionData);
+
+      // Validação (agora o código já existe)
+      const validation = connection.validate();
+      if (!validation.isValid) {
+        throw new Error(`Dados inválidos: ${validation.errors.join(', ')}`);
+      }
 
       // Salva no Firestore
       const connectionsRef = collection(this.db, this.collectionName);
