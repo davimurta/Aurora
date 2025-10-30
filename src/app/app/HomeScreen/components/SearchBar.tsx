@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useCallback } from 'react';
 import { View, TextInput, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
@@ -7,25 +7,39 @@ interface SearchBarProps {
   onChangeText: (text: string) => void;
 }
 
-const SearchBarComponent: React.FC<SearchBarProps> = ({ value, onChangeText }) => (
-  <View style={styles.searchContainer}>
-    <View style={styles.searchBar}>
-      <Icon name="search" size={22} color="#999" style={styles.searchIcon} />
-      <TextInput
-        style={styles.searchInput}
-        placeholder="Buscar atividades, artigos..."
-        placeholderTextColor="#999"
-        value={value}
-        onChangeText={onChangeText}
-        autoCorrect={false}
-        autoCapitalize="none"
-      />
-    </View>
-  </View>
-);
+const SearchBarComponent: React.FC<SearchBarProps> = ({ value, onChangeText }) => {
+  const inputRef = useRef<TextInput>(null);
 
-// Wrap in React.memo to prevent unnecessary re-renders that cause focus loss
-export const SearchBar = React.memo(SearchBarComponent);
+  // Memoriza a função para evitar re-criação
+  const handleChangeText = useCallback((text: string) => {
+    onChangeText(text);
+  }, [onChangeText]);
+
+  return (
+    <View style={styles.searchContainer}>
+      <View style={styles.searchBar}>
+        <Icon name="search" size={22} color="#999" style={styles.searchIcon} />
+        <TextInput
+          ref={inputRef}
+          style={styles.searchInput}
+          placeholder="Buscar atividades, artigos..."
+          placeholderTextColor="#999"
+          value={value}
+          onChangeText={handleChangeText}
+          autoCorrect={false}
+          autoCapitalize="none"
+          blurOnSubmit={false}
+        />
+      </View>
+    </View>
+  );
+};
+
+// Wrap in React.memo with custom comparison to prevent unnecessary re-renders
+export const SearchBar = React.memo(SearchBarComponent, (prevProps, nextProps) => {
+  // Só re-renderiza se o value realmente mudou
+  return prevProps.value === nextProps.value;
+});
 
 const styles = StyleSheet.create({
   searchContainer: {

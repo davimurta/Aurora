@@ -67,8 +67,16 @@ class EmotionalRegisterRepository {
    */
   async findByMonth(userId, year, month) {
     try {
+      console.log('🔵 [EmotionalRegisterRepository] findByMonth chamado');
+      console.log('🔵 [EmotionalRegisterRepository] userId:', userId);
+      console.log('🔵 [EmotionalRegisterRepository] year:', year);
+      console.log('🔵 [EmotionalRegisterRepository] month:', month);
+
       const registersRef = collection(this.db, this.collectionName);
-      const monthPrefix = `${year}-${String(month + 1).padStart(2, '0')}-`;
+      // month já vem correto (1-12) do frontend, NÃO precisa +1
+      const monthPrefix = `${year}-${String(month).padStart(2, '0')}-`;
+
+      console.log('🔵 [EmotionalRegisterRepository] monthPrefix:', monthPrefix);
 
       // Busca todos do usuário e filtra em memória (evita necessidade de índice composto)
       const q = query(
@@ -76,6 +84,8 @@ class EmotionalRegisterRepository {
         where('userId', '==', userId)
       );
       const snapshot = await getDocs(q);
+
+      console.log('🔵 [EmotionalRegisterRepository] Total de registros do usuário:', snapshot.docs.length);
 
       const allRegisters = snapshot.docs.map((doc) => {
         return EmotionalRegister.fromFirestore({
@@ -85,9 +95,21 @@ class EmotionalRegisterRepository {
         });
       });
 
+      console.log('🔵 [EmotionalRegisterRepository] Registros formatados:', allRegisters.length);
+      console.log('🔵 [EmotionalRegisterRepository] Datas dos registros:', allRegisters.map(r => r.date));
+
       // Filtra pelo mês específico
-      return allRegisters.filter(register => register.date.startsWith(monthPrefix));
+      const filtered = allRegisters.filter(register => {
+        const matches = register.date.startsWith(monthPrefix);
+        console.log(`  - ${register.date} starts with ${monthPrefix}? ${matches}`);
+        return matches;
+      });
+
+      console.log('✅ [EmotionalRegisterRepository] Registros filtrados:', filtered.length);
+
+      return filtered;
     } catch (error) {
+      console.error('❌ [EmotionalRegisterRepository] Erro:', error);
       throw new Error(`Erro ao buscar registros do mês: ${error.message}`);
     }
   }

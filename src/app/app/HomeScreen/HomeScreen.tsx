@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { SafeAreaView, ScrollView, View, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import BottomNavigation from '@components/BottonNavigation';
@@ -43,6 +43,11 @@ const HomeScreen: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [loadingPosts, setLoadingPosts] = useState(true);
+
+  // Memoriza a função de atualizar search para evitar re-renders desnecessários
+  const handleSearchChange = useCallback((text: string) => {
+    setSearchQuery(text);
+  }, []);
 
   // Busca posts do backend ao montar o componente
   useEffect(() => {
@@ -123,7 +128,7 @@ const HomeScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <SearchBar value={searchQuery} onChangeText={setSearchQuery} />
+      <SearchBar value={searchQuery} onChangeText={handleSearchChange} />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
