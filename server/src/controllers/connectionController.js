@@ -108,23 +108,33 @@ class ConnectionController {
    */
   async listPatients(req, res) {
     try {
+      console.log('🔵 [BACKEND] listPatients chamado');
       const { psychologistId } = req.params;
+      console.log('🔵 [BACKEND] psychologistId:', psychologistId);
 
       const connections = await this.connectionRepository.findPatientsByPsychologist(psychologistId);
 
+      console.log('✅ [BACKEND] Conexões encontradas:', connections.length);
+      console.log('✅ [BACKEND] Conexões:', JSON.stringify(connections, null, 2));
+
+      const patients = connections.map(conn => ({
+        id: conn.patientId,
+        name: conn.patientName,
+        email: conn.patientEmail,
+        connectedAt: conn.connectedAt,
+        connectionId: conn.id,
+      }));
+
+      console.log('✅ [BACKEND] Pacientes formatados:', JSON.stringify(patients, null, 2));
+
       return res.status(200).json({
         success: true,
-        patients: connections.map(conn => ({
-          id: conn.patientId,
-          name: conn.patientName,
-          email: conn.patientEmail,
-          connectedAt: conn.connectedAt,
-          connectionId: conn.id,
-        })),
+        patients,
         count: connections.length,
       });
     } catch (error) {
-      console.error('❌ Erro ao listar pacientes:', error);
+      console.error('❌ [BACKEND] Erro ao listar pacientes:', error);
+      console.error('❌ [BACKEND] Stack:', error.stack);
       return res.status(400).json({
         success: false,
         message: error.message,
