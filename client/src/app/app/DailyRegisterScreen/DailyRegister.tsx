@@ -11,6 +11,8 @@ import {
   StatusBar,
   Alert,
   Platform,
+  Modal,
+  Animated,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import BottomNavigation from '../../../components/BottonNavigation';
@@ -31,6 +33,7 @@ const DailyRegisterScreen: React.FC = () => {
   const [selectedMood, setSelectedMood] = useState<number | null>(null);
   const [intensityValue, setIntensityValue] = useState<number>(3); // Agora vai de 1 a 5
   const [diaryText, setDiaryText] = useState<string>('');
+  const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false);
 
   const { user, loading } = useAuthController();
   const { saveRegister, getMoodLabel } = useEmotionalRegister();
@@ -120,22 +123,13 @@ const DailyRegisterScreen: React.FC = () => {
         diaryText: diaryText.trim(),
       });
 
-      // Limpa os campos ANTES de mostrar o alert
+      // Limpa os campos ANTES de mostrar o modal
       setSelectedMood(null);
       setIntensityValue(3); // Valor médio
       setDiaryText('');
 
-      // Mostra confirmação visual melhorada
-      Alert.alert(
-        '✅ Registro Salvo!',
-        'Seu registro emocional foi salvo com sucesso! Você pode visualizá-lo no histórico.',
-        [
-          {
-            text: 'OK',
-            style: 'default'
-          }
-        ]
-      );
+      // Mostra modal de sucesso
+      setShowSuccessModal(true);
 
     } catch (error: any) {
       console.error('Erro ao salvar registro:', error);
@@ -353,6 +347,35 @@ const DailyRegisterScreen: React.FC = () => {
             </Text>
           </TouchableOpacity>
         </ScrollView>
+
+        {/* Modal de Sucesso */}
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={showSuccessModal}
+          onRequestClose={() => setShowSuccessModal(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <View style={styles.modalIconContainer}>
+                <Icon name="check-circle" size={64} color="#4ECDC4" />
+              </View>
+
+              <Text style={styles.modalTitle}>Registro Salvo!</Text>
+              <Text style={styles.modalMessage}>
+                Seu registro emocional foi salvo com sucesso!{'\n'}
+                Você pode visualizá-lo no histórico.
+              </Text>
+
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={() => setShowSuccessModal(false)}
+              >
+                <Text style={styles.modalButtonText}>OK</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
 
         <BottomNavigation />
       </SafeAreaView>

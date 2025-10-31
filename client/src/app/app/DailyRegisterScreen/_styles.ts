@@ -283,6 +283,57 @@ export const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#FFFFFF',
   },
+  // Modal de Sucesso
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalContent: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    padding: 30,
+    alignItems: 'center',
+    width: '90%',
+    maxWidth: 400,
+    elevation: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+  },
+  modalIconContainer: {
+    marginBottom: 20,
+  },
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#2C3E50',
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  modalMessage: {
+    fontSize: 16,
+    color: '#7F8C8D',
+    textAlign: 'center',
+    marginBottom: 24,
+    lineHeight: 24,
+  },
+  modalButton: {
+    backgroundColor: '#4ECDC4',
+    paddingHorizontal: 40,
+    paddingVertical: 14,
+    borderRadius: 12,
+    width: '100%',
+    alignItems: 'center',
+  },
+  modalButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
 });
 
 export default styles

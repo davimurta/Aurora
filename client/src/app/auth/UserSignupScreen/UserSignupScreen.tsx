@@ -135,7 +135,17 @@ const UserSignup: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView 
+      {/* Botão Voltar */}
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => router.back()}
+        activeOpacity={0.7}
+      >
+        <Icon name="arrow-back" size={24} color="#4ECDC4" />
+        <Text style={styles.backButtonText}>Voltar</Text>
+      </TouchableOpacity>
+
+      <KeyboardAvoidingView
         style={styles.keyboardAvoid}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
@@ -587,6 +597,19 @@ const styles = StyleSheet.create({
   },
   bottomSpacing: {
     height: 20,
+  },
+  // Botão Voltar
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    gap: 8,
+  },
+  backButtonText: {
+    fontSize: 16,
+    color: '#4ECDC4',
+    fontWeight: '600',
   },
 });
 

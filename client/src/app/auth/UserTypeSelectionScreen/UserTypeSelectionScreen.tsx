@@ -80,8 +80,18 @@ const UserTypeSelectionScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#f8f9fa" />
-      
-      <ScrollView 
+
+      {/* Botão Voltar */}
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => router.back()}
+        activeOpacity={0.7}
+      >
+        <Icon name="arrow-back" size={24} color="#4ECDC4" />
+        <Text style={styles.backButtonText}>Voltar</Text>
+      </TouchableOpacity>
+
+      <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}

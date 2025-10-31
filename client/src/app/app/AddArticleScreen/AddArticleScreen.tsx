@@ -10,6 +10,7 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  Modal,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import * as ImagePicker from 'expo-image-picker';
@@ -34,6 +35,7 @@ const AddArticleScreen: React.FC = () => {
     { id: '1', type: 'paragraph', content: '' }
   ]);
   const [isLoading, setIsLoading] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const currentDate = new Date().toLocaleDateString('pt-BR');
 
@@ -186,7 +188,7 @@ const AddArticleScreen: React.FC = () => {
           await postsApi.publishPost(response.post.id);
         }
 
-        // Limpa o formulário ANTES de mostrar o alert
+        // Limpa o formulário ANTES de mostrar o modal
         setTitle('');
         setDescription('');
         setCategory('Saúde Mental');
@@ -194,12 +196,8 @@ const AddArticleScreen: React.FC = () => {
 
         setIsLoading(false);
 
-        // Mostra confirmação de sucesso
-        Alert.alert(
-          '✅ Matéria Publicada!',
-          'Sua matéria foi criada e publicada com sucesso! Ela já está disponível no blog para todos os usuários.',
-          [{ text: 'OK' }]
-        );
+        // Mostra modal de sucesso
+        setShowSuccessModal(true);
       } else {
         throw new Error('Resposta inválida do servidor');
       }
@@ -488,6 +486,35 @@ const AddArticleScreen: React.FC = () => {
           <View style={styles.bottomSpacing} />
         </ScrollView>
       </KeyboardAvoidingView>
+
+      {/* Modal de Sucesso */}
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={showSuccessModal}
+        onRequestClose={() => setShowSuccessModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalIconContainer}>
+              <Icon name="check-circle" size={64} color="#4ECDC4" />
+            </View>
+
+            <Text style={styles.modalTitle}>Matéria Publicada!</Text>
+            <Text style={styles.modalMessage}>
+              Sua matéria foi criada e publicada com sucesso!{'\n'}
+              Ela já está disponível no blog para todos os usuários.
+            </Text>
+
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={() => setShowSuccessModal(false)}
+            >
+              <Text style={styles.modalButtonText}>OK</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
 
       <BottomNavigation />
     </SafeAreaView>

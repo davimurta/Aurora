@@ -135,6 +135,19 @@ export const styles = StyleSheet.create({
     color: '#666',
     fontWeight: '400',
   },
+  // Botão Voltar
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    gap: 8,
+  },
+  backButtonText: {
+    fontSize: 16,
+    color: '#4ECDC4',
+    fontWeight: '600',
+  },
 });
 
 export default styles
