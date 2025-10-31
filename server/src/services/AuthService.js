@@ -1,16 +1,8 @@
-/**
- * AuthService - Usando Firebase CLIENT SDK
- *
- * SOLUÇÃO SIMPLES: Removida dependência do Admin SDK
- * Agora usa apenas o Client SDK (sem problemas de permissão!)
- */
-
 const UserRepository = require('../repositories/UserRepository');
 const UserFactory = require('../patterns/UserFactory');
 const { EventSystem } = require('../patterns/EventObserver');
 const firebase = require('../config/firebase');
 
-// Importa funções do Firebase Client SDK
 const { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } = require('firebase/auth');
 const { doc, setDoc, serverTimestamp } = require('firebase/firestore');
 
@@ -22,21 +14,15 @@ class AuthService {
     this.db = firebase.getFirestore();
   }
 
-  /**
-   * Registra um novo usuário
-   */
   async register(userData) {
     try {
-      // Verifica se email já existe
       const existingUser = await this.userRepository.findByEmail(userData.email);
       if (existingUser) {
         throw new Error('Email já cadastrado');
       }
 
-      // Cria usuário usando Factory Pattern
       const user = UserFactory.createUser(userData);
 
-      // Cria usuário no Firebase Auth usando CLIENT SDK
       const userCredential = await createUserWithEmailAndPassword(
         this.auth,
         user.email,
@@ -45,15 +31,12 @@ class AuthService {
 
       const firebaseUser = userCredential.user;
 
-      // Atualiza display name
       await updateProfile(firebaseUser, {
         displayName: user.displayName
       });
 
-      // Atualiza UID
       user.uid = firebaseUser.uid;
 
-      // Salva no Firestore
       const userDocRef = doc(this.db, 'users', user.uid);
       const userDataToSave = {
         ...user.toFirestore(),
@@ -63,7 +46,6 @@ class AuthService {
 
       await setDoc(userDocRef, userDataToSave);
 
-      // Emite evento usando Observer Pattern
       await this.eventSystem.emit('user.created', {
         uid: user.uid,
         displayName: user.displayName,
@@ -76,7 +58,6 @@ class AuthService {
         message: 'Usuário cadastrado com sucesso',
       };
     } catch (error) {
-      // Trata erros do Firebase
       let errorMessage = error.message;
 
       if (error.code === 'auth/email-already-in-use') {
@@ -91,14 +72,10 @@ class AuthService {
     }
   }
 
-  /**
-   * Autentica um usuário
-   */
   async login(credentials) {
     try {
       const { email, password } = credentials;
 
-      // Faz login usando CLIENT SDK
       const userCredential = await signInWithEmailAndPassword(
         this.auth,
         email,
@@ -107,7 +84,6 @@ class AuthService {
 
       const firebaseUser = userCredential.user;
 
-      // Busca dados completos do usuário
       const user = await this.userRepository.findById(firebaseUser.uid);
 
       if (!user) {
@@ -118,7 +94,6 @@ class AuthService {
         throw new Error('Usuário inativo');
       }
 
-      // Emite evento de login
       await this.eventSystem.emit('user.login', {
         uid: user.uid,
         strategy: 'email-password',
@@ -144,9 +119,6 @@ class AuthService {
     }
   }
 
-  /**
-   * Logout de usuário
-   */
   async logout(userId) {
     try {
       await this.eventSystem.emit('user.logout', { uid: userId });
@@ -160,23 +132,17 @@ class AuthService {
     }
   }
 
-  /**
-   * Redefine senha do usuário
-   */
   async resetPassword(email) {
     try {
       const user = await this.userRepository.findByEmail(email);
 
       if (!user) {
-        // Por segurança, não revela que o email não existe
         return {
           success: true,
           message: 'Se o email existir, você receberá instruções para resetar a senha',
         };
       }
 
-      // Nota: sendPasswordResetEmail precisa ser implementado no cliente
-      // Por enquanto, apenas registra o evento
       await this.eventSystem.emit('user.password.reset', {
         uid: user.uid,
         email: user.email,
@@ -191,9 +157,6 @@ class AuthService {
     }
   }
 
-  /**
-   * Aprova um psicólogo
-   */
   async approvePsychologist(psychologistId) {
     try {
       await this.userRepository.approvePsychologist(psychologistId);
@@ -215,9 +178,6 @@ class AuthService {
     }
   }
 
-  /**
-   * Busca usuário por ID
-   */
   async getUserById(userId) {
     try {
       const user = await this.userRepository.findById(userId);
@@ -232,9 +192,6 @@ class AuthService {
     }
   }
 
-  /**
-   * Lista psicólogos aprovados
-   */
   async getApprovedPsychologists() {
     try {
       const psychologists = await this.userRepository.findApprovedPsychologists();

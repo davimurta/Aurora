@@ -1,36 +1,24 @@
-/**
- * Model de Conexão entre Psicólogo e Paciente
- *
- * Representa uma conexão ativa entre profissional e paciente
- */
-
 class Connection {
   constructor(data) {
     this.id = data.id || null;
-    this.code = data.code; // Código de 6 caracteres
+    this.code = data.code;
     this.psychologistId = data.psychologistId;
     this.psychologistName = data.psychologistName;
     this.patientId = data.patientId || null;
     this.patientName = data.patientName || null;
     this.patientEmail = data.patientEmail || null;
-    this.status = data.status || 'pending'; // pending, active, expired
+    this.status = data.status || 'pending';
     this.createdAt = data.createdAt || new Date();
     this.connectedAt = data.connectedAt || null;
     this.expiresAt = data.expiresAt || this.calculateExpiration();
   }
 
-  /**
-   * Calcula data de expiração (24 horas)
-   */
   calculateExpiration() {
     const expiration = new Date();
     expiration.setHours(expiration.getHours() + 24);
     return expiration;
   }
 
-  /**
-   * Converte para objeto do Firestore
-   */
   toFirestore() {
     return {
       code: this.code,
@@ -46,9 +34,6 @@ class Connection {
     };
   }
 
-  /**
-   * Cria Connection a partir de documento do Firestore
-   */
   static fromFirestore(doc) {
     if (!doc.exists) {
       return null;
@@ -64,16 +49,10 @@ class Connection {
     });
   }
 
-  /**
-   * Verifica se o código está expirado
-   */
   isExpired() {
     return new Date() > this.expiresAt;
   }
 
-  /**
-   * Marca conexão como ativa
-   */
   activate(patientId, patientName, patientEmail) {
     this.patientId = patientId;
     this.patientName = patientName;
@@ -82,9 +61,6 @@ class Connection {
     this.connectedAt = new Date();
   }
 
-  /**
-   * Validação
-   */
   validate() {
     const errors = [];
 

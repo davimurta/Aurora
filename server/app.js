@@ -1,69 +1,34 @@
-/**
- * Aurora Backend Server
- *
- * Servidor Node.js + Express para o aplicativo Aurora
- *
- * Arquitetura: MVC com Repository Pattern
- *
- * Padrões GoF Implementados:
- * 1. Singleton - Conexão Firebase (firebase.js)
- * 2. Repository - Acesso a dados (UserRepository, PostRepository)
- * 3. Factory - Criação de usuários (UserFactory)
- * 4. Strategy - Estratégias de autenticação (AuthStrategy)
- * 5. Observer - Sistema de eventos (EventObserver)
- */
-
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 
-// Importa rotas
 const userRoutes = require('./src/routes/userRoutes');
 const postRoutes = require('./src/routes/postRoutes');
 const emotionalRegisterRoutes = require('./src/routes/emotionalRegisterRoutes');
 const connectionRoutes = require('./src/routes/connectionRoutes');
 
-// Importa sistema de eventos (Observer Pattern)
 const { EventSystem } = require('./src/patterns/EventObserver');
 
-// Inicializa Express
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// ==========================================
-// MIDDLEWARES
-// ==========================================
-
-// CORS - Permite requisições do frontend
 app.use(
   cors({
-    origin: '*', // Em produção, especificar domínios permitidos
+    origin: '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   }),
 );
 
-// Parser de JSON
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Logger de requisições
 app.use(morgan('dev'));
 
-// ==========================================
-// INICIALIZAÇÃO
-// ==========================================
-
-// Inicializa sistema de eventos (Observer Pattern + Singleton)
 const eventSystem = EventSystem.getInstance();
 console.log('📡 Sistema de Eventos ativo');
 
-// ==========================================
-// ROTAS
-// ==========================================
-
-// Rota de health check
 app.get('/', (req, res) => {
   res.json({
     success: true,
@@ -80,7 +45,6 @@ app.get('/', (req, res) => {
   });
 });
 
-// Rota de status
 app.get('/health', (req, res) => {
   res.json({
     status: 'ok',
@@ -89,16 +53,12 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Importa rotas de usuários
 app.use('/api', userRoutes);
 
-// Importa rotas de posts
 app.use('/api', postRoutes);
 
-// Importa rotas de registros emocionais
 app.use('/api', emotionalRegisterRoutes);
 
-// Importa rotas de conexões
 console.log('🔍 Carregando rotas de conexão...');
 try {
   app.use('/api/connections', connectionRoutes);
@@ -112,11 +72,6 @@ try {
   console.error('❌ Erro ao carregar rotas de conexão:', error.message);
 }
 
-// ==========================================
-// TRATAMENTO DE ERROS
-// ==========================================
-
-// Rota não encontrada
 app.use((req, res) => {
   res.status(404).json({
     success: false,
@@ -125,7 +80,6 @@ app.use((req, res) => {
   });
 });
 
-// Handler de erros global
 app.use((err, req, res, next) => {
   console.error('❌ Erro:', err);
 
@@ -135,10 +89,6 @@ app.use((err, req, res, next) => {
     ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
   });
 });
-
-// ==========================================
-// INICIALIZAÇÃO DO SERVIDOR
-// ==========================================
 
 app.listen(PORT, () => {
   console.log('\n================================================');
@@ -178,7 +128,6 @@ app.listen(PORT, () => {
   console.log('  DELETE /api/registers/:userId/date/:date\n');
 });
 
-// Tratamento de erros não capturados
 process.on('unhandledRejection', (reason, promise) => {
   console.error('❌ Unhandled Rejection:', reason);
 });

@@ -1,9 +1,3 @@
-/**
- * ConnectionController
- *
- * Gerencia requisições HTTP para conexões entre psicólogos e pacientes
- */
-
 const ConnectionRepository = require('../repositories/ConnectionRepository');
 const EmotionalRegisterRepository = require('../repositories/EmotionalRegisterRepository');
 
@@ -13,10 +7,6 @@ class ConnectionController {
     this.registerRepository = new EmotionalRegisterRepository();
   }
 
-  /**
-   * POST /connections/generate
-   * Psicólogo gera código de conexão
-   */
   async generateCode(req, res) {
     try {
       const { psychologistId, psychologistName } = req.body;
@@ -48,10 +38,6 @@ class ConnectionController {
     }
   }
 
-  /**
-   * POST /connections/connect
-   * Paciente usa código para conectar
-   */
   async connect(req, res) {
     try {
       console.log('🔵 [BACKEND] connect chamado');
@@ -102,10 +88,6 @@ class ConnectionController {
     }
   }
 
-  /**
-   * GET /connections/psychologist/:psychologistId/patients
-   * Lista pacientes conectados a um psicólogo
-   */
   async listPatients(req, res) {
     try {
       console.log('🔵 [BACKEND] listPatients chamado');
@@ -142,10 +124,6 @@ class ConnectionController {
     }
   }
 
-  /**
-   * GET /connections/patient/:patientId/psychologist
-   * Busca psicólogo conectado a um paciente
-   */
   async getPsychologist(req, res) {
     try {
       const { patientId } = req.params;
@@ -176,10 +154,6 @@ class ConnectionController {
     }
   }
 
-  /**
-   * GET /connections/patient/:patientId/registers
-   * Busca registros diários do paciente (para o psicólogo ver)
-   */
   async getPatientRegisters(req, res) {
     try {
       console.log('🔵 [BACKEND] getPatientRegisters chamado');
@@ -209,7 +183,6 @@ class ConnectionController {
           count: registers.length,
         });
       } else {
-        // Busca todos os registros
         console.log('🔵 [BACKEND] Buscando todos os registros...');
         const registers = await this.registerRepository.findByUserId(patientId);
 

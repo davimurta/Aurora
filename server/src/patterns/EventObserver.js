@@ -1,30 +1,8 @@
-/**
- * EventObserver
- *
- * Padrão GoF: OBSERVER
- *
- * Propósito: Define uma dependência um-para-muitos entre objetos, de modo que quando
- * um objeto muda de estado, todos os seus dependentes são notificados e atualizados
- * automaticamente. Útil para logging, notificações e eventos assíncronos.
- *
- * Benefícios:
- * - Desacoplamento entre objetos
- * - Facilita implementação de sistemas de eventos
- * - Permite adicionar/remover observers dinamicamente
- * - Princípio de Responsabilidade Única
- */
-
-/**
- * Subject (Observable): Gerencia lista de observers e os notifica
- */
 class EventSubject {
   constructor() {
     this.observers = [];
   }
 
-  /**
-   * Adiciona um observer à lista
-   */
   attach(observer) {
     if (!this.observers.includes(observer)) {
       this.observers.push(observer);
@@ -32,9 +10,6 @@ class EventSubject {
     }
   }
 
-  /**
-   * Remove um observer da lista
-   */
   detach(observer) {
     const index = this.observers.indexOf(observer);
     if (index > -1) {
@@ -43,13 +18,9 @@ class EventSubject {
     }
   }
 
-  /**
-   * Notifica todos os observers sobre um evento
-   */
   async notify(event) {
     console.log(`📢 Notificando ${this.observers.length} observers sobre: ${event.type}`);
 
-    // Executa todos os observers em paralelo
     const promises = this.observers.map((observer) =>
       observer.update(event).catch((error) => {
         console.error(`❌ Erro no observer ${observer.name}: ${error.message}`);
@@ -60,9 +31,6 @@ class EventSubject {
   }
 }
 
-/**
- * Observer abstrato: Define interface para observers
- */
 class Observer {
   constructor(name) {
     this.name = name;
@@ -73,10 +41,6 @@ class Observer {
   }
 }
 
-/**
- * OBSERVER 1: Logger de eventos
- * Registra todos os eventos no console/arquivo
- */
 class LoggerObserver extends Observer {
   constructor() {
     super('LoggerObserver');
@@ -94,7 +58,6 @@ class LoggerObserver extends Observer {
 
     console.log(`📝 [LOG] ${event.type}:`, JSON.stringify(event.data, null, 2));
 
-    // Em produção, salvar em arquivo ou serviço de logging
   }
 
   getLogs() {
@@ -106,10 +69,6 @@ class LoggerObserver extends Observer {
   }
 }
 
-/**
- * OBSERVER 2: Notificador de usuários
- * Envia notificações quando eventos importantes acontecem
- */
 class NotificationObserver extends Observer {
   constructor() {
     super('NotificationObserver');
@@ -117,7 +76,6 @@ class NotificationObserver extends Observer {
   }
 
   async update(event) {
-    // Filtra apenas eventos que geram notificações
     const notifiableEvents = [
       'user.created',
       'post.created',
@@ -134,7 +92,6 @@ class NotificationObserver extends Observer {
 
     console.log(`🔔 [NOTIFICAÇÃO] ${notification.message}`);
 
-    // Em produção, enviar por push notification, email, etc
   }
 
   createNotification(event) {
@@ -158,10 +115,6 @@ class NotificationObserver extends Observer {
   }
 }
 
-/**
- * OBSERVER 3: Analisador de métricas
- * Coleta e analisa métricas de uso do sistema
- */
 class AnalyticsObserver extends Observer {
   constructor() {
     super('AnalyticsObserver');
@@ -210,10 +163,6 @@ class AnalyticsObserver extends Observer {
   }
 }
 
-/**
- * Sistema de Eventos Global
- * Singleton que gerencia eventos da aplicação
- */
 class EventSystem {
   constructor() {
     if (EventSystem.instance) {
@@ -232,9 +181,6 @@ class EventSystem {
     EventSystem.instance = this;
   }
 
-  /**
-   * Emite um evento para todos os observers
-   */
   async emit(eventType, data) {
     const event = {
       type: eventType,
@@ -245,23 +191,14 @@ class EventSystem {
     await this.subject.notify(event);
   }
 
-  /**
-   * Adiciona um observer customizado
-   */
   addObserver(observer) {
     this.subject.attach(observer);
   }
 
-  /**
-   * Remove um observer
-   */
   removeObserver(observer) {
     this.subject.detach(observer);
   }
 
-  /**
-   * Obtém a instância única (Singleton)
-   */
   static getInstance() {
     if (!EventSystem.instance) {
       EventSystem.instance = new EventSystem();

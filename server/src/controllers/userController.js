@@ -1,11 +1,3 @@
-/**
- * UserController
- *
- * Camada de controle para requisições relacionadas a usuários.
- * Responsável por receber requisições HTTP, validar dados,
- * chamar services e retornar respostas apropriadas.
- */
-
 const AuthService = require('../services/AuthService');
 
 class UserController {
@@ -13,15 +5,10 @@ class UserController {
     this.authService = new AuthService();
   }
 
-  /**
-   * POST /register
-   * Registra um novo usuário
-   */
   async register(req, res) {
     try {
       const { email, password, displayName, userType, ...additionalData } = req.body;
 
-      // Validação básica
       if (!email || !password || !displayName || !userType) {
         return res.status(400).json({
           success: false,
@@ -49,15 +36,10 @@ class UserController {
     }
   }
 
-  /**
-   * POST /login
-   * Autentica um usuário
-   */
   async login(req, res) {
     try {
       const { email, password, strategy = 'email-password' } = req.body;
 
-      // Validação básica
       if (!email || !password) {
         return res.status(400).json({
           success: false,
@@ -78,10 +60,6 @@ class UserController {
     }
   }
 
-  /**
-   * POST /logout
-   * Desloga um usuário
-   */
   async logout(req, res) {
     try {
       const { userId } = req.body;
@@ -105,10 +83,6 @@ class UserController {
     }
   }
 
-  /**
-   * POST /reset-password
-   * Envia email de redefinição de senha
-   */
   async resetPassword(req, res) {
     try {
       const { email } = req.body;
@@ -132,10 +106,6 @@ class UserController {
     }
   }
 
-  /**
-   * GET /users/:id
-   * Busca um usuário por ID
-   */
   async getUser(req, res) {
     try {
       const { id } = req.params;
@@ -155,10 +125,6 @@ class UserController {
     }
   }
 
-  /**
-   * GET /psychologists
-   * Lista psicólogos aprovados
-   */
   async getPsychologists(req, res) {
     try {
       const psychologists = await this.authService.getApprovedPsychologists();
@@ -177,10 +143,6 @@ class UserController {
     }
   }
 
-  /**
-   * POST /psychologists/:id/approve
-   * Aprova um psicólogo
-   */
   async approvePsychologist(req, res) {
     try {
       const { id } = req.params;

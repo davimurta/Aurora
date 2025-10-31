@@ -1,11 +1,3 @@
-/**
- * PostController
- *
- * Camada de controle para requisições relacionadas a posts/artigos.
- * Responsável por receber requisições HTTP, validar dados,
- * chamar repositories e retornar respostas apropriadas.
- */
-
 const PostRepository = require('../repositories/PostRepository');
 const { EventSystem } = require('../patterns/EventObserver');
 
@@ -15,10 +7,6 @@ class PostController {
     this.eventSystem = EventSystem.getInstance();
   }
 
-  /**
-   * GET /posts
-   * Lista todos os posts publicados
-   */
   async getPosts(req, res) {
     try {
       const { limit = 50, category, tag } = req.query;
@@ -47,10 +35,6 @@ class PostController {
     }
   }
 
-  /**
-   * GET /posts/:id
-   * Busca um post por ID
-   */
   async getPost(req, res) {
     try {
       const { id } = req.params;
@@ -64,7 +48,6 @@ class PostController {
         });
       }
 
-      // Incrementa visualizações
       await this.postRepository.incrementViews(id);
 
       return res.status(200).json({
@@ -80,15 +63,10 @@ class PostController {
     }
   }
 
-  /**
-   * POST /posts
-   * Cria um novo post
-   */
   async createPost(req, res) {
     try {
       const { title, content, authorId, authorName, category, tags, imageUrl } = req.body;
 
-      // Validação básica
       if (!title || !content || !authorId || !authorName) {
         return res.status(400).json({
           success: false,
@@ -104,12 +82,11 @@ class PostController {
         category: category || 'geral',
         tags: tags || [],
         imageUrl: imageUrl || '',
-        published: false, // Por padrão, posts são criados como rascunho
+        published: false,
       };
 
       const post = await this.postRepository.create(postData);
 
-      // Emite evento de criação
       await this.eventSystem.emit('post.created', {
         id: post.id,
         title: post.title,
@@ -130,10 +107,6 @@ class PostController {
     }
   }
 
-  /**
-   * PUT /posts/:id
-   * Atualiza um post existente
-   */
   async updatePost(req, res) {
     try {
       const { id } = req.params;
@@ -155,10 +128,6 @@ class PostController {
     }
   }
 
-  /**
-   * DELETE /posts/:id
-   * Remove um post
-   */
   async deletePost(req, res) {
     try {
       const { id } = req.params;
@@ -178,10 +147,6 @@ class PostController {
     }
   }
 
-  /**
-   * POST /posts/:id/publish
-   * Publica um post
-   */
   async publishPost(req, res) {
     try {
       const { id } = req.params;
@@ -190,7 +155,6 @@ class PostController {
 
       const post = await this.postRepository.findById(id);
 
-      // Emite evento de publicação
       await this.eventSystem.emit('post.published', {
         id: post.id,
         title: post.title,
@@ -210,10 +174,6 @@ class PostController {
     }
   }
 
-  /**
-   * POST /posts/:id/unpublish
-   * Despublica um post
-   */
   async unpublishPost(req, res) {
     try {
       const { id } = req.params;
@@ -233,10 +193,6 @@ class PostController {
     }
   }
 
-  /**
-   * POST /posts/:id/like
-   * Incrementa likes de um post
-   */
   async likePost(req, res) {
     try {
       const { id } = req.params;
@@ -257,10 +213,6 @@ class PostController {
     }
   }
 
-  /**
-   * GET /posts/author/:authorId
-   * Lista posts de um autor específico
-   */
   async getPostsByAuthor(req, res) {
     try {
       const { authorId } = req.params;

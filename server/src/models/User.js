@@ -1,29 +1,19 @@
-/**
- * Model: User
- *
- * Representa a estrutura de dados de um usuário no sistema.
- * Este modelo define as propriedades básicas e métodos auxiliares
- * para manipulação de dados de usuários.
- */
-
 class User {
   constructor(data) {
     this.uid = data.uid || null;
     this.email = data.email || '';
     this.displayName = data.displayName || '';
-    this.userType = data.userType || 'paciente'; // 'paciente' ou 'psicologo'
+    this.userType = data.userType || 'paciente';
     this.createdAt = data.createdAt || new Date();
     this.updatedAt = data.updatedAt || new Date();
     this.isActive = data.isActive !== undefined ? data.isActive : true;
 
-    // Dados específicos de paciente
     if (this.userType === 'paciente') {
       this.idade = data.idade || null;
       this.genero = data.genero || '';
       this.telefone = data.telefone || '';
     }
 
-    // Dados específicos de psicólogo
     if (this.userType === 'psicologo') {
       this.crp = data.crp || '';
       this.especialidade = data.especialidade || '';
@@ -33,9 +23,6 @@ class User {
     }
   }
 
-  /**
-   * Converte o modelo para um objeto simples (para salvar no Firebase)
-   */
   toFirestore() {
     const data = {
       uid: this.uid,
@@ -47,7 +34,6 @@ class User {
       isActive: this.isActive,
     };
 
-    // Adiciona campos específicos do tipo de usuário
     if (this.userType === 'paciente') {
       data.idade = this.idade;
       data.genero = this.genero;
@@ -63,17 +49,11 @@ class User {
     return data;
   }
 
-  /**
-   * Cria uma instância de User a partir de dados do Firestore
-   */
   static fromFirestore(doc) {
     const data = doc.data();
     return new User({ ...data, uid: doc.id });
   }
 
-  /**
-   * Valida se os dados do usuário são válidos
-   */
   validate() {
     const errors = [];
 
@@ -99,13 +79,10 @@ class User {
     };
   }
 
-  /**
-   * Retorna representação pública do usuário (sem dados sensíveis)
-   */
   toPublic() {
     const publicData = {
       uid: this.uid,
-      email: this.email, // Email necessário para operações como conexão paciente-psicólogo
+      email: this.email,
       displayName: this.displayName,
       userType: this.userType,
     };

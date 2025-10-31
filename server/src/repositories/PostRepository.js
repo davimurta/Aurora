@@ -1,25 +1,6 @@
-/**
- * PostRepository - Usando Firebase CLIENT SDK
- *
- * Padrão: REPOSITORY PATTERN
- *
- * SOLUÇÃO SIMPLES: Removida dependência do Admin SDK
- * Agora usa apenas o Client SDK (sem problemas de permissão!)
- *
- * Propósito: Encapsula toda a lógica de acesso a dados relacionada a posts/artigos,
- * abstraindo os detalhes de persistência do Firebase.
- *
- * Benefícios:
- * - Separação de responsabilidades
- * - Facilita testes
- * - Facilita mudança de banco de dados
- * - Centraliza queries complexas
- */
-
 const firebase = require('../config/firebase');
 const Post = require('../models/Post');
 
-// Importa funções do Firebase Client SDK
 const {
   collection,
   doc,
@@ -41,9 +22,6 @@ class PostRepository {
     this.collectionName = 'posts';
   }
 
-  /**
-   * Busca todos os posts
-   */
   async findAll(limitCount = 50) {
     try {
       const postsRef = collection(this.db, this.collectionName);
@@ -62,18 +40,12 @@ class PostRepository {
     }
   }
 
-  /**
-   * Busca posts publicados
-   * NOTA: Filtra em memória para evitar necessidade de índice composto no Firestore
-   */
   async findPublished(limitCount = 50) {
     try {
       const postsRef = collection(this.db, this.collectionName);
-      // Busca mais documentos para compensar a filtragem em memória
       const q = query(postsRef, orderBy('createdAt', 'desc'), limit(limitCount * 2));
       const snapshot = await getDocs(q);
 
-      // Filtra posts publicados em memória e aplica o limite
       const publishedPosts = snapshot.docs
         .filter((doc) => doc.data().published === true)
         .slice(0, limitCount)
@@ -91,9 +63,6 @@ class PostRepository {
     }
   }
 
-  /**
-   * Busca um post por ID
-   */
   async findById(postId) {
     try {
       const docRef = doc(this.db, this.collectionName, postId);
@@ -113,9 +82,6 @@ class PostRepository {
     }
   }
 
-  /**
-   * Busca posts por autor
-   */
   async findByAuthor(authorId) {
     try {
       const postsRef = collection(this.db, this.collectionName);
@@ -138,18 +104,12 @@ class PostRepository {
     }
   }
 
-  /**
-   * Busca posts por categoria
-   * NOTA: Filtra em memória para evitar necessidade de índice composto no Firestore
-   */
   async findByCategory(category) {
     try {
       const postsRef = collection(this.db, this.collectionName);
-      // Busca todos os posts ordenados por data
       const q = query(postsRef, orderBy('createdAt', 'desc'));
       const snapshot = await getDocs(q);
 
-      // Filtra por categoria e publicados em memória
       return snapshot.docs
         .filter((doc) => {
           const data = doc.data();
@@ -167,18 +127,12 @@ class PostRepository {
     }
   }
 
-  /**
-   * Busca posts por tag
-   * NOTA: Filtra em memória para evitar necessidade de índice composto no Firestore
-   */
   async findByTag(tag) {
     try {
       const postsRef = collection(this.db, this.collectionName);
-      // Busca todos os posts ordenados por data
       const q = query(postsRef, orderBy('createdAt', 'desc'));
       const snapshot = await getDocs(q);
 
-      // Filtra por tag e publicados em memória
       return snapshot.docs
         .filter((doc) => {
           const data = doc.data();
@@ -196,23 +150,17 @@ class PostRepository {
     }
   }
 
-  /**
-   * Cria um novo post
-   */
   async create(postData) {
     try {
       const post = new Post(postData);
 
-      // Gera excerpt se não existir
       post.generateExcerpt();
 
-      // Valida os dados
       const validation = post.validate();
       if (!validation.isValid) {
         throw new Error(`Dados inválidos: ${validation.errors.join(', ')}`);
       }
 
-      // Salva no Firestore
       const postsRef = collection(this.db, this.collectionName);
       const docRef = await addDoc(postsRef, post.toFirestore());
 
@@ -224,9 +172,6 @@ class PostRepository {
     }
   }
 
-  /**
-   * Atualiza um post existente
-   */
   async update(postId, postData) {
     try {
       const docRef = doc(this.db, this.collectionName, postId);
@@ -236,21 +181,17 @@ class PostRepository {
         throw new Error('Post não encontrado');
       }
 
-      // Mescla dados existentes com novos dados
       const existingData = docSnap.data();
       const updatedPost = new Post({ ...existingData, ...postData, id: postId });
       updatedPost.updatedAt = new Date();
 
-      // Gera excerpt se não existir
       updatedPost.generateExcerpt();
 
-      // Valida os dados
       const validation = updatedPost.validate();
       if (!validation.isValid) {
         throw new Error(`Dados inválidos: ${validation.errors.join(', ')}`);
       }
 
-      // Atualiza no Firestore
       await updateDoc(docRef, updatedPost.toFirestore());
 
       return updatedPost;
@@ -259,9 +200,6 @@ class PostRepository {
     }
   }
 
-  /**
-   * Remove um post
-   */
   async delete(postId) {
     try {
       const docRef = doc(this.db, this.collectionName, postId);
@@ -278,9 +216,6 @@ class PostRepository {
     }
   }
 
-  /**
-   * Incrementa visualizações de um post
-   */
   async incrementViews(postId) {
     try {
       const docRef = doc(this.db, this.collectionName, postId);
@@ -308,9 +243,6 @@ class PostRepository {
     }
   }
 
-  /**
-   * Incrementa likes de um post
-   */
   async incrementLikes(postId) {
     try {
       const docRef = doc(this.db, this.collectionName, postId);
@@ -338,9 +270,6 @@ class PostRepository {
     }
   }
 
-  /**
-   * Publica ou despublica um post
-   */
   async togglePublish(postId, published) {
     try {
       const docRef = doc(this.db, this.collectionName, postId);

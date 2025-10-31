@@ -1,12 +1,3 @@
-/**
- * EmotionalRegister Model
- *
- * Modelo que representa um registro emocional diário do paciente
- *
- * Propósito: Encapsular dados de registros emocionais (humor, intensidade, diário)
- * com validações e métodos úteis para conversão de/para Firestore
- */
-
 class EmotionalRegister {
   constructor(data = {}) {
     this.id = data.id || null;
@@ -20,9 +11,6 @@ class EmotionalRegister {
     this.updatedAt = data.updatedAt || new Date();
   }
 
-  /**
-   * Valida os dados do registro emocional
-   */
   validate() {
     const errors = [];
 
@@ -60,9 +48,6 @@ class EmotionalRegister {
     };
   }
 
-  /**
-   * Converte para formato do Firestore
-   */
   toFirestore() {
     return {
       id: this.id,
@@ -77,9 +62,6 @@ class EmotionalRegister {
     };
   }
 
-  /**
-   * Cria uma instância a partir de um documento do Firestore
-   */
   static fromFirestore(doc) {
     if (!doc.exists) {
       return null;
@@ -92,9 +74,6 @@ class EmotionalRegister {
     });
   }
 
-  /**
-   * Retorna objeto com dados públicos (sem informações sensíveis)
-   */
   toPublic() {
     return {
       id: this.id,
@@ -109,9 +88,6 @@ class EmotionalRegister {
     };
   }
 
-  /**
-   * Retorna label do humor a partir do ID
-   */
   static getMoodLabel(moodId) {
     const moods = {
       1: 'Muito triste',
@@ -124,9 +100,6 @@ class EmotionalRegister {
     return moods[moodId] || 'Neutro';
   }
 
-  /**
-   * Formata data para chave de documento
-   */
   static formatDateKey(year, month, day) {
     const monthStr = String(month + 1).padStart(2, '0');
     const dayStr = String(day).padStart(2, '0');

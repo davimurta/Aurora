@@ -1,11 +1,3 @@
-/**
- * Model: Post (Artigo de Blog)
- *
- * Representa a estrutura de dados de um post/artigo no sistema.
- * Este modelo é usado principalmente por psicólogos para
- * compartilhar conteúdo educacional.
- */
-
 class Post {
   constructor(data) {
     this.id = data.id || null;
@@ -24,9 +16,6 @@ class Post {
     this.updatedAt = data.updatedAt || new Date();
   }
 
-  /**
-   * Converte o modelo para um objeto simples (para salvar no Firebase)
-   */
   toFirestore() {
     return {
       title: this.title,
@@ -45,17 +34,11 @@ class Post {
     };
   }
 
-  /**
-   * Cria uma instância de Post a partir de dados do Firestore
-   */
   static fromFirestore(doc) {
     const data = doc.data();
     return new Post({ ...data, id: doc.id });
   }
 
-  /**
-   * Valida se os dados do post são válidos
-   */
   validate() {
     const errors = [];
 
@@ -85,42 +68,27 @@ class Post {
     };
   }
 
-  /**
-   * Gera um excerpt automático a partir do conteúdo se não existir
-   */
   generateExcerpt() {
     if (!this.excerpt && this.content) {
       this.excerpt = this.content.substring(0, 150) + '...';
     }
   }
 
-  /**
-   * Incrementa o contador de visualizações
-   */
   incrementViews() {
     this.views += 1;
     this.updatedAt = new Date();
   }
 
-  /**
-   * Incrementa o contador de likes
-   */
   incrementLikes() {
     this.likes += 1;
     this.updatedAt = new Date();
   }
 
-  /**
-   * Publica o post
-   */
   publish() {
     this.published = true;
     this.updatedAt = new Date();
   }
 
-  /**
-   * Despublica o post
-   */
   unpublish() {
     this.published = false;
     this.updatedAt = new Date();

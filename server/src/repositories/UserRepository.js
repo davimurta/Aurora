@@ -1,27 +1,6 @@
-/**
- * UserRepository - Usando Firebase CLIENT SDK
- *
- * Padrão: REPOSITORY PATTERN
- *
- * SOLUÇÃO SIMPLES: Removida dependência do Admin SDK
- * Agora usa apenas o Client SDK (sem problemas de permissão!)
- *
- * Propósito: Encapsula toda a lógica de acesso a dados relacionada a usuários,
- * abstraindo os detalhes de persistência do Firebase. Isso permite que o código
- * de negócios (controllers/services) não precise conhecer os detalhes de como
- * os dados são armazenados ou recuperados.
- *
- * Benefícios:
- * - Separação de responsabilidades (SRP)
- * - Facilita testes (pode ser mockado)
- * - Facilita mudança de banco de dados no futuro
- * - Centraliza queries e operações de dados
- */
-
 const firebase = require('../config/firebase');
 const User = require('../models/User');
 
-// Importa funções do Firebase Client SDK
 const {
   collection,
   doc,
@@ -42,9 +21,6 @@ class UserRepository {
     this.collectionName = 'users';
   }
 
-  /**
-   * Busca todos os usuários
-   */
   async findAll() {
     try {
       const usersRef = collection(this.db, this.collectionName);
@@ -62,9 +38,6 @@ class UserRepository {
     }
   }
 
-  /**
-   * Busca um usuário por ID
-   */
   async findById(uid) {
     try {
       const docRef = doc(this.db, this.collectionName, uid);
@@ -84,9 +57,6 @@ class UserRepository {
     }
   }
 
-  /**
-   * Busca um usuário por email
-   */
   async findByEmail(email) {
     try {
       const usersRef = collection(this.db, this.collectionName);
@@ -108,9 +78,6 @@ class UserRepository {
     }
   }
 
-  /**
-   * Busca usuários por tipo (paciente ou psicologo)
-   */
   async findByType(userType) {
     try {
       const usersRef = collection(this.db, this.collectionName);
@@ -129,9 +96,6 @@ class UserRepository {
     }
   }
 
-  /**
-   * Busca psicólogos aprovados
-   */
   async findApprovedPsychologists() {
     try {
       const usersRef = collection(this.db, this.collectionName);
@@ -154,20 +118,15 @@ class UserRepository {
     }
   }
 
-  /**
-   * Cria um novo usuário
-   */
   async create(userData) {
     try {
       const user = new User(userData);
 
-      // Valida os dados
       const validation = user.validate();
       if (!validation.isValid) {
         throw new Error(`Dados inválidos: ${validation.errors.join(', ')}`);
       }
 
-      // Salva no Firestore usando o UID do Firebase Auth
       const docRef = doc(this.db, this.collectionName, user.uid);
       await setDoc(docRef, user.toFirestore());
 
@@ -177,9 +136,6 @@ class UserRepository {
     }
   }
 
-  /**
-   * Atualiza um usuário existente
-   */
   async update(uid, userData) {
     try {
       const docRef = doc(this.db, this.collectionName, uid);
@@ -189,18 +145,15 @@ class UserRepository {
         throw new Error('Usuário não encontrado');
       }
 
-      // Mescla dados existentes com novos dados
       const existingData = docSnap.data();
       const updatedUser = new User({ ...existingData, ...userData, uid });
       updatedUser.updatedAt = new Date();
 
-      // Valida os dados
       const validation = updatedUser.validate();
       if (!validation.isValid) {
         throw new Error(`Dados inválidos: ${validation.errors.join(', ')}`);
       }
 
-      // Atualiza no Firestore
       await updateDoc(docRef, updatedUser.toFirestore());
 
       return updatedUser;
@@ -209,9 +162,6 @@ class UserRepository {
     }
   }
 
-  /**
-   * Remove um usuário (soft delete)
-   */
   async delete(uid) {
     try {
       const docRef = doc(this.db, this.collectionName, uid);
@@ -221,7 +171,6 @@ class UserRepository {
         throw new Error('Usuário não encontrado');
       }
 
-      // Soft delete - marca como inativo
       await updateDoc(docRef, {
         isActive: false,
         updatedAt: new Date(),
@@ -233,9 +182,6 @@ class UserRepository {
     }
   }
 
-  /**
-   * Remove permanentemente um usuário
-   */
   async hardDelete(uid) {
     try {
       const docRef = doc(this.db, this.collectionName, uid);
@@ -246,9 +192,6 @@ class UserRepository {
     }
   }
 
-  /**
-   * Aprova um psicólogo
-   */
   async approvePsychologist(uid) {
     try {
       const docRef = doc(this.db, this.collectionName, uid);

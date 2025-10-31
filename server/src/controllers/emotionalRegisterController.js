@@ -1,9 +1,3 @@
-/**
- * EmotionalRegisterController
- *
- * Gerencia as requisições HTTP relacionadas a registros emocionais
- */
-
 const EmotionalRegisterRepository = require('../repositories/EmotionalRegisterRepository');
 
 class EmotionalRegisterController {
@@ -11,10 +5,6 @@ class EmotionalRegisterController {
     this.repository = new EmotionalRegisterRepository();
   }
 
-  /**
-   * GET /api/registers/:userId
-   * Busca todos os registros de um usuário
-   */
   async getUserRegisters(req, res) {
     try {
       const { userId } = req.params;
@@ -43,10 +33,6 @@ class EmotionalRegisterController {
     }
   }
 
-  /**
-   * GET /api/registers/:userId/month/:year/:month
-   * Busca registros de um usuário em um mês específico
-   */
   async getRegistersByMonth(req, res) {
     try {
       const { userId, year, month } = req.params;
@@ -86,10 +72,6 @@ class EmotionalRegisterController {
     }
   }
 
-  /**
-   * GET /api/registers/:userId/date/:date
-   * Busca um registro específico por data
-   */
   async getRegisterByDate(req, res) {
     try {
       const { userId, date } = req.params;
@@ -101,7 +83,6 @@ class EmotionalRegisterController {
         });
       }
 
-      // Valida formato da data (YYYY-MM-DD)
       if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
         return res.status(400).json({
           success: false,
@@ -131,10 +112,6 @@ class EmotionalRegisterController {
     }
   }
 
-  /**
-   * POST /api/registers
-   * Cria ou atualiza um registro emocional
-   */
   async saveRegister(req, res) {
     try {
       const { userId, selectedMood, moodId, intensityValue, diaryText, date } = req.body;
@@ -146,7 +123,6 @@ class EmotionalRegisterController {
         });
       }
 
-      // Se data não foi fornecida, usa data atual
       const registerDate = date || new Date().toISOString().split('T')[0];
 
       const registerData = {
@@ -174,10 +150,6 @@ class EmotionalRegisterController {
     }
   }
 
-  /**
-   * DELETE /api/registers/:userId/date/:date
-   * Remove um registro
-   */
   async deleteRegister(req, res) {
     try {
       const { userId, date } = req.params;
@@ -212,10 +184,6 @@ class EmotionalRegisterController {
     }
   }
 
-  /**
-   * GET /api/registers/:userId/statistics/:year/:month
-   * Retorna estatísticas do mês
-   */
   async getMonthStatistics(req, res) {
     try {
       const { userId, year, month } = req.params;

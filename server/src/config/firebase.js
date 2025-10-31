@@ -1,21 +1,10 @@
-/**
- * Configuração Firebase com Singleton Pattern - CLIENT SDK
- *
- * Padrão GoF: SINGLETON
- *
- * SOLUÇÃO SIMPLES: Usa Firebase Client SDK em vez de Admin SDK
- * Isso elimina TODOS os problemas de permissão!
- */
-
 require('dotenv').config();
 
-// Importa Firebase CLIENT SDK (não Admin!)
 const { initializeApp } = require('firebase/app');
 const { getAuth } = require('firebase/auth');
 const { getFirestore } = require('firebase/firestore');
 const { getStorage } = require('firebase/storage');
 
-// Configuração do Firebase CLIENT (as credenciais que você forneceu!)
 const firebaseConfig = {
   apiKey: process.env.FIREBASE_API_KEY || "AIzaSyCawFSSzDXVeIVz4iyyFJ1KOsy4jmT0Zj4",
   authDomain: process.env.FIREBASE_AUTH_DOMAIN || "aurora-482f9.firebaseapp.com",
@@ -32,7 +21,6 @@ class FirebaseConnection {
     }
 
     try {
-      // Inicializa Firebase CLIENT SDK
       this.app = initializeApp(firebaseConfig);
       this.auth = getAuth(this.app);
       this.db = getFirestore(this.app);
