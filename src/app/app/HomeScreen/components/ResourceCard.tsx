@@ -97,16 +97,4 @@ export const dailyResources: DailyResource[] = [
     icon: 'tips-and-updates',
     route: '/app/WellnessTipsScreen/WellnessTipsScreen',
   },
-  {
-    id: '4',
-    title: 'Técnicas de Relaxamento',
-    icon: 'spa',
-    route: '/app/RelaxationScreen/RelaxationScreen',
-  },
-  {
-    id: '5',
-    title: 'Meditação Guiada',
-    icon: 'self-improvement',
-    route: '/app/MeditationScreen/MeditationScreen',
-  },
 ];
