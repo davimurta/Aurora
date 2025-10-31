@@ -1,29 +1,14 @@
 import React, { useEffect } from 'react';
-import { Stack, useRouter, useSegments } from 'expo-router';
+import { Stack, useRouter, Redirect } from 'expo-router';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { useAuthController } from '../../hooks/useAuthController';
 
 /**
  * Layout protegido para todas as rotas do app
- * Verifica autenticação e redireciona para login se necessário
+ * Verifica autenticação e bloqueia acesso se não autenticado
  */
 export default function AppLayout() {
   const { user, loading } = useAuthController();
-  const router = useRouter();
-  const segments = useSegments();
-
-  useEffect(() => {
-    // Aguarda o carregamento inicial da autenticação
-    if (loading) return;
-
-    // Se não houver usuário autenticado, redireciona para login
-    if (!user) {
-      console.log('🔒 [AppLayout] Usuário não autenticado, redirecionando para login');
-      router.replace('/auth/LoginScreen/LoginScreen');
-    } else {
-      console.log('✅ [AppLayout] Usuário autenticado:', user.uid);
-    }
-  }, [user, loading]);
 
   // Mostra loading enquanto verifica autenticação
   if (loading) {
@@ -34,14 +19,13 @@ export default function AppLayout() {
     );
   }
 
-  // Se não houver usuário, não renderiza nada (redirecionamento já foi iniciado)
+  // Se não houver usuário, redireciona para SplashScreen (que leva ao login)
   if (!user) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#4ECDC4" />
-      </View>
-    );
+    console.log('🔒 [AppLayout] Bloqueando acesso - usuário não autenticado');
+    return <Redirect href="/" />;
   }
+
+  console.log('✅ [AppLayout] Acesso permitido - usuário:', user.uid);
 
   // Renderiza as rotas protegidas
   return (
