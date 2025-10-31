@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Stack, useRouter } from 'expo-router';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
-import { useAuthController } from '@hooks/useAuthController';
+import { useAuthController } from '../../hooks/useAuthController';
 
 /**
  * Layout para rotas de autenticação
