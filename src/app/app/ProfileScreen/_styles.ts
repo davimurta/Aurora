@@ -248,3 +248,5 @@ export const styles = StyleSheet.create({
     height: 20,
   },
 });
+
+export default styles

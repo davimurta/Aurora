@@ -251,3 +251,5 @@ dayWithDataText: {
     textAlign: 'center',
   },
 });
+
+export default styles

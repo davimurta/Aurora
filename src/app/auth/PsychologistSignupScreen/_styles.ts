@@ -229,3 +229,5 @@ export const styles = StyleSheet.create({
     color: '#2C3E50',
   },
 });
+
+export default styles

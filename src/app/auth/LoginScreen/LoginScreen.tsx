@@ -197,28 +197,7 @@ const Login: React.FC = () => {
               </View>
             </View>
 
-            {/* Form Section */}
             <View style={styles.formSection}>
-              {/* Google Login Button */}
-              <Pressable 
-                style={[styles.googleLogin, styles.shadowButton]}
-                onPress={handleGoogleLogin}
-                android_ripple={{ color: '#f0f0f0' }}
-              >
-                <Image
-                  source={require("@assets/images/google.png")}
-                  style={styles.googleIcon}
-                />
-                <Text style={styles.googleLoginText}>Continuar com o Google</Text>
-              </Pressable>
-
-              {/* Divider */}
-              <View style={styles.dividerContainer}>
-                <View style={styles.dividerLine} />
-                <Text style={styles.dividerText}>ou</Text>
-                <View style={styles.dividerLine} />
-              </View>
-
               {/* Email Input */}
               <View style={styles.inputContainer}>
                 <Text style={styles.inputLabel}>Email</Text>

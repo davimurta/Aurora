@@ -51,3 +51,5 @@ export const styles = StyleSheet.create({
     marginTop: 50,
   },
 });
+
+export default styles

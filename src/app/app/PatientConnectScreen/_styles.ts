@@ -234,3 +234,5 @@ export const styles = StyleSheet.create({
     color: "#4ECDC4",
   },
 });
+
+export default styles

@@ -39,7 +39,6 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
     marginLeft: 8,
-    outlineStyle: 'none',
   },
   divider: {
     height: 2,
@@ -58,7 +57,6 @@ export const styles = StyleSheet.create({
     height: 40,
     alignItems: "center",
     justifyContent: "center",
-    display: "flex",
     flexDirection: "row",
     gap: 20,
     marginBottom: 20,
@@ -96,3 +94,5 @@ export const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
+
+export default styles

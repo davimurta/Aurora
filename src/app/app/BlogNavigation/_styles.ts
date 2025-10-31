@@ -350,3 +350,5 @@ export const getResponsiveStyles = () => {
 };
 
 export { responsive };
+
+export default styles
