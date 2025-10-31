@@ -1,0 +1,36 @@
+{
+  "name": "aurora-backend",
+  "version": "1.0.0",
+  "description": "Backend Node.js + Express para o aplicativo Aurora (Saúde Mental)",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "nodejs",
+    "express",
+    "firebase",
+    "rest-api",
+    "design-patterns",
+    "mvc",
+    "repository-pattern"
+  ],
+  "author": "Equipe Aurora",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "morgan": "^1.10.0",
+    "firebase": "^11.10.0",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}

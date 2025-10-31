@@ -1,0 +1,277 @@
+import { StyleSheet } from 'react-native'
+
+export const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F5F5F5',
+  },
+  content: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingBottom: 20,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    backgroundColor: '#FFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#F0F0F0',
+  },
+  backButton: {
+    padding: 4,
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#333',
+  },
+  headerPlaceholder: {
+    width: 32,
+  },
+  profileSection: {
+    backgroundColor: '#FFF',
+    alignItems: 'center',
+    paddingVertical: 32,
+    marginBottom: 16,
+  },
+  profileAvatar: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  profileName: {
+    fontSize: 24,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 20,
+  },
+  reportButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#4ECDC4',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 12,
+    shadowColor: '#4ECDC4',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  reportButtonIcon: {
+    marginRight: 8,
+  },
+  reportButtonText: {
+    color: '#FFF',
+    fontSize: 15,
+    fontWeight: '600',
+  },
+  section: {
+    backgroundColor: '#FFF',
+    marginBottom: 16,
+    paddingVertical: 20,
+    paddingHorizontal: 20,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 16,
+  },
+  calendarCard: {
+    backgroundColor: '#F8F9FA',
+    borderRadius: 12,
+    padding: 16,
+  },
+  calendarHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
+  monthYear: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: '#333',
+  },
+  weekDaysContainer: {
+    flexDirection: 'row',
+    marginBottom: 12,
+  },
+  weekDay: {
+    flex: 1,
+    textAlign: 'center',
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#666',
+  },
+  calendarGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  dayCell: {
+    width: '14.28%',
+    aspectRatio: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 8,
+  },
+  dayText: {
+    fontSize: 15,
+    color: '#333',
+  },
+  selectedDay: {
+    backgroundColor: '#4ECDC4',
+    borderRadius: 8,
+  },
+  selectedDayText: {
+    color: '#FFF',
+    fontWeight: '600',
+  },
+  dayWithData: {
+    backgroundColor: '#E3F2FD',
+    borderRadius: 8,
+  },
+  dayWithDataText: {
+    color: '#4ECDC4',
+    fontWeight: '600',
+  },
+  registerDetails: {
+    marginTop: 20,
+  },
+  moodCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F8F9FA',
+    padding: 20,
+    borderRadius: 12,
+    marginBottom: 16,
+  },
+  moodIcon: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: '#FFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  moodEmoji: {
+    fontSize: 36,
+  },
+  moodInfo: {
+    flex: 1,
+  },
+  moodLabel: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 6,
+  },
+  intensityPercentage: {
+    fontSize: 15,
+    color: '#4ECDC4',
+    fontWeight: '600',
+  },
+  diaryCard: {
+    backgroundColor: '#F8F9FA',
+    padding: 20,
+    borderRadius: 12,
+  },
+  diaryHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  diaryTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+    marginLeft: 8,
+  },
+  diaryText: {
+    fontSize: 15,
+    color: '#666',
+    lineHeight: 24,
+    marginBottom: 12,
+  },
+  diaryDate: {
+    fontSize: 13,
+    color: '#999',
+    textAlign: 'right',
+  },
+  emptyStateCard: {
+    alignItems: 'center',
+    paddingVertical: 40,
+    marginTop: 20,
+  },
+  emptyStateText: {
+    marginTop: 16,
+    fontSize: 15,
+    color: '#999',
+    textAlign: 'center',
+    lineHeight: 22,
+  },
+  notesSectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  notesList: {
+    gap: 12,
+  },
+  noteItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#F8F9FA',
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+  },
+  noteItemLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  noteItemText: {
+    fontSize: 15,
+    color: '#333',
+    marginLeft: 12,
+    fontWeight: '500',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5F5F5',
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: '#666',
+  },
+  bottomSpacing: {
+    height: 20,
+  },
+})
+
+export default styles

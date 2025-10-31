@@ -41,38 +41,65 @@ Certifique-se de ter as seguintes ferramentas instaladas:
    cd aurora
    ```
 
-2. **Instale as dependências**
+2. **Instale as dependências do CLIENT**
    ```bash
+   cd client
    npm install
    ```
 
-3. **Configure as variáveis de ambiente**
+3. **Instale as dependências do SERVER**
    ```bash
+   cd ../server
+   npm install
+   ```
+
+4. **Configure as variáveis de ambiente**
+   ```bash
+   # Na raiz do projeto
+   cd ..
    cp .env.example .env
    # Edite o arquivo .env com suas configurações
    ```
 
-4. **Execute o projeto**
+5. **Execute o BACKEND**
    ```bash
-   npx expo start
+   cd server
+   npm run dev
    ```
 
-5. **Abra o app**
+6. **Execute o FRONTEND (em outro terminal)**
+   ```bash
+   cd client
+   npm run web     # Para web
+   # ou
+   npm start       # Para mobile (Expo)
+   ```
+
+7. **Abra o app**
+   - **Web**: Abrirá automaticamente no navegador
    - **Expo Go**: Escaneie o QR code com o app Expo Go
    - **Emulador**: Pressione `a` para Android ou `i` para iOS
-   - **Web**: Pressione `w` para abrir no navegador
 
 ---
 
 ## 📦 Tecnologias
 
+### Frontend (Client)
 | Tecnologia | Versão | Descrição |
 |------------|--------|-----------|
 | React Native | Latest | Framework para desenvolvimento mobile |
-| Expo | Latest | Plataforma para desenvolvimento React Native |
+| Expo Router | Latest | Sistema de navegação baseado em arquivos |
 | TypeScript | Latest | Superset do JavaScript com tipagem estática |
-| Firebase | Latest | Backend-as-a-Service para autenticação e database |
+| Firebase Client SDK | Latest | Autenticação e serviços |
+| Axios | Latest | Cliente HTTP |
+
+### Backend (Server)
+| Tecnologia | Versão | Descrição |
+|------------|--------|-----------|
 | Node.js | v18+ | Ambiente de execução JavaScript |
+| Express.js | Latest | Framework web minimalista |
+| Firebase Admin SDK | Latest | Gerenciamento de usuários e auth |
+| Firestore | Latest | Banco de dados NoSQL |
 
 ---
 
@@ -80,40 +107,41 @@ Certifique-se de ter as seguintes ferramentas instaladas:
 
 ```
 aurora/
-├── src/
-│   ├── app/         # Arquivo principal e configurações da aplicação
-│   │   └── index.tsx
-│   ├── components/  # Componentes reutilizáveis
-│   │   ├── Button/
-│   │   ├── Input/
-│   │   ├── Charts/
-│   │   └── ...
-│   ├── screens/     # Telas principais do app
-│   │   ├── Auth/
-│   │   │   ├── Login/
-│   │   │   ├── Register/
-│   │   │   └── ...
-│   │   ├── Patient/
-│   │   │   ├── Dashboard/
-│   │   │   ├── WellnessLog/
-│   │   │   └── ...
-│   │   ├── Psychologist/
-│   │   │   ├── Dashboard/
-│   │   │   ├── BlogManager/
-│   │   │   └── ...
-│   │   └── Shared/
-│   ├── services/    # Serviços e APIs
-│   │   ├── firebase/
-│   │   ├── auth/
-│   │   └── api/
-│   ├── utils/       # Funções utilitárias
-│   ├── types/       # Definições de tipos TypeScript
-│   └── constants/   # Constantes da aplicação
-├── assets/          # Imagens, fontes e outros recursos
-├── .env.example     # Exemplo de variáveis de ambiente
-├── app.json         # Configurações do Expo
-├── package.json     # Dependências e scripts
-└── README.md        # Documentação do projeto
+├── client/                      # Frontend React Native + Expo
+│   ├── src/
+│   │   ├── app/                 # Rotas do Expo Router
+│   │   │   ├── app/             # Rotas protegidas (após login)
+│   │   │   ├── auth/            # Rotas de autenticação
+│   │   │   ├── _layout.tsx      # Layout raiz
+│   │   │   └── index.tsx        # Entrada (SplashScreen)
+│   │   ├── components/          # Componentes reutilizáveis
+│   │   ├── controllers/         # Lógica de negócio
+│   │   ├── hooks/               # Custom hooks
+│   │   ├── models/              # Modelos de dados
+│   │   ├── services/            # APIs e serviços
+│   │   ├── theme/               # Tema e estilos
+│   │   └── types/               # Tipos TypeScript
+│   ├── assets/                  # Imagens e recursos
+│   ├── app.json                 # Configuração Expo
+│   ├── package.json             # Dependências client
+│   └── README.md                # Docs do client
+│
+├── server/                      # Backend Express.js + Firebase
+│   ├── src/
+│   │   ├── controllers/         # Controladores de rotas
+│   │   ├── models/              # Modelos de dados
+│   │   ├── repositories/        # Acesso a dados
+│   │   ├── routes/              # Definição de rotas
+│   │   ├── services/            # Lógica de negócio
+│   │   └── index.js             # Entrada do servidor
+│   ├── package.json             # Dependências server
+│   └── README.md                # Docs do server
+│
+├── .env.example                 # Exemplo de variáveis de ambiente
+├── .gitignore                   # Arquivos ignorados pelo Git
+├── README.md                    # Documentação principal
+├── INTEGRATION_GUIDE.md         # Guia de integração
+└── FUNCIONALIDADES_IMPLEMENTADAS.md  # Status das features
 ```
 
 ### Diagrama de classes
@@ -155,15 +183,21 @@ ANALYTICS_KEY=sua_chave_analytics
 
 ## 🔧 Scripts Disponíveis
 
+### Frontend (client/)
 | Script | Comando | Descrição |
 |--------|---------|-----------|
-| **Desenvolvimento** | `npm start` | Inicia o servidor de desenvolvimento |
+| **Desenvolvimento** | `npm start` | Inicia o Metro bundler |
+| **Web** | `npm run web` | Executa no navegador |
 | **Android** | `npm run android` | Executa no emulador Android |
 | **iOS** | `npm run ios` | Executa no emulador iOS (macOS) |
-| **Web** | `npm run web` | Executa no navegador |
-| **Build** | `npm run build` | Gera build de produção |
 | **Lint** | `npm run lint` | Executa verificação de código |
-| **Test** | `npm test` | Executa testes unitários |
+
+### Backend (server/)
+| Script | Comando | Descrição |
+|--------|---------|-----------|
+| **Desenvolvimento** | `npm run dev` | Inicia servidor com nodemon |
+| **Produção** | `npm start` | Inicia servidor em produção |
+| **Test** | `npm test` | Executa testes (se configurado) |
 
 ---
 

@@ -35,3 +35,12 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+# Client specific
+client/.expo/
+client/dist/
+client/web-build/
+
+# Server specific  
+server/dist/
+server/build/
