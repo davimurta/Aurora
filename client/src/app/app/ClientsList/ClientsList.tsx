@@ -34,15 +34,13 @@ const ClientsList: React.FC = () => {
   const { user, loading: authLoading } = useAuthController()
 
   useEffect(() => {
-    // Só carrega clientes quando o auth terminar de carregar E o user existir
     if (!authLoading && user?.uid) {
       loadClients()
     } else if (!authLoading && !user) {
-      // Auth terminou mas não tem usuário - redireciona para login
       console.log('❌ [ClientsList] Auth carregado mas sem usuário')
       setLoading(false)
     }
-  }, [user?.uid, authLoading]) // Usar user.uid para evitar loop infinito
+  }, [user?.uid, authLoading])
 
   useEffect(() => {
     filterClients()
@@ -53,7 +51,6 @@ const ClientsList: React.FC = () => {
     console.log('🔵 [ClientsList] user:', user)
     console.log('🔵 [ClientsList] authLoading:', authLoading)
 
-    // Esta verificação é redundante, mas mantém por segurança
     if (!user) {
       console.log('❌ [ClientsList] Usuário não encontrado')
       setLoading(false)
@@ -69,7 +66,6 @@ const ClientsList: React.FC = () => {
       console.log('✅ [ClientsList] Resposta recebida:', response)
       console.log('✅ [ClientsList] Número de pacientes:', response.patients?.length || 0)
 
-      // Remove duplicatas baseado no ID do paciente
       const uniquePatients = response.patients.filter((patient, index, self) =>
         index === self.findIndex((p) => p.id === patient.id)
       )

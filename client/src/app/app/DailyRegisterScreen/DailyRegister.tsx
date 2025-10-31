@@ -4,15 +4,12 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
   SafeAreaView,
   ScrollView,
   Dimensions,
   StatusBar,
   Alert,
-  Platform,
   Modal,
-  Animated,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import BottomNavigation from '../../../components/BottonNavigation';
@@ -31,7 +28,7 @@ interface MoodOption {
 
 const DailyRegisterScreen: React.FC = () => {
   const [selectedMood, setSelectedMood] = useState<number | null>(null);
-  const [intensityValue, setIntensityValue] = useState<number>(3); // Agora vai de 1 a 5
+  const [intensityValue, setIntensityValue] = useState<number>(3);
   const [diaryText, setDiaryText] = useState<string>('');
   const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false);
 
@@ -47,7 +44,6 @@ const DailyRegisterScreen: React.FC = () => {
     { id: 6, icon: 'mood', label: 'Radiante', color: '#45B7D1' },
   ];
 
-  // Cores baseadas no valor 1-5
   const getIntensityColor = (value: number): string => {
     const colors = {
       1: '#FF6B6B',
@@ -59,7 +55,6 @@ const DailyRegisterScreen: React.FC = () => {
     return colors[value as keyof typeof colors] || '#FFD93D';
   };
 
-  // Funções de incremento/decremento
   const handleIncrement = () => {
     if (intensityValue < 5) {
       setIntensityValue(intensityValue + 1);
@@ -72,7 +67,6 @@ const DailyRegisterScreen: React.FC = () => {
     }
   };
 
-  // Função para clicar diretamente no valor
   const handleDirectValue = (value: number) => {
     setIntensityValue(value);
   };
@@ -113,7 +107,6 @@ const DailyRegisterScreen: React.FC = () => {
     try {
       const selectedMoodLabel = getMoodLabel(selectedMood!);
 
-      // Converte intensityValue (1-5) para porcentagem (20-100)
       const intensityPercentage = intensityValue * 20;
 
       await saveRegister({
@@ -123,12 +116,10 @@ const DailyRegisterScreen: React.FC = () => {
         diaryText: diaryText.trim(),
       });
 
-      // Limpa os campos ANTES de mostrar o modal
       setSelectedMood(null);
-      setIntensityValue(3); // Valor médio
+      setIntensityValue(3);
       setDiaryText('');
 
-      // Mostra modal de sucesso
       setShowSuccessModal(true);
 
     } catch (error: any) {

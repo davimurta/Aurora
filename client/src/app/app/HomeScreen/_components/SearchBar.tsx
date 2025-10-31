@@ -10,7 +10,6 @@ interface SearchBarProps {
 const SearchBarComponent: React.FC<SearchBarProps> = ({ value, onChangeText }) => {
   const inputRef = useRef<TextInput>(null);
 
-  // Memoriza a função para evitar re-criação
   const handleChangeText = useCallback((text: string) => {
     onChangeText(text);
   }, [onChangeText]);
@@ -35,9 +34,7 @@ const SearchBarComponent: React.FC<SearchBarProps> = ({ value, onChangeText }) =
   );
 };
 
-// Wrap in React.memo with custom comparison to prevent unnecessary re-renders
 export const SearchBar = React.memo(SearchBarComponent, (prevProps, nextProps) => {
-  // Só re-renderiza se o value realmente mudou
   return prevProps.value === nextProps.value;
 });
 

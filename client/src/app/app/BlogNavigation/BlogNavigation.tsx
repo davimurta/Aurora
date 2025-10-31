@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   SafeAreaView,
   TextInput,
-  Dimensions,
   useWindowDimensions,
   ActivityIndicator,
 } from 'react-native';
@@ -41,7 +40,6 @@ const BlogNavigation: React.FC<BlogNavigationProps> = ({
   const [loading, setLoading] = useState(true);
   const { width } = useWindowDimensions();
 
-  // Função de navegação que usa a prop ou o router
   const handleNavigateToPost = (postId: string) => {
     if (onNavigateToPost) {
       onNavigateToPost(postId);
@@ -54,10 +52,8 @@ const BlogNavigation: React.FC<BlogNavigationProps> = ({
     if (onNavigateToAllPosts) {
       onNavigateToAllPosts();
     }
-    // Se não houver prop, não faz nada pois já está na tela de todos os posts
   };
 
-  // Busca posts do backend ao montar o componente
   useEffect(() => {
     loadPosts();
   }, []);
@@ -65,10 +61,9 @@ const BlogNavigation: React.FC<BlogNavigationProps> = ({
   const loadPosts = async () => {
     try {
       setLoading(true);
-      const response = await postsApi.getPosts(50); // Busca até 50 posts
+      const response = await postsApi.getPosts(50);
 
       if (response.success && response.posts) {
-        // Converte posts do backend para formato BlogPost
         const formattedPosts: BlogPost[] = response.posts.map((post: Post, index: number) => ({
           id: post.id,
           title: post.title,
@@ -77,14 +72,13 @@ const BlogNavigation: React.FC<BlogNavigationProps> = ({
           date: new Date(post.createdAt).toLocaleDateString('pt-BR'),
           readTime: `${Math.ceil(post.content.length / 1000)} min`,
           category: post.category || 'Geral',
-          featured: index === 0, // Primeiro post como destaque
+          featured: index === 0,
         }));
 
         setBlogPosts(formattedPosts);
       }
     } catch (error) {
       console.error('Erro ao carregar posts:', error);
-      // Se houver erro, mantém array vazio
       setBlogPosts([]);
     } finally {
       setLoading(false);
@@ -548,7 +542,6 @@ const BlogNavigation: React.FC<BlogNavigationProps> = ({
             </View>
           </>
         ) : (
-          // Search Results
           <View style={{ 
             paddingTop: isSmallScreen ? 16 : 24, 
             paddingHorizontal: horizontalPadding, 

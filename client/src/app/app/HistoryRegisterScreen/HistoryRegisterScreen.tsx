@@ -11,7 +11,6 @@ import {
   SafeAreaView,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { BarChart } from 'react-native-chart-kit';
 import { useEmotionalRegister } from '../../../hooks/useEmotionalRegister';
 import { EmotionalRegister, ChartData } from '../../../models/emotionalRegister';
 import { useAuthController } from '../../../hooks/useAuthController';
@@ -53,7 +52,6 @@ const HistoryRegisterScreen: React.FC = () => {
     if (user) loadMonthData();
   }, [user, currentDate]);
 
-  /** 🔹 Carrega todos os registros do mês atual */
   const loadMonthData = async () => {
     if (!user) {
       Alert.alert('Erro', 'Você precisa estar logado para ver o histórico.');
@@ -71,7 +69,6 @@ const HistoryRegisterScreen: React.FC = () => {
     }
   };
 
-  /** 🔹 Gera os dias do mês atual */
   const getDaysInMonth = (date: Date): (number | null)[] => {
     const year = date.getFullYear();
     const month = date.getMonth();
@@ -86,7 +83,6 @@ const HistoryRegisterScreen: React.FC = () => {
     return days;
   };
 
-  /** 🔹 Troca o mês e recarrega os registros */
   const changeMonth = async (direction: number): Promise<void> => {
     const newDate = new Date(currentDate);
     newDate.setMonth(currentDate.getMonth() + direction);
@@ -101,7 +97,6 @@ const HistoryRegisterScreen: React.FC = () => {
     }
   };
 
-  /** 🔹 Seleciona um dia e mostra detalhes do registro */
   const selectDay = async (day: number | null): Promise<void> => {
     if (!day || !user) return;
     setSelectedDay(day);
@@ -123,7 +118,6 @@ const HistoryRegisterScreen: React.FC = () => {
     }
   };
 
-  /** 🔹 Verifica se há dados para o dia */
   const hasDataForDay = (day: number | null): boolean => {
   if (!day) return false;
 
@@ -133,7 +127,6 @@ const HistoryRegisterScreen: React.FC = () => {
     day
   );
 
-  // 🔍 Debug opcional
   console.log(
     '📅 Verificando dia:',
     dateKey,
@@ -141,11 +134,9 @@ const HistoryRegisterScreen: React.FC = () => {
     monthRegisters.map((r) => r.date)
   );
 
-  // 🔹 Faz comparação exata de strings (sem hora)
   return monthRegisters.some((r) => r.date === dateKey);
 };
 
-  /** 🔹 Emojis dos humores */
   const getMoodEmoji = (mood: string): string => {
     const moodEmojis: Record<string, string> = {
       'Muito triste': '😢',
@@ -177,7 +168,6 @@ const HistoryRegisterScreen: React.FC = () => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* 🔹 Cabeçalho */}
         <View style={styles.header}>
           <TouchableOpacity>
             <Ionicons name="arrow-back" size={24} color="#333" />
@@ -186,7 +176,6 @@ const HistoryRegisterScreen: React.FC = () => {
           <View style={{ width: 24 }} />
         </View>
 
-        {/* 🔹 Mês atual */}
         <View style={styles.calendarHeader}>
           <TouchableOpacity onPress={() => changeMonth(-1)} disabled={loading}>
             <Ionicons name="chevron-back" size={20} color={loading ? '#ccc' : '#666'} />
@@ -201,7 +190,6 @@ const HistoryRegisterScreen: React.FC = () => {
           </TouchableOpacity>
         </View>
 
-        {/* 🔹 Dias da semana */}
         <View style={styles.weekDaysContainer}>
           {weekDays.map((day, index) => (
             <Text key={index} style={styles.weekDay}>
@@ -210,7 +198,6 @@ const HistoryRegisterScreen: React.FC = () => {
           ))}
         </View>
 
-        {/* 🔹 Grade de dias */}
         <View style={styles.calendarGrid}>
           {days.map((day, index) => {
   if (day === null) {
@@ -251,7 +238,6 @@ const HistoryRegisterScreen: React.FC = () => {
 })}
         </View>
 
-        {/* 🔹 Estado de carregamento do dia */}
         {loading && selectedDay && (
           <View style={styles.dayLoadingContainer}>
             <ActivityIndicator size="small" color="#4ECDC4" />
@@ -259,7 +245,6 @@ const HistoryRegisterScreen: React.FC = () => {
           </View>
         )}
 
-        {/* 🔹 Exibição geral ou diária */}
         {!selectedDay ? (
   <View style={styles.chartContainer}>
     <Text style={styles.chartTitle}>Histórico Mensal</Text>

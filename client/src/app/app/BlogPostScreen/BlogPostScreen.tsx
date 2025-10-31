@@ -4,14 +4,13 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
-  StyleSheet,
   SafeAreaView,
   ActivityIndicator,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { styles } from './_styles';
-import { postsApi, Post } from '../../../services/postsApi';
+import { postsApi } from '../../../services/postsApi';
 
 interface BlogPost {
   id: string;
@@ -34,7 +33,6 @@ const BlogPostScreen: React.FC = () => {
   const [currentPost, setCurrentPost] = useState<BlogPost | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // Busca o post da API quando o componente montar
   useEffect(() => {
     loadPost();
   }, [postId]);
@@ -55,10 +53,8 @@ const BlogPostScreen: React.FC = () => {
       if (response.success && response.post) {
         const post = response.post;
 
-        // Converte o post da API para o formato BlogPost
-        // Remove markdown do título (##, ###, etc.)
         const cleanTitle = post.title
-          .replace(/^#+\s+/, '') // Remove ## ou ### do início
+          .replace(/^#+\s+/, '')
           .trim();
 
         const formattedPost: BlogPost = {
@@ -77,7 +73,6 @@ const BlogPostScreen: React.FC = () => {
         };
 
         setCurrentPost(formattedPost);
-        // NOTA: Views são incrementadas automaticamente pelo backend ao buscar o post
       } else {
         setError('Post não encontrado');
       }
@@ -140,7 +135,6 @@ const BlogPostScreen: React.FC = () => {
     });
   };
 
-  // Estado de carregamento
   if (loading) {
     return (
       <SafeAreaView style={styles.container}>
@@ -157,7 +151,6 @@ const BlogPostScreen: React.FC = () => {
     );
   }
 
-  // Estado de erro
   if (error || !currentPost) {
     return (
       <SafeAreaView style={styles.container}>

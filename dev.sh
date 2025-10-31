@@ -17,7 +17,6 @@ if [ ! -d "server/node_modules" ]; then
     cd server && npm install && cd ..
 fi
 
-# Verifica se existe .env no client
 if [ ! -f "client/.env" ]; then
     echo "⚙️  Criando arquivo .env no client..."
     cp .env.example client/.env

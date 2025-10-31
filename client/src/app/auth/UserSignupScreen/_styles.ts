@@ -61,6 +61,48 @@ export const styles = StyleSheet.create({
     shadowRadius: 12,
     elevation: 8,
   },
+  inputContainer: {
+    marginBottom: 20,
+  },
+  inputLabel: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#2C3E50',
+    marginBottom: 8,
+    marginLeft: 2,
+  },
+  inputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 12,
+    borderWidth: 1.5,
+    borderColor: '#E1E8ED',
+    backgroundColor: '#fff',
+    paddingHorizontal: 16,
+    height: 56,
+  },
+  inputWrapperFocused: {
+    borderColor: '#4ECDC4',
+    backgroundColor: '#F8FFFE',
+    shadowColor: '#4ECDC4',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  inputIcon: {
+    marginRight: 12,
+  },
+  inputField: {
+    flex: 1,
+    fontSize: 16,
+    color: '#2C3E50',
+    paddingVertical: 0,
+    height: '100%',
+  },
   termsContainer: {
     flexDirection: 'row',
     alignItems: 'flex-start',
@@ -139,6 +181,16 @@ export const styles = StyleSheet.create({
   bottomSpacing: {
     height: 20,
   },
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    gap: 8,
+  },
+  backButtonText: {
+    fontSize: 16,
+    color: '#4ECDC4',
+    fontWeight: '600',
+  },
 });
-
-export default styles

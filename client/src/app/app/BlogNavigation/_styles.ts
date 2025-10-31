@@ -1,6 +1,6 @@
-import { StyleSheet, Dimensions } from 'react-native';
+import { Dimensions, StyleSheet } from 'react-native';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 const getResponsiveDimensions = () => {
   const isSmallScreen = width < 375;

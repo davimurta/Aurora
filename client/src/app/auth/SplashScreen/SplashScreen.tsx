@@ -20,7 +20,6 @@ const SplashScreen: React.FC = () => {
   const { user, loading: authLoading } = useAuthController();
 
   useEffect(() => {
-    // Animação de entrada
     Animated.parallel([
       Animated.timing(fadeAnim, {
         toValue: 1,
@@ -35,9 +34,7 @@ const SplashScreen: React.FC = () => {
       }),
     ]).start();
 
-    // Aguarda autenticação carregar e mínimo de 2s para melhor UX
     const checkAuth = async () => {
-      // Aguarda pelo menos 2 segundos para mostrar a splash
       await new Promise(resolve => setTimeout(resolve, 2000));
       setIsReady(true);
     };
@@ -83,7 +80,6 @@ const SplashScreen: React.FC = () => {
     );
   }
 
-  // Redireciona baseado no estado de autenticação
   if (user) {
     return <Redirect href="/app/HomeScreen/HomeScreen" />;
   }

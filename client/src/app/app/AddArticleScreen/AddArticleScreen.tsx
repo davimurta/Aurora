@@ -39,7 +39,6 @@ const AddArticleScreen: React.FC = () => {
 
   const currentDate = new Date().toLocaleDateString('pt-BR');
 
-  // Preenche o nome do autor com o displayName do usuário logado
   React.useEffect(() => {
     if (user && user.displayName && !author) {
       setAuthor(user.displayName);
@@ -114,7 +113,6 @@ const AddArticleScreen: React.FC = () => {
       return;
     }
 
-    // Validação de título
     if (!title.trim()) {
       Alert.alert('⚠️ Título Obrigatório', 'Por favor, preencha o título da matéria.');
       return;
@@ -130,26 +128,22 @@ const AddArticleScreen: React.FC = () => {
       return;
     }
 
-    // Validação de autor
     if (!author.trim()) {
       Alert.alert('⚠️ Autor Obrigatório', 'Por favor, preencha o nome do autor.');
       return;
     }
 
-    // Validação de descrição
     if (!description.trim()) {
       Alert.alert('⚠️ Descrição Obrigatória', 'Por favor, preencha uma breve descrição da matéria.');
       return;
     }
 
-    // Validação de conteúdo
     const hasContent = contentBlocks.some(block => block.content.trim() !== '');
     if (!hasContent) {
       Alert.alert('⚠️ Conteúdo Vazio', 'Por favor, escreva o conteúdo da matéria adicionando pelo menos um parágrafo.');
       return;
     }
 
-    // Converte os blocos de conteúdo para um único texto formatado
     let fullContent = '';
     contentBlocks.forEach(block => {
       if (block.content.trim()) {
@@ -163,7 +157,6 @@ const AddArticleScreen: React.FC = () => {
       }
     });
 
-    // Validação de conteúdo mínimo (10 caracteres conforme backend)
     if (fullContent.trim().length < 10) {
       Alert.alert('⚠️ Conteúdo Insuficiente', 'O conteúdo da matéria deve ter pelo menos 10 caracteres. Por favor, escreva mais detalhes.');
       return;
@@ -172,7 +165,6 @@ const AddArticleScreen: React.FC = () => {
     setIsLoading(true);
 
     try {
-      // Salva o artigo no backend
       const response = await postsApi.createPost({
         title: title.trim(),
         content: fullContent.trim(),
@@ -183,12 +175,10 @@ const AddArticleScreen: React.FC = () => {
       });
 
       if (response.success) {
-        // Publica o artigo automaticamente
         if (response.post?.id) {
           await postsApi.publishPost(response.post.id);
         }
 
-        // Limpa o formulário ANTES de mostrar o modal
         setTitle('');
         setDescription('');
         setCategory('Saúde Mental');
@@ -196,7 +186,6 @@ const AddArticleScreen: React.FC = () => {
 
         setIsLoading(false);
 
-        // Mostra modal de sucesso
         setShowSuccessModal(true);
       } else {
         throw new Error('Resposta inválida do servidor');
@@ -205,7 +194,6 @@ const AddArticleScreen: React.FC = () => {
       setIsLoading(false);
       console.error('Erro ao criar matéria:', error);
 
-      // Extrai mensagem de erro do backend se disponível
       let errorMessage = 'Não foi possível criar a matéria. Tente novamente.';
 
       if (error.response?.data?.message) {

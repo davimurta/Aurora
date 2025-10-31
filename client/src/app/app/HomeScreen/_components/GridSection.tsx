@@ -1,8 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 
-const SCREEN_WIDTH = Dimensions.get('window').width;
-const CARD_MARGIN = 8;
 const CONTAINER_PADDING = 16;
 
 interface GridSectionProps<T> {

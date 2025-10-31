@@ -30,7 +30,6 @@ interface ClientData {
 const AVATAR_COLORS = ['#E91E63', '#FFEB3B', '#4ECDC4', '#9C27B0', '#FF5722', '#3F51B5']
 
 const ClientSimulator: React.FC = () => {
-  // Usando useLocalSearchParams do Expo Router
   const params = useLocalSearchParams()
   const clientId = params.clientId as string
   const clientName = params.clientName as string
@@ -52,9 +51,8 @@ const ClientSimulator: React.FC = () => {
     if (clientId) {
       loadClientData()
     }
-  }, [clientId]) // Removido currentDate para evitar loop infinito
+  }, [clientId])
 
-  // Recarrega quando muda de mês
   useEffect(() => {
     if (clientId) {
       loadClientData()
@@ -77,7 +75,6 @@ const ClientSimulator: React.FC = () => {
     try {
       setLoading(true)
 
-      // Busca registros do mês atual
       const year = currentDate.getFullYear()
       const month = currentDate.getMonth() + 1
 

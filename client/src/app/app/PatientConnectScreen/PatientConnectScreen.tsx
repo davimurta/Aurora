@@ -28,7 +28,6 @@ const PatientConnectScreen: React.FC = () => {
   const [connectedPsychologist, setConnectedPsychologist] = useState<ConnectedPsychologist | null>(null);
   const { user, userData } = useAuthController();
 
-  // Carrega informações do psicólogo conectado ao abrir a tela
   useEffect(() => {
     loadConnectedPsychologist();
   }, [user]);
@@ -49,7 +48,6 @@ const PatientConnectScreen: React.FC = () => {
         setConnectedPsychologist(null);
       }
     } catch (error) {
-      // Se não encontrar psicólogo conectado (404), não é erro
       setConnectedPsychologist(null);
     } finally {
       setLoadingConnection(false);
@@ -75,7 +73,6 @@ const PatientConnectScreen: React.FC = () => {
       return;
     }
 
-    // Pega email e nome, com validação
     const patientEmail = user.email || userData.email;
     const patientName = userData.displayName || user.displayName;
 
@@ -87,7 +84,6 @@ const PatientConnectScreen: React.FC = () => {
     console.log('  - patientEmail final:', patientEmail);
     console.log('  - patientName final:', patientName);
 
-    // Valida se email e nome existem
     if (!patientEmail || patientEmail.trim() === '') {
       console.log('❌ Email não encontrado');
       Alert.alert(
@@ -123,9 +119,8 @@ const PatientConnectScreen: React.FC = () => {
       );
 
       setIsLoading(false);
-      setCodigo(""); // Limpa o código
+      setCodigo("");
 
-      // Recarrega as informações do psicólogo conectado
       await loadConnectedPsychologist();
 
       Alert.alert(
@@ -173,7 +168,6 @@ const PatientConnectScreen: React.FC = () => {
           </Text>
         </View>
 
-        {/* Status de Conexão */}
         {loadingConnection ? (
           <View style={styles.connectionStatusCard}>
             <ActivityIndicator size="small" color="#4ECDC4" />

@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
-import { SafeAreaView, ScrollView, View, ActivityIndicator } from 'react-native';
+import { SafeAreaView, ScrollView, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import BottomNavigation from '@components/BottonNavigation';
 
@@ -44,12 +44,10 @@ const HomeScreen: React.FC = () => {
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [loadingPosts, setLoadingPosts] = useState(true);
 
-  // Memoriza a função de atualizar search para evitar re-renders desnecessários
   const handleSearchChange = useCallback((text: string) => {
     setSearchQuery(text);
   }, []);
 
-  // Busca posts do backend ao montar o componente
   useEffect(() => {
     loadBlogPosts();
   }, []);
@@ -57,10 +55,9 @@ const HomeScreen: React.FC = () => {
   const loadBlogPosts = async () => {
     try {
       setLoadingPosts(true);
-      const response = await postsApi.getPosts(10); // Busca até 10 posts para a home
+      const response = await postsApi.getPosts(10);
 
       if (response.success && response.posts) {
-        // Converte posts do backend para formato BlogPost da HomeScreen
         const formattedPosts: BlogPost[] = response.posts.map((post: Post) => ({
           id: post.id,
           title: post.title,
@@ -78,7 +75,6 @@ const HomeScreen: React.FC = () => {
       }
     } catch (error) {
       console.error('Erro ao carregar posts na home:', error);
-      // Se houver erro, mantém array vazio
       setBlogPosts([]);
     } finally {
       setLoadingPosts(false);

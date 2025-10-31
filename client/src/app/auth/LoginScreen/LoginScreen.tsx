@@ -20,7 +20,6 @@ import { useAuthController } from '../../../hooks/useAuthController';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { styles } from "./_styles";
 
-// Componente de Banner de Sucesso (Memoizado para evitar re-renders)
 const SuccessBanner = React.memo(({ show, fadeAnim, message }: any) => {
   if (!show) return null;
   
@@ -35,7 +34,6 @@ const SuccessBanner = React.memo(({ show, fadeAnim, message }: any) => {
   );
 });
 
-// Componente de Banner de Erro (Memoizado)
 const ErrorBanner = React.memo(({ message, onClose }: any) => {
   if (!message) return null;
   
@@ -67,12 +65,10 @@ const Login: React.FC = () => {
   const params = useLocalSearchParams();
   const isWeb = Platform.OS === 'web';
 
-  // Mensagem do banner de sucesso
   const successMessage = params.registered === 'psychologist'
     ? 'Seus dados estão em análise. Aguarde a aprovação.'
     : 'Faça login para começar';
 
-  // Detecta se veio do cadastro
   useEffect(() => {
     if (params.registered === 'true' || params.registered === 'psychologist') {
       setShowSuccessBanner(true);
@@ -97,7 +93,6 @@ const Login: React.FC = () => {
     }
   }, [params.registered]);
 
-  // Handlers memoizados para evitar re-renders
   const handleEmailChange = useCallback((text: string) => {
     setEmail(text);
   }, []);
@@ -150,7 +145,6 @@ const Login: React.FC = () => {
   };
 
   const handleForgotPassword = () => {
-    // router.push('/auth/ForgotPasswordScreen/ForgotPasswordScreen');
   };
 
   const handleSignup = () => {

@@ -61,6 +61,48 @@ export const styles = StyleSheet.create({
     color: '#2C3E50',
     marginBottom: 8,
   },
+  inputFieldContainer: {
+    marginBottom: 20,
+  },
+  inputFieldLabel: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#2C3E50',
+    marginBottom: 8,
+    marginLeft: 2,
+  },
+  inputFieldWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 12,
+    borderWidth: 1.5,
+    borderColor: '#E1E8ED',
+    backgroundColor: '#fff',
+    paddingHorizontal: 16,
+    height: 56,
+  },
+  inputFieldWrapperFocused: {
+    borderColor: '#4ECDC4',
+    backgroundColor: '#F8FFFE',
+    shadowColor: '#4ECDC4',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  inputFieldIcon: {
+    marginRight: 12,
+  },
+  inputFieldText: {
+    flex: 1,
+    fontSize: 16,
+    color: '#2C3E50',
+    paddingVertical: 0,
+    height: '100%',
+  },
   selectButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -104,31 +146,6 @@ export const styles = StyleSheet.create({
     color: '#2C3E50',
     textAlignVertical: 'top',
     minHeight: 80,
-  },
-  documentSection: {
-    marginBottom: 20,
-  },
-  documentButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFF',
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-    borderRadius: 12,
-    paddingHorizontal: 15,
-    paddingVertical: 15,
-    marginBottom: 10,
-    minHeight: 50,
-  },
-  documentButtonText: {
-    fontSize: 16,
-    color: '#666',
-    marginLeft: 10,
-    flex: 1,
-  },
-  documentButtonTextUploaded: {
-    color: '#4ECDC4',
-    fontWeight: '500',
   },
   termsContainer: {
     flexDirection: 'row',
@@ -228,6 +245,17 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     color: '#2C3E50',
   },
+  // Botão Voltar
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    gap: 8,
+  },
+  backButtonText: {
+    fontSize: 16,
+    color: '#4ECDC4',
+    fontWeight: '600',
+  },
 });
-
-export default styles

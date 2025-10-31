@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 
 import {
   View,
   Text,
   ScrollView,
   TouchableOpacity,
-  StyleSheet,
   SafeAreaView,
   Alert,
   KeyboardAvoidingView,
@@ -19,6 +18,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useAuthController } from '../../../hooks/useAuthController';
 import { router } from 'expo-router';
 import { PsicologoData } from '../../../types/auth.types';
+import { styles } from './_styles';
 
 const PsychologistSignup: React.FC = () => {
   const [formData, setFormData] = useState<PsicologoData>({
@@ -41,7 +41,6 @@ const PsychologistSignup: React.FC = () => {
   const params = useLocalSearchParams();
   const [emailUsed, setEmailUsed] = useState(false);
 
-  // Focus states for inputs
   const [nomeFocused, setNomeFocused] = useState(false);
   const [emailFocused, setEmailFocused] = useState(false);
   const [cpfFocused, setCpfFocused] = useState(false);
@@ -60,7 +59,7 @@ const PsychologistSignup: React.FC = () => {
 
       setTimeout(() => {
         setEmailUsed(false);
-        router.replace('/auth/PsychologistSignupScreen/PsychologistSignupScreen'); // remove o parâmetro da URL
+        router.replace('/auth/PsychologistSignupScreen/PsychologistSignupScreen'); 
       }, 5000);
     }
   }, [params.emailjausado]);
@@ -152,7 +151,6 @@ const PsychologistSignup: React.FC = () => {
 
       setIsLoading(false);
 
-      // Navega com flag de sucesso (igual ao paciente)
       router.push("/auth/Login?registered=psychologist" as any);
 
     } catch (error: any) {
@@ -660,265 +658,4 @@ const PsychologistSignup: React.FC = () => {
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F8FFFE',
-  },
-  keyboardAvoid: {
-    flex: 1,
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: 20,
-  },
-  headerContainer: {
-    alignItems: 'center',
-    paddingVertical: 30,
-    marginBottom: 20,
-  },
-  iconContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: '#E8F8F7',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 15,
-  },
-  headerTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#2C3E50',
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  headerSubtitle: {
-    fontSize: 16,
-    color: '#666',
-    textAlign: 'center',
-    lineHeight: 22,
-  },
-  formContainer: {
-    paddingBottom: 100,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#2C3E50',
-    marginBottom: 20,
-    marginTop: 30,
-    paddingBottom: 10,
-    borderBottomWidth: 2,
-    borderBottomColor: '#4ECDC4',
-  },
-  inputContainer: {
-    marginBottom: 20,
-  },
-  inputLabel: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#2C3E50',
-    marginBottom: 8,
-  },
-  inputFieldContainer: {
-    marginBottom: 20,
-  },
-  inputFieldLabel: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#2C3E50',
-    marginBottom: 8,
-    marginLeft: 2,
-  },
-  inputFieldWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: 12,
-    borderWidth: 1.5,
-    borderColor: '#E1E8ED',
-    backgroundColor: '#fff',
-    paddingHorizontal: 16,
-    height: 56,
-  },
-  inputFieldWrapperFocused: {
-    borderColor: '#4ECDC4',
-    backgroundColor: '#F8FFFE',
-    shadowColor: '#4ECDC4',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  inputFieldIcon: {
-    marginRight: 12,
-  },
-  inputFieldText: {
-    flex: 1,
-    fontSize: 16,
-    color: '#2C3E50',
-    paddingVertical: 0,
-    height: '100%',
-  },
-  selectButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFF',
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-    borderRadius: 12,
-    paddingHorizontal: 15,
-    paddingVertical: 15,
-    minHeight: 50,
-  },
-  selectIcon: {
-    marginRight: 10,
-  },
-  selectText: {
-    flex: 1,
-    fontSize: 16,
-    color: '#999',
-  },
-  selectTextFilled: {
-    color: '#2C3E50',
-  },
-  textAreaWrapper: {
-    flexDirection: 'row',
-    backgroundColor: '#FFF',
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-    borderRadius: 12,
-    paddingHorizontal: 15,
-    paddingVertical: 15,
-    minHeight: 100,
-    alignItems: 'flex-start',
-  },
-  textAreaIcon: {
-    marginTop: 2,
-    marginRight: 10,
-  },
-  textArea: {
-    flex: 1,
-    fontSize: 16,
-    color: '#2C3E50',
-    textAlignVertical: 'top',
-    minHeight: 80,
-  },
-  termsContainer: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginVertical: 20,
-    paddingHorizontal: 5,
-  },
-  termsText: {
-    fontSize: 14,
-    color: '#666',
-    marginLeft: 10,
-    flex: 1,
-    lineHeight: 20,
-  },
-  termsLink: {
-    color: '#4ECDC4',
-    fontWeight: '500',
-  },
-  submitButton: {
-    backgroundColor: '#4ECDC4',
-    borderRadius: 12,
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 10,
-    shadowColor: '#4ECDC4',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
-  },
-  submitButtonDisabled: {
-    backgroundColor: '#B0B0B0',
-    shadowOpacity: 0,
-    elevation: 0,
-  },
-  submitButtonText: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#FFF',
-    marginLeft: 8,
-  },
-  infoContainer: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    backgroundColor: '#E8F4FD',
-    borderRadius: 12,
-    padding: 15,
-    marginTop: 20,
-  },
-  infoText: {
-    fontSize: 14,
-    color: '#666',
-    marginLeft: 10,
-    flex: 1,
-    lineHeight: 20,
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'flex-end',
-  },
-  modalContent: {
-    backgroundColor: '#FFF',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    maxHeight: '70%',
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#2C3E50',
-  },
-  modalScrollView: {
-    maxHeight: 400,
-  },
-  specialtyOption: {
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F0F0F0',
-  },
-  specialtyText: {
-    fontSize: 16,
-    color: '#2C3E50',
-  },
-  // Botão Voltar
-  backButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    gap: 8,
-  },
-  backButtonText: {
-    fontSize: 16,
-    color: '#4ECDC4',
-    fontWeight: '600',
-  },
-});
-
 export default PsychologistSignup;

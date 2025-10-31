@@ -35,30 +35,6 @@ const ProfileScreen: React.FC = () => {
   const [showPersonalData, setShowPersonalData] = useState<boolean>(false);
   const { userData, logout } = useAuthController();
 
-  const recentActivities: ActivityItem[] = [
-    {
-      id: "1",
-      title: "Meditação Mindfulness",
-      date: "29 Jun",
-      duration: "15 min",
-      type: "meditation",
-    },
-    {
-      id: "2",
-      title: "Respiração Profunda",
-      date: "28 Jun",
-      duration: "10 min",
-      type: "breathing",
-    },
-    {
-      id: "3",
-      title: "Relaxamento Guiado",
-      date: "27 Jun",
-      duration: "20 min",
-      type: "mindfulness",
-    },
-  ];
-
   const personalData: PersonalDataItem[] = [
     {
       label: "Nome",
@@ -254,13 +230,6 @@ const ProfileScreen: React.FC = () => {
             {accountSettings.map((item, index) =>
               renderSettingItem(item, index)
             )}
-          </View>
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Últimas Atividades</Text>
-          <View style={styles.activitiesContainer}>
-            {recentActivities.map((item) => renderActivityItem(item))}
           </View>
         </View>
 
