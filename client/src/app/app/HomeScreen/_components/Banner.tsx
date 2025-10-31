@@ -4,7 +4,7 @@ import { View, Text, StyleSheet } from 'react-native';
 export const Banner: React.FC = () => (
   <View style={styles.welcomeBanner}>
     <View style={styles.bannerContent}>
-      <Text style={styles.bannerTitle}>Bem-vindo ao nosso{'\n'}espaço de bem-estar</Text>
+      <Text style={styles.bannerTitle}>Bem-vindo ao nosso espaço de bem-estar</Text>
     </View>
   </View>
 );
@@ -33,5 +33,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     lineHeight: 30,
     letterSpacing: 0.3,
+    textAlign: 'center',
   },
 });

@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { router } from "expo-router";
-import Clipboard from "@react-native-clipboard/clipboard";
+import * as Clipboard from "expo-clipboard";
 import { useAuthController } from '../../../hooks/useAuthController';
 import { connectionApi } from '../../../services/connectionApi';
 import { styles } from "./_styles";
@@ -64,19 +64,19 @@ const ProfessionalConnectScreen: React.FC = () => {
     }
   };
 
-  const handleCopiarCodigo = () => {
+  const handleCopiarCodigo = async () => {
     console.log("Botão clicado! Código:", codigo);
-    
+
     if (!codigo) {
       Alert.alert("Aviso", "Gere um código primeiro!");
       return;
     }
 
     try {
-      Clipboard.setString(codigo);
+      await Clipboard.setStringAsync(codigo);
       setCopiado(true);
       console.log("Código copiado com sucesso!");
-      
+
       setTimeout(() => {
         setCopiado(false);
       }, 2000);

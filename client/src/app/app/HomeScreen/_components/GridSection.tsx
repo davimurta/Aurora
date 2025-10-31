@@ -45,9 +45,10 @@ const styles = StyleSheet.create({
   gridContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
+    gap: 12,
   },
   gridItem: {
-    marginBottom: 16,
+    marginBottom: 4,
   },
 });
