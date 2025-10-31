@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import * as ImagePicker from 'expo-image-picker';
-import { styles } from './styles';
+import { styles } from './_styles';
 import { postsApi } from '../../../services/postsApi';
 import { useAuthController } from '../../../hooks/useAuthController';
 

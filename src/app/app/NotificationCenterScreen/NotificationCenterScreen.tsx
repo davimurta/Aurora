@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { styles } from './styles';
+import { styles } from './_styles';
 
 interface Notification {
   id: string;

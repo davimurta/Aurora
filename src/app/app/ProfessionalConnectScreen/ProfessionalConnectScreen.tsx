@@ -12,7 +12,7 @@ import { router } from "expo-router";
 import Clipboard from "@react-native-clipboard/clipboard";
 import { useAuthController } from '../../../hooks/useAuthController';
 import { connectionApi } from '../../../services/connectionApi';
-import { styles } from "./styles";
+import { styles } from "./_styles";
 
 const ProfessionalConnectScreen: React.FC = () => {
   const [codigo, setCodigo] = useState("");

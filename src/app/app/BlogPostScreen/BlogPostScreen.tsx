@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { styles } from './styles';
+import { styles } from './_styles';
 import { postsApi, Post } from '../../../services/postsApi';
 
 interface BlogPost {

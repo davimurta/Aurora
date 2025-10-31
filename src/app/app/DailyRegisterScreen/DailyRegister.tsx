@@ -16,7 +16,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import BottomNavigation from '../../../components/BottonNavigation';
 import { useEmotionalRegister } from '../../../hooks/useEmotionalRegister';
 import { useAuthController } from '../../../hooks/useAuthController';
-import { styles } from './styles';
+import { styles } from './_styles';
 
 const { width } = Dimensions.get('window');
 

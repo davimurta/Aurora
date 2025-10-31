@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useAuthController } from '../../../hooks/useAuthController';
-import { styles } from "./styles";
+import { styles } from "./_styles";
 
 interface ActivityItem {
   id: string;

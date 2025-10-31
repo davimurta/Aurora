@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { router } from 'expo-router';
-import { styles } from './styles';
+import { styles } from './_styles';
 
 const UserTypeSelectionScreen: React.FC = () => {
   const handleSelectType = (type: 'client' | 'psychologist') => {

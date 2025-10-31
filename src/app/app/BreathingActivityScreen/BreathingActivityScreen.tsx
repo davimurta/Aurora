@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, Animated, ScrollView, SafeAreaView } from
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import BottomNavigation from "@components/BottonNavigation";
 import { router } from 'expo-router';
-import { styles } from './styles';
+import { styles } from './_styles';
 
 type BreathingPhase = 'idle' | 'inhale' | 'hold' | 'exhale';
 

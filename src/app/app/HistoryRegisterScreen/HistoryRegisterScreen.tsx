@@ -16,7 +16,7 @@ import { useEmotionalRegister } from '../../../hooks/useEmotionalRegister';
 import { EmotionalRegister, ChartData } from '../../../models/emotionalRegister';
 import { useAuthController } from '../../../hooks/useAuthController';
 import { emotionalRegisterController } from '../../../controllers/emotionalRegister';
-import { styles } from './styles';
+import { styles } from './_styles';
 
 interface DayData {
   selectedMood: string;

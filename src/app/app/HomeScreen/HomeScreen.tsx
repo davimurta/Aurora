@@ -3,15 +3,15 @@ import { SafeAreaView, ScrollView, View, ActivityIndicator } from 'react-native'
 import { useRouter } from 'expo-router';
 import BottomNavigation from '@components/BottonNavigation';
 
-import { styles } from './styles';
-import { respirationActivities } from './mockData';
-import { SearchBar } from './components/SearchBar';
-import { Banner } from './components/Banner';
-import { BlogCard } from './components/BlogCard';
-import { GridSection } from './components/GridSection';
-import { Section } from './components/Section';
-import { RespirationCard } from './components/RespirationCard';
-import { ResourceCard, dailyResources } from './components/ResourceCard';
+import { styles } from './_styles';
+import { respirationActivities } from './_mockData';
+import { SearchBar } from './_components/SearchBar';
+import { Banner } from './_components/Banner';
+import { BlogCard } from './_components/BlogCard';
+import { GridSection } from './_components/GridSection';
+import { Section } from './_components/Section';
+import { RespirationCard } from './_components/RespirationCard';
+import { ResourceCard, dailyResources } from './_components/ResourceCard';
 import { postsApi, Post } from '../../../services/postsApi';
 
 interface RespirationActivity {

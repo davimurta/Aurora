@@ -11,7 +11,7 @@ import {
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import { router, useLocalSearchParams } from 'expo-router'
 import { connectionApi } from '../../../services/connectionApi'
-import { styles } from './styles'
+import { styles } from './_styles'
 
 interface EmotionalRegister {
   date: string

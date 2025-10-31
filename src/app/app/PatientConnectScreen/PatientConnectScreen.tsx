@@ -13,7 +13,7 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import { router } from "expo-router";
 import { useAuthController } from '../../../hooks/useAuthController';
 import { connectionApi } from '../../../services/connectionApi';
-import { styles } from "./styles";
+import { styles } from "./_styles";
 
 interface ConnectedPsychologist {
   id: string;
