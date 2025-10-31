@@ -4,11 +4,11 @@ import {
   Text,
   StyleSheet,
   SafeAreaView,
-  GestureResponderEvent,
+  TouchableOpacity,
 } from 'react-native';
 import { Link, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import Button from '@components/Button';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 export default function NotFoundScreen() {
   return (
@@ -32,12 +32,13 @@ export default function NotFoundScreen() {
         
         <View style={styles.buttonContainer}>
           <Link href="/" asChild>
-            <Button
-              title="Voltar ao início"
-              iconName="home"
-              backgroundColor="#4ECDC4"
-              textColor="#fff"
-              style={styles.button}/>
+            <TouchableOpacity
+              style={styles.button}
+              activeOpacity={0.8}
+            >
+              <Icon name="home" size={20} color="#fff" style={styles.buttonIcon} />
+              <Text style={styles.buttonText}>Voltar ao início</Text>
+            </TouchableOpacity>
           </Link>
         </View>
       </View>
@@ -86,5 +87,25 @@ const styles = StyleSheet.create({
   button: {
     height: 56,
     borderRadius: 12,
+    backgroundColor: '#4ECDC4',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#4ECDC4',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  buttonIcon: {
+    marginRight: 8,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });

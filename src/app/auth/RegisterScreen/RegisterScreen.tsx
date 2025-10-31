@@ -11,9 +11,11 @@ import {
   Text,
   Pressable,
   Alert,
+  TextInput,
+  TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
-import Input from "@components/Input";
-import Button from "@components/Button";
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import { router } from "expo-router";
 import { useAuthController } from '../../../hooks/useAuthController';
 import { styles } from './styles';
@@ -23,7 +25,10 @@ const RegisterScreen = () => {
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [loading, setLoading] = useState(false);
-  
+  const [nameFocused, setNameFocused] = useState(false);
+  const [emailFocused, setEmailFocused] = useState(false);
+  const [passwordFocused, setPasswordFocused] = useState(false);
+
   const { register } = useAuthController();
 
   const handleRegister = async () => {
@@ -73,47 +78,77 @@ const RegisterScreen = () => {
 
             <View style={styles.divider} />
 
-            <Input
-              style={styles.input}
-              label="Nome completo"
-              type="texto"
-              placeholder="Digite seu nome completo"
-              value={displayName}
-              onChangeText={setDisplayName}
-              iconName="person"
-            />
-            
-            <Input
-              style={styles.input}
-              label="Email"
-              type="email"
-              placeholder="Digite seu email"
-              keyboardType="email-address"
-              value={email}
-              onChangeText={setEmail}
-              iconName="email"
-            />
+            {/* Nome Input */}
+            <View style={styles.inputContainer}>
+              <Text style={styles.inputLabel}>Nome completo</Text>
+              <View style={[styles.inputWrapper, nameFocused && styles.inputWrapperFocused]}>
+                <Icon name="person" size={20} color={nameFocused ? "#4ECDC4" : "#999"} />
+                <TextInput
+                  style={styles.inputField}
+                  placeholder="Digite seu nome completo"
+                  placeholderTextColor="#999"
+                  value={displayName}
+                  onChangeText={setDisplayName}
+                  onFocus={() => setNameFocused(true)}
+                  onBlur={() => setNameFocused(false)}
+                  autoCapitalize="words"
+                />
+              </View>
+            </View>
 
-            <Input
-              style={styles.input}
-              label="Senha"
-              type="senha"
-              placeholder="Digite sua senha"
-              secureTextEntry
-              value={password}
-              onChangeText={setPassword}
-              iconName="lock"
-            />
+            {/* Email Input */}
+            <View style={styles.inputContainer}>
+              <Text style={styles.inputLabel}>Email</Text>
+              <View style={[styles.inputWrapper, emailFocused && styles.inputWrapperFocused]}>
+                <Icon name="email" size={20} color={emailFocused ? "#4ECDC4" : "#999"} />
+                <TextInput
+                  style={styles.inputField}
+                  placeholder="Digite seu email"
+                  placeholderTextColor="#999"
+                  value={email}
+                  onChangeText={setEmail}
+                  onFocus={() => setEmailFocused(true)}
+                  onBlur={() => setEmailFocused(false)}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                />
+              </View>
+            </View>
 
-            <Button
-              title="Cadastrar"
-              iconName="login"
+            {/* Senha Input */}
+            <View style={styles.inputContainer}>
+              <Text style={styles.inputLabel}>Senha</Text>
+              <View style={[styles.inputWrapper, passwordFocused && styles.inputWrapperFocused]}>
+                <Icon name="lock" size={20} color={passwordFocused ? "#4ECDC4" : "#999"} />
+                <TextInput
+                  style={styles.inputField}
+                  placeholder="Digite sua senha"
+                  placeholderTextColor="#999"
+                  value={password}
+                  onChangeText={setPassword}
+                  onFocus={() => setPasswordFocused(true)}
+                  onBlur={() => setPasswordFocused(false)}
+                  secureTextEntry
+                  autoCapitalize="none"
+                />
+              </View>
+            </View>
+
+            {/* Botão de Cadastro */}
+            <TouchableOpacity
+              style={[styles.button, loading && styles.buttonDisabled]}
               onPress={handleRegister}
-              backgroundColor="#4ECDC4"
-              textColor="#fff"
-              loading={loading}
-              style={{ marginTop: 30, alignSelf: "center" }}
-            />
+              disabled={loading}
+            >
+              {loading ? (
+                <ActivityIndicator size="small" color="#fff" />
+              ) : (
+                <>
+                  <Icon name="login" size={20} color="#fff" style={styles.buttonIcon} />
+                  <Text style={styles.buttonText}>Cadastrar</Text>
+                </>
+              )}
+            </TouchableOpacity>
 
             <Pressable onPress={() => router.push('/')}>
               <Text style={styles.link}>

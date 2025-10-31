@@ -79,6 +79,38 @@ export const styles = StyleSheet.create({
   searchContainer: {
     paddingVertical: 16,
   },
+  searchInputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    borderWidth: 1.5,
+    borderColor: '#E1E8ED',
+    paddingHorizontal: 16,
+    height: 50,
+  },
+  searchInputWrapperFocused: {
+    borderColor: '#4ECDC4',
+    backgroundColor: '#F8FFFE',
+    shadowColor: '#4ECDC4',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  searchIcon: {
+    marginRight: 12,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 16,
+    color: '#333',
+    paddingVertical: 0,
+    height: '100%',
+  },
   actionButtons: {
     flexDirection: 'row',
     justifyContent: 'space-between',

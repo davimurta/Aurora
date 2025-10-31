@@ -11,10 +11,35 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
   },
   inputWrapper: {
-    width: "100%",
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    height: 50,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    backgroundColor: '#fff',
   },
-  input: {
-    width: "100%",
+  inputWrapperFocused: {
+    borderColor: '#4ECDC4',
+    borderWidth: 2,
+  },
+  inputContainer: {
+    marginBottom: 16,
+  },
+  inputLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 8,
+  },
+  inputField: {
+    flex: 1,
+    fontSize: 16,
+    color: '#333',
+    marginLeft: 8,
+    outlineStyle: 'none',
   },
   divider: {
     height: 2,
@@ -47,5 +72,27 @@ export const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: 'center',
     marginTop: 20,
+  },
+  button: {
+    backgroundColor: '#4ECDC4',
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 30,
+    width: '100%',
+  },
+  buttonDisabled: {
+    opacity: 0.6,
+  },
+  buttonIcon: {
+    marginRight: 8,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });

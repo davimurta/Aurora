@@ -7,10 +7,10 @@ import {
   SafeAreaView,
   Switch,
   Alert,
+  TextInput,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import Input from '../../../components/Input';
 import { styles } from './styles';
 
 interface Notification {
@@ -34,6 +34,7 @@ interface NotificationSettings {
 const NotificationCenterScreen: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'notifications' | 'settings'>('notifications');
   const [searchText, setSearchText] = useState('');
+  const [searchFocused, setSearchFocused] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([
     {
       id: '1',
@@ -176,12 +177,26 @@ const NotificationCenterScreen: React.FC = () => {
   const renderNotifications = () => (
     <View style={styles.tabContent}>
       <View style={styles.searchContainer}>
-        <Input
-          placeholder="Buscar notificações..."
-          value={searchText}
-          onChangeText={setSearchText}
-          iconName="search"
-        />
+        <View style={[
+          styles.searchInputWrapper,
+          searchFocused && styles.searchInputWrapperFocused
+        ]}>
+          <MaterialIcons
+            name="search"
+            size={20}
+            color={searchFocused ? "#4ECDC4" : "#999"}
+            style={styles.searchIcon}
+          />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Buscar notificações..."
+            placeholderTextColor="#999"
+            value={searchText}
+            onChangeText={setSearchText}
+            onFocus={() => setSearchFocused(true)}
+            onBlur={() => setSearchFocused(false)}
+          />
+        </View>
       </View>
 
       <View style={styles.actionButtons}>

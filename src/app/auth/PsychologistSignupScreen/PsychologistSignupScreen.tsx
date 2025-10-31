@@ -1,4 +1,3 @@
-import Input from '@components/Input';
 import React, { useEffect, useState } from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
@@ -14,6 +13,7 @@ import {
   Platform,
   Modal,
   TextInput,
+  ActivityIndicator,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useAuthController } from '../../../hooks/useAuthController';
@@ -37,10 +37,22 @@ const PsychologistSignup: React.FC = () => {
     confirmarSenha: '',
   });
 
-
   const [isLoading, setIsLoading] = useState(false);
   const params = useLocalSearchParams();
   const [emailUsed, setEmailUsed] = useState(false);
+
+  // Focus states for inputs
+  const [nomeFocused, setNomeFocused] = useState(false);
+  const [emailFocused, setEmailFocused] = useState(false);
+  const [cpfFocused, setCpfFocused] = useState(false);
+  const [telefoneFocused, setTelefoneFocused] = useState(false);
+  const [dataNascimentoFocused, setDataNascimentoFocused] = useState(false);
+  const [crpFocused, setCrpFocused] = useState(false);
+  const [instituicaoFocused, setInstituicaoFocused] = useState(false);
+  const [anoFormacaoFocused, setAnoFormacaoFocused] = useState(false);
+  const [experienciaFocused, setExperienciaFocused] = useState(false);
+  const [senhaFocused, setSenhaFocused] = useState(false);
+  const [confirmarSenhaFocused, setConfirmarSenhaFocused] = useState(false);
 
   useEffect(() => {
     if (params.emailjausado === 'true') {
@@ -240,84 +252,186 @@ const PsychologistSignup: React.FC = () => {
             {/* Personal Information Section */}
             <Text style={styles.sectionTitle}>Informações Pessoais</Text>
 
-            <Input
-              label="Nome Completo"
-              placeholder="Digite seu nome completo"
-              iconName="person"
-              type="texto"
-              value={formData.nome}
-              onChangeText={handleInputChange('nome')}
-            />
+            {/* Nome Completo Input */}
+            <View style={styles.inputFieldContainer}>
+              <Text style={styles.inputFieldLabel}>Nome Completo</Text>
+              <View style={[
+                styles.inputFieldWrapper,
+                nomeFocused && styles.inputFieldWrapperFocused
+              ]}>
+                <Icon
+                  name="person"
+                  size={20}
+                  color={nomeFocused ? "#4ECDC4" : "#999"}
+                  style={styles.inputFieldIcon}
+                />
+                <TextInput
+                  style={styles.inputFieldText}
+                  placeholder="Digite seu nome completo"
+                  placeholderTextColor="#999"
+                  value={formData.nome}
+                  onChangeText={handleInputChange('nome')}
+                  onFocus={() => setNomeFocused(true)}
+                  onBlur={() => setNomeFocused(false)}
+                  editable={!isLoading}
+                />
+              </View>
+            </View>
 
-            <Input
-              label="Email Profissional"
-              placeholder="Digite seu email profissional"
-              iconName="email"
-              type="email"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              value={formData.email}
-              onChangeText={handleInputChange('email')}
-            />
+            {/* Email Input */}
+            <View style={styles.inputFieldContainer}>
+              <Text style={styles.inputFieldLabel}>Email Profissional</Text>
+              <View style={[
+                styles.inputFieldWrapper,
+                emailFocused && styles.inputFieldWrapperFocused
+              ]}>
+                <Icon
+                  name="email"
+                  size={20}
+                  color={emailFocused ? "#4ECDC4" : "#999"}
+                  style={styles.inputFieldIcon}
+                />
+                <TextInput
+                  style={styles.inputFieldText}
+                  placeholder="Digite seu email profissional"
+                  placeholderTextColor="#999"
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  value={formData.email}
+                  onChangeText={handleInputChange('email')}
+                  onFocus={() => setEmailFocused(true)}
+                  onBlur={() => setEmailFocused(false)}
+                  editable={!isLoading}
+                />
+              </View>
+            </View>
 
-            <Input
-              label="CPF"
-              placeholder="000.000.000-00"
-              iconName="credit-card"
-              type="cpf"
-              keyboardType="numeric"
-              maxLength={14}
-              value={formData.cpf}
-              onChangeText={(value: string) => {
-                const formatted = formatCPF(value);
-                handleInputChange('cpf')(formatted);
-              }}
-            />
+            {/* CPF Input */}
+            <View style={styles.inputFieldContainer}>
+              <Text style={styles.inputFieldLabel}>CPF</Text>
+              <View style={[
+                styles.inputFieldWrapper,
+                cpfFocused && styles.inputFieldWrapperFocused
+              ]}>
+                <Icon
+                  name="credit-card"
+                  size={20}
+                  color={cpfFocused ? "#4ECDC4" : "#999"}
+                  style={styles.inputFieldIcon}
+                />
+                <TextInput
+                  style={styles.inputFieldText}
+                  placeholder="000.000.000-00"
+                  placeholderTextColor="#999"
+                  keyboardType="numeric"
+                  maxLength={14}
+                  value={formData.cpf}
+                  onChangeText={(value: string) => {
+                    const formatted = formatCPF(value);
+                    handleInputChange('cpf')(formatted);
+                  }}
+                  onFocus={() => setCpfFocused(true)}
+                  onBlur={() => setCpfFocused(false)}
+                  editable={!isLoading}
+                />
+              </View>
+            </View>
 
-            <Input
-              label="Telefone"
-              placeholder="(00) 00000-0000"
-              iconName="phone"
-              type="texto"
-              keyboardType="phone-pad"
-              maxLength={15}
-              value={formData.telefone}
-              onChangeText={(value: string) => {
-                const formatted = formatPhone(value);
-                handleInputChange('telefone')(formatted);
-              }}
-            />
+            {/* Telefone Input */}
+            <View style={styles.inputFieldContainer}>
+              <Text style={styles.inputFieldLabel}>Telefone</Text>
+              <View style={[
+                styles.inputFieldWrapper,
+                telefoneFocused && styles.inputFieldWrapperFocused
+              ]}>
+                <Icon
+                  name="phone"
+                  size={20}
+                  color={telefoneFocused ? "#4ECDC4" : "#999"}
+                  style={styles.inputFieldIcon}
+                />
+                <TextInput
+                  style={styles.inputFieldText}
+                  placeholder="(00) 00000-0000"
+                  placeholderTextColor="#999"
+                  keyboardType="phone-pad"
+                  maxLength={15}
+                  value={formData.telefone}
+                  onChangeText={(value: string) => {
+                    const formatted = formatPhone(value);
+                    handleInputChange('telefone')(formatted);
+                  }}
+                  onFocus={() => setTelefoneFocused(true)}
+                  onBlur={() => setTelefoneFocused(false)}
+                  editable={!isLoading}
+                />
+              </View>
+            </View>
 
-            <Input
-              label="Data de Nascimento"
-              placeholder="DD/MM/AAAA"
-              iconName="cake"
-              type="texto"
-              keyboardType="numeric"
-              maxLength={10}
-              value={formData.dataNascimento}
-              onChangeText={(value: string) => {
-                const formatted = formatDate(value);
-                handleInputChange('dataNascimento')(formatted);
-              }}
-            />
+            {/* Data de Nascimento Input */}
+            <View style={styles.inputFieldContainer}>
+              <Text style={styles.inputFieldLabel}>Data de Nascimento</Text>
+              <View style={[
+                styles.inputFieldWrapper,
+                dataNascimentoFocused && styles.inputFieldWrapperFocused
+              ]}>
+                <Icon
+                  name="cake"
+                  size={20}
+                  color={dataNascimentoFocused ? "#4ECDC4" : "#999"}
+                  style={styles.inputFieldIcon}
+                />
+                <TextInput
+                  style={styles.inputFieldText}
+                  placeholder="DD/MM/AAAA"
+                  placeholderTextColor="#999"
+                  keyboardType="numeric"
+                  maxLength={10}
+                  value={formData.dataNascimento}
+                  onChangeText={(value: string) => {
+                    const formatted = formatDate(value);
+                    handleInputChange('dataNascimento')(formatted);
+                  }}
+                  onFocus={() => setDataNascimentoFocused(true)}
+                  onBlur={() => setDataNascimentoFocused(false)}
+                  editable={!isLoading}
+                />
+              </View>
+            </View>
 
             {/* Professional Information Section */}
             <Text style={styles.sectionTitle}>Informações Profissionais</Text>
 
-            <Input
-              label="CRP (Conselho Regional de Psicologia)"
-              placeholder="00/00000"
-              iconName="verified-user"
-              type="texto"
-              keyboardType="numeric"
-              maxLength={8}
-              value={formData.crp}
-              onChangeText={(value: string) => {
-                const formatted = formatCRP(value);
-                handleInputChange('crp')(formatted);
-              }}
-            />
+            {/* CRP Input */}
+            <View style={styles.inputFieldContainer}>
+              <Text style={styles.inputFieldLabel}>CRP (Conselho Regional de Psicologia)</Text>
+              <View style={[
+                styles.inputFieldWrapper,
+                crpFocused && styles.inputFieldWrapperFocused
+              ]}>
+                <Icon
+                  name="verified-user"
+                  size={20}
+                  color={crpFocused ? "#4ECDC4" : "#999"}
+                  style={styles.inputFieldIcon}
+                />
+                <TextInput
+                  style={styles.inputFieldText}
+                  placeholder="00/00000"
+                  placeholderTextColor="#999"
+                  keyboardType="numeric"
+                  maxLength={8}
+                  value={formData.crp}
+                  onChangeText={(value: string) => {
+                    const formatted = formatCRP(value);
+                    handleInputChange('crp')(formatted);
+                  }}
+                  onFocus={() => setCrpFocused(true)}
+                  onBlur={() => setCrpFocused(false)}
+                  editable={!isLoading}
+                />
+              </View>
+            </View>
 
             <View style={styles.inputContainer}>
               <Text style={styles.inputLabel}>Especialidade Principal</Text>
@@ -333,34 +447,85 @@ const PsychologistSignup: React.FC = () => {
               </TouchableOpacity>
             </View>
 
-            <Input
-              label="Instituição de Formação"
-              placeholder="Nome da universidade"
-              iconName="school"
-              type="texto"
-              value={formData.instituicaoFormacao}
-              onChangeText={handleInputChange('instituicaoFormacao')}
-            />
+            {/* Instituição de Formação Input */}
+            <View style={styles.inputFieldContainer}>
+              <Text style={styles.inputFieldLabel}>Instituição de Formação</Text>
+              <View style={[
+                styles.inputFieldWrapper,
+                instituicaoFocused && styles.inputFieldWrapperFocused
+              ]}>
+                <Icon
+                  name="school"
+                  size={20}
+                  color={instituicaoFocused ? "#4ECDC4" : "#999"}
+                  style={styles.inputFieldIcon}
+                />
+                <TextInput
+                  style={styles.inputFieldText}
+                  placeholder="Nome da universidade"
+                  placeholderTextColor="#999"
+                  value={formData.instituicaoFormacao}
+                  onChangeText={handleInputChange('instituicaoFormacao')}
+                  onFocus={() => setInstituicaoFocused(true)}
+                  onBlur={() => setInstituicaoFocused(false)}
+                  editable={!isLoading}
+                />
+              </View>
+            </View>
 
-            <Input
-              label="Ano de Formação"
-              placeholder="Ex: 2020"
-              iconName="calendar-today"
-              type="texto"
-              keyboardType="numeric"
-              maxLength={4}
-              value={formData.anoFormacao}
-              onChangeText={handleInputChange('anoFormacao')}
-            />
+            {/* Ano de Formação Input */}
+            <View style={styles.inputFieldContainer}>
+              <Text style={styles.inputFieldLabel}>Ano de Formação</Text>
+              <View style={[
+                styles.inputFieldWrapper,
+                anoFormacaoFocused && styles.inputFieldWrapperFocused
+              ]}>
+                <Icon
+                  name="calendar-today"
+                  size={20}
+                  color={anoFormacaoFocused ? "#4ECDC4" : "#999"}
+                  style={styles.inputFieldIcon}
+                />
+                <TextInput
+                  style={styles.inputFieldText}
+                  placeholder="Ex: 2020"
+                  placeholderTextColor="#999"
+                  keyboardType="numeric"
+                  maxLength={4}
+                  value={formData.anoFormacao}
+                  onChangeText={handleInputChange('anoFormacao')}
+                  onFocus={() => setAnoFormacaoFocused(true)}
+                  onBlur={() => setAnoFormacaoFocused(false)}
+                  editable={!isLoading}
+                />
+              </View>
+            </View>
 
-            <Input
-              label="Experiência Profissional (anos)"
-              placeholder="Ex: 5 anos"
-              iconName="work"
-              type="texto"
-              value={formData.experiencia}
-              onChangeText={handleInputChange('experiencia')}
-            />
+            {/* Experiência Profissional Input */}
+            <View style={styles.inputFieldContainer}>
+              <Text style={styles.inputFieldLabel}>Experiência Profissional (anos)</Text>
+              <View style={[
+                styles.inputFieldWrapper,
+                experienciaFocused && styles.inputFieldWrapperFocused
+              ]}>
+                <Icon
+                  name="work"
+                  size={20}
+                  color={experienciaFocused ? "#4ECDC4" : "#999"}
+                  style={styles.inputFieldIcon}
+                />
+                <TextInput
+                  style={styles.inputFieldText}
+                  placeholder="Ex: 5 anos"
+                  placeholderTextColor="#999"
+                  value={formData.experiencia}
+                  onChangeText={handleInputChange('experiencia')}
+                  onFocus={() => setExperienciaFocused(true)}
+                  onBlur={() => setExperienciaFocused(false)}
+                  editable={!isLoading}
+                />
+              </View>
+            </View>
 
             <View style={styles.inputContainer}>
               <Text style={styles.inputLabel}>Biografia Profissional</Text>
@@ -382,23 +547,59 @@ const PsychologistSignup: React.FC = () => {
             {/* Security Section */}
             <Text style={styles.sectionTitle}>Segurança</Text>
 
-            <Input
-              label="Senha"
-              placeholder="Mínimo 6 caracteres"
-              iconName="lock"
-              type="senha"
-              value={formData.senha}
-              onChangeText={handleInputChange('senha')}
-            />
+            {/* Senha Input */}
+            <View style={styles.inputFieldContainer}>
+              <Text style={styles.inputFieldLabel}>Senha</Text>
+              <View style={[
+                styles.inputFieldWrapper,
+                senhaFocused && styles.inputFieldWrapperFocused
+              ]}>
+                <Icon
+                  name="lock"
+                  size={20}
+                  color={senhaFocused ? "#4ECDC4" : "#999"}
+                  style={styles.inputFieldIcon}
+                />
+                <TextInput
+                  style={styles.inputFieldText}
+                  placeholder="Mínimo 6 caracteres"
+                  placeholderTextColor="#999"
+                  secureTextEntry
+                  value={formData.senha}
+                  onChangeText={handleInputChange('senha')}
+                  onFocus={() => setSenhaFocused(true)}
+                  onBlur={() => setSenhaFocused(false)}
+                  editable={!isLoading}
+                />
+              </View>
+            </View>
 
-            <Input
-              label="Confirmar Senha"
-              placeholder="Digite novamente sua senha"
-              iconName="lock-outline"
-              type="senha"
-              value={formData.confirmarSenha}
-              onChangeText={handleInputChange('confirmarSenha')}
-            />
+            {/* Confirmar Senha Input */}
+            <View style={styles.inputFieldContainer}>
+              <Text style={styles.inputFieldLabel}>Confirmar Senha</Text>
+              <View style={[
+                styles.inputFieldWrapper,
+                confirmarSenhaFocused && styles.inputFieldWrapperFocused
+              ]}>
+                <Icon
+                  name="lock-outline"
+                  size={20}
+                  color={confirmarSenhaFocused ? "#4ECDC4" : "#999"}
+                  style={styles.inputFieldIcon}
+                />
+                <TextInput
+                  style={styles.inputFieldText}
+                  placeholder="Digite novamente sua senha"
+                  placeholderTextColor="#999"
+                  secureTextEntry
+                  value={formData.confirmarSenha}
+                  onChangeText={handleInputChange('confirmarSenha')}
+                  onFocus={() => setConfirmarSenhaFocused(true)}
+                  onBlur={() => setConfirmarSenhaFocused(false)}
+                  editable={!isLoading}
+                />
+              </View>
+            </View>
 
             {/* Terms and Conditions */}
             <TouchableOpacity
@@ -423,9 +624,10 @@ const PsychologistSignup: React.FC = () => {
               style={[styles.submitButton, isLoading && styles.submitButtonDisabled]}
               onPress={handleSubmit}
               disabled={isLoading}
+              activeOpacity={0.8}
             >
               {isLoading ? (
-                <Text style={styles.submitButtonText}>Enviando...</Text>
+                <ActivityIndicator size="small" color="#FFF" />
               ) : (
                 <>
                   <Icon name="send" size={20} color="#FFF" />
@@ -509,6 +711,48 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: '#2C3E50',
     marginBottom: 8,
+  },
+  inputFieldContainer: {
+    marginBottom: 20,
+  },
+  inputFieldLabel: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#2C3E50',
+    marginBottom: 8,
+    marginLeft: 2,
+  },
+  inputFieldWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 12,
+    borderWidth: 1.5,
+    borderColor: '#E1E8ED',
+    backgroundColor: '#fff',
+    paddingHorizontal: 16,
+    height: 56,
+  },
+  inputFieldWrapperFocused: {
+    borderColor: '#4ECDC4',
+    backgroundColor: '#F8FFFE',
+    shadowColor: '#4ECDC4',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  inputFieldIcon: {
+    marginRight: 12,
+  },
+  inputFieldText: {
+    flex: 1,
+    fontSize: 16,
+    color: '#2C3E50',
+    paddingVertical: 0,
+    height: '100%',
   },
   selectButton: {
     flexDirection: 'row',
