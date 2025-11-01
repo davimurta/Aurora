@@ -210,9 +210,9 @@ ANALYTICS_KEY=sua_chave_analytics
 - **Diferenciação de interface para cada tipo de usuário (Paciente/ Psicólogo)**: Ajusta o design e as telas exibidas de acordo com o tipo de conta (Paciente tem acesso a ferramentas de auto-cuidado; Psicólogo a ferramentas de gestão).
 - **Sair da conta Paciente/ Psicólogo**: Permite que o usuário encerre a sessão atual de forma segura.
 - **Acesso ao blog**: Permite que todos os usuários leiam artigos e conteúdos postados pelos profissionais.
+- **Tela Splash**: Exibe o logotipo do aplicativo enquanto o sistema é iniciado.
 
 ### 👤 Para Pacientes
-- **Exportar relatórios**: Gera um documento (PDF, etc.) com o resumo do histórico emocional e dos registros do paciente em um período.
 - **Atividade de respiração**: Oferece um guia visual para exercícios de respiração e relaxamento.
 - **Registro diário**: Permite ao paciente documentar pensamentos, eventos e humor ao longo do dia.
 - **Anotações diárias**: Oferece um espaço para o paciente escrever reflexões e lembretes.
