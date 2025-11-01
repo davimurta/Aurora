@@ -199,30 +199,6 @@ ANALYTICS_KEY=sua_chave_analytics
 | **Produção** | `npm start` | Inicia servidor em produção |
 | **Test** | `npm test` | Executa testes (se configurado) |
 
----
-
-## ✅ Status do Desenvolvimento
-
-### Funcionalidades Gerais
-- [x] **Login com autenticação** (Firebase)
-- [x] **Cadastro de usuários** (pacientes)
-- [x] **Cadastro de psicólogos** (com validação de documentos)
-- [x] **Diferenciação entre perfis** (paciente/psicólogo)
-- [x] **Aceite dos termos e condições** no cadastro
-
-### Funcionalidades do Paciente
-- [x] **Registro diário de bem-estar** (emoção, intensidade, descrição)
-- [x] **Histórico de registros** com filtros e busca
-- [ ] **Gráficos de progresso emocional** (weekly/monthly views)
-- [ ] **Notificações de lembrete** personalizáveis
-- [x] **Exportar relatório emocional** (PDF)
-
-### Funcionalidades do Psicólogo
-- [ ] **Gestão de conteúdo do blog** (CRUD completo)
-- [ ] **Editor rico** para matérias (HTML)
-- [ ] **Perfil profissional completo** (CRP, formação, biografia)
-- [ ] **Upload de documentos** (diploma, CRP, comprovantes)
-- [ ] **Dashboard analítico** com métricas
 
 ---
 
