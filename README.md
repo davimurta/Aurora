@@ -199,47 +199,37 @@ ANALYTICS_KEY=sua_chave_analytics
 | **Produção** | `npm start` | Inicia servidor em produção |
 | **Test** | `npm test` | Executa testes (se configurado) |
 
----
-
-## ✅ Status do Desenvolvimento
-
-### Funcionalidades Gerais
-- [x] **Login com autenticação** (Firebase)
-- [x] **Cadastro de usuários** (pacientes)
-- [x] **Cadastro de psicólogos** (com validação de documentos)
-- [x] **Diferenciação entre perfis** (paciente/psicólogo)
-- [x] **Aceite dos termos e condições** no cadastro
-
-### Funcionalidades do Paciente
-- [x] **Registro diário de bem-estar** (emoção, intensidade, descrição)
-- [x] **Histórico de registros** com filtros e busca
-- [ ] **Gráficos de progresso emocional** (weekly/monthly views)
-- [ ] **Notificações de lembrete** personalizáveis
-- [x] **Exportar relatório emocional** (PDF)
-
-### Funcionalidades do Psicólogo
-- [ ] **Gestão de conteúdo do blog** (CRUD completo)
-- [ ] **Editor rico** para matérias (HTML)
-- [ ] **Perfil profissional completo** (CRP, formação, biografia)
-- [ ] **Upload de documentos** (diploma, CRP, comprovantes)
-- [ ] **Dashboard analítico** com métricas
 
 ---
 
-## 🎯 Funcionalidades
+## 🎯 20 Funcionalidades
+
+### ⚙ Geral
+- **Login Paciente/ Psicólogo**: Permite que usuários existentes entrem no aplicativo usando suas credenciais.
+- **Cadastro Paciente/ Psicólogo**: Permite que novos usuários criem uma conta na plataforma.
+- **Diferenciação de interface para cada tipo de usuário (Paciente/ Psicólogo)**: Ajusta o design e as telas exibidas de acordo com o tipo de conta (Paciente tem acesso a ferramentas de auto-cuidado; Psicólogo a ferramentas de gestão).
+- **Sair da conta Paciente/ Psicólogo**: Permite que o usuário encerre a sessão atual de forma segura.
+- **Acesso ao blog**: Permite que todos os usuários leiam artigos e conteúdos postados pelos profissionais.
+- **Tela Splash**: Exibe o logotipo do aplicativo enquanto o sistema é iniciado.
 
 ### 👤 Para Pacientes
-- **Registro de Bem-estar**: Acompanhe suas emoções diariamente com escala de intensidade
-- **Histórico Completo**: Visualize seu progresso ao longo do tempo
-- **Relatórios**: Exporte dados para compartilhar com profissionais
-- **Lembretes**: Notificações personalizadas para manter a constância
-- **Recursos Educativos**: Acesse conteúdos criados por psicólogos verificados
+- **Atividade de respiração**: Oferece um guia visual para exercícios de respiração e relaxamento.
+- **Registro diário**: Permite ao paciente documentar pensamentos, eventos e humor ao longo do dia.
+- **Anotações diárias**: Oferece um espaço para o paciente escrever reflexões e lembretes.
+- **Escala de emoções**: Permite que o paciente classifique seu estado emocional ou intensidade de sentimentos usando uma escala visual (ex: emojis, números).
+- **Histórico emocional**: Apresenta uma visão cronológica dos registros, emoções e anotações feitas pelo paciente.
+- **Conexão com profissional**: Permite ao paciente vincular sua conta ao perfil de seu psicólogo.
+- **Busca**: Permite ao paciente encontrar rapidamente artigos no blog, recursos ou entradas de seu registro.
+- **Acesso recursos diários**: Oferece conteúdos curtos e ferramentas de apoio para uso imediato no dia a dia.
 
 ### 👨‍⚕️ Para Psicólogos
-- **Perfil Profissional**: Cadastro completo com validação de documentos
-- **Gestão de Conteúdo**: Crie e gerencie artigos educativos
-- **Dashboard Analítico**: Acompanhe métricas de engajamento
-- **Verificação Profissional**: Sistema de validação de credenciais
+- **Lista de pacientes**: Apresenta uma tela com todos os pacientes conectados ao perfil do psicólogo.
+- **Postar blog/artigo**: Permite ao psicólogo criar e publicar novos conteúdos de texto para o blog do aplicativo.
+- **Acesso ao perfil paciente**: Permite que o profissional visualize os dados básicos e o status de conexão de um paciente específico.
+- **Acesso ao registro emocional paciente**: Permite ao profissional visualizar as informações de humor, emoções e anotações do paciente.
+- **Gerar código de conexão**: Cria um código exclusivo que o paciente utiliza para se conectar ao perfil do psicólogo.
+- **Tags/Categorias para posts do blog**: Permite que o psicólogo classifique artigos para facilitar a busca e organização do conteúdo.
+- **Formatação do Blog**: Oferece ferramentas de edição (negrito, itálico, listas) para melhorar a apresentação dos artigos postados.
 
 ---
 
