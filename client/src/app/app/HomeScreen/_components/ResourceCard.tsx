@@ -98,3 +98,5 @@ export const dailyResources: DailyResource[] = [
     route: '/app/WellnessTipsScreen/WellnessTipsScreen',
   },
 ];
+
+export default ResourceCard;

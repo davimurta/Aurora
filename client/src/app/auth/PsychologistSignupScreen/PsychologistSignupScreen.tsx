@@ -610,22 +610,34 @@ const PsychologistSignup: React.FC = () => {
             </View>
 
             {/* Terms and Conditions */}
-            <TouchableOpacity
-              style={styles.termsContainer}
-              onPress={() => setAcceptTerms(!acceptTerms)}
-            >
-              <Icon
-                name={acceptTerms ? 'check-box' : 'check-box-outline-blank'}
-                size={24}
-                color={acceptTerms ? '#4ECDC4' : '#666'}
-              />
+            <View style={styles.termsContainer}>
+              <TouchableOpacity
+                onPress={() => setAcceptTerms(!acceptTerms)}
+                style={{ marginTop: 2 }}
+              >
+                <Icon
+                  name={acceptTerms ? 'check-box' : 'check-box-outline-blank'}
+                  size={24}
+                  color={acceptTerms ? '#4ECDC4' : '#666'}
+                />
+              </TouchableOpacity>
               <Text style={styles.termsText}>
                 Aceito os{' '}
-                <Text style={styles.termsLink}>termos e condições</Text>
-                {' '}e a{' '}
-                <Text style={styles.termsLink}>política de privacidade</Text>
+                <Text
+                  style={styles.termsLink}
+                  onPress={() => router.push('/auth/TermsOfUse/TermsOfUse')}
+                >
+                  termos de uso
+                </Text>
+                {' '}e o{' '}
+                <Text
+                  style={styles.termsLink}
+                  onPress={() => router.push('/auth/ConsentTerms/ConsentTerms')}
+                >
+                  termo de consentimento
+                </Text>
               </Text>
-            </TouchableOpacity>
+            </View>
 
             {/* Submit Button */}
             <TouchableOpacity

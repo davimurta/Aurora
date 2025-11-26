@@ -152,17 +152,18 @@ export const styles = StyleSheet.create({
     alignItems: 'flex-start',
     marginVertical: 20,
     paddingHorizontal: 5,
+    gap: 10,
   },
   termsText: {
     fontSize: 14,
     color: '#666',
-    marginLeft: 10,
     flex: 1,
     lineHeight: 20,
   },
   termsLink: {
     color: '#4ECDC4',
     fontWeight: '500',
+    textDecorationLine: 'underline',
   },
   submitButton: {
     backgroundColor: '#4ECDC4',
@@ -259,3 +260,5 @@ export const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
+
+export default styles;

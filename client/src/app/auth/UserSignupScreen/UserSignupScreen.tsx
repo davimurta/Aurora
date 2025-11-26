@@ -365,20 +365,31 @@ const UserSignup: React.FC = () => {
             </View>
 
             {/* Terms and Conditions */}
-            <TouchableOpacity 
-              style={styles.termsContainer}
-              onPress={() => setAcceptTerms(!acceptTerms)}
-            >
-              <View style={[styles.checkbox, acceptTerms && styles.checkboxChecked]}>
-                {acceptTerms && <Icon name="check" size={16} color="#fff" />}
-              </View>
+            <View style={styles.termsContainer}>
+              <TouchableOpacity
+                onPress={() => setAcceptTerms(!acceptTerms)}
+              >
+                <View style={[styles.checkbox, acceptTerms && styles.checkboxChecked]}>
+                  {acceptTerms && <Icon name="check" size={16} color="#fff" />}
+                </View>
+              </TouchableOpacity>
               <Text style={styles.termsText}>
                 Eu aceito os{' '}
-                <Text style={styles.linkText}>Termos de Uso</Text>
-                {' '}e{' '}
-                <Text style={styles.linkText}>Política de Privacidade</Text>
+                <Text
+                  style={styles.linkText}
+                  onPress={() => router.push('/auth/TermsOfUse/TermsOfUse')}
+                >
+                  termos de uso
+                </Text>
+                {' '}e o{' '}
+                <Text
+                  style={styles.linkText}
+                  onPress={() => router.push('/auth/ConsentTerms/ConsentTerms')}
+                >
+                  termo de consentimento
+                </Text>
               </Text>
-            </TouchableOpacity>
+            </View>
 
             {/* Submit Button */}
             <TouchableOpacity

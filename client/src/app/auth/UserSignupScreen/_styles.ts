@@ -107,6 +107,7 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     marginVertical: 20,
+    gap: 12,
   },
   checkbox: {
     width: 20,
@@ -114,7 +115,6 @@ export const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#ddd',
     borderRadius: 4,
-    marginRight: 12,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 2,
@@ -132,6 +132,7 @@ export const styles = StyleSheet.create({
   linkText: {
     color: '#4ECDC4',
     fontWeight: '600',
+    textDecorationLine: 'underline',
   },
   submitButton: {
     backgroundColor: '#4ECDC4',
@@ -194,3 +195,5 @@ export const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
+
+export default styles;

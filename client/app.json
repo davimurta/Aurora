@@ -23,6 +23,10 @@
       },
       "edgeToEdgeEnabled": true
     },
+    "assetBundlePatterns": [
+      "**/*",
+      "assets/**/*"
+    ],
     "web": {
       "bundler": "metro",
       "output": "static",

@@ -1,4 +1,3 @@
-
 export const respirationActivities = [
   {
     id: '1',
@@ -37,3 +36,5 @@ export const respirationActivities = [
     bgColor: '#FFF9C4',
   },
 ];
+
+export default respirationActivities;
