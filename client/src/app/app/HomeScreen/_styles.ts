@@ -5,8 +5,8 @@ export const styles = StyleSheet.create({
     flex: 1, 
     backgroundColor: '#f8f9fa' 
   },
-  contentContainer: { 
-    paddingBottom: 40 
+  contentContainer: {
+    paddingBottom: 100
   },
   searchContainer: { 
     paddingVertical: 16, 

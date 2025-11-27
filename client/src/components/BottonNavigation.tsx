@@ -18,15 +18,27 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
   const [activeTab, setActiveTab] = useState('')
 
   const getActiveTabFromPath = (path: string): string => {
-    if (path.includes('/Home')) return 'home'
-    if (path.includes('/DailyRegister')) return 'analytics'
-    if (path.includes('/Chat')) return 'chat'
-    if (path.includes('/Profile') || path.includes('/acesso')) return 'profile'
+    // Home
+    if (path.includes('/HomeScreen')) return 'home'
+
+    // Analytics/Daily Register (para paciente) ou ClientsList (para psicólogo)
+    if (path.includes('/DailyRegister') || path.includes('/ClientsList') || path.includes('/ClientSimulator')) return 'analytics'
+
+    // Add/History (para paciente) ou AddArticle (para psicólogo)
+    if (path.includes('/HistoryRegister') || path.includes('/AddArticle')) return 'add'
+
+    // Chat/Blog
+    if (path.includes('/Chat') || path.includes('/BlogNavigation') || path.includes('/BlogPost')) return 'chat'
+
+    // Profile
+    if (path.includes('/Profile') || path.includes('/acesso') || path.includes('/Language') || path.includes('/Privacy') || path.includes('/Help') || path.includes('/AboutUs')) return 'profile'
+
     return 'home'
   }
 
   useEffect(() => {
     const currentTab = getActiveTabFromPath(pathname)
+    console.log('📍 [BottomNav] Pathname:', pathname, '→ Active tab:', currentTab)
     setActiveTab(currentTab)
   }, [pathname])
 

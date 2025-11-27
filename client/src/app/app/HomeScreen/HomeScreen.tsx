@@ -161,14 +161,12 @@ const HomeScreen: React.FC = () => {
           data={filteredData.blogPosts}
           keyExtractor={(item) => item.id}
           renderItem={(item) => (
-            <BlogCard 
-              item={item as BlogPost} 
-              onPress={() => handleNavigateToBlogPost(item.id)} 
+            <BlogCard
+              item={item as BlogPost}
+              onPress={() => handleNavigateToBlogPost(item.id)}
             />
           )}
         />
-
-        <View style={styles.bottomSpacing} />
       </ScrollView>
 
       <BottomNavigation />
